@@ -3,15 +3,15 @@
         <img src="https://cdn.croct.io/brand/logo/repo-icon-green.svg" alt="Croct" height="80"/>
     </a>
     <br />
-    <strong>TypeScript Project Title</strong>
+    <strong>Datetime Library</strong>
     <br />
-    A brief description about the project.
+    Additional date-time classes that complement the native JS Date object.
 </p>
 <p align="center">
     <img alt="Language" src="https://img.shields.io/badge/language-TypeScript-blue" />
-    <img alt="Build" src="https://github.com/croct-tech/value-objects-js/actions/workflows/branch-validations.yaml/badge.svg" />
-    <a href="https://codeclimate.com/repos/607073a82a14204f3b004a8b/maintainability"><img src="https://api.codeclimate.com/v1/badges/a1492aed55fd00bb9ba3/maintainability" /></a>
-    <a href="https://codeclimate.com/repos/607073a82a14204f3b004a8b/test_coverage"><img src="https://api.codeclimate.com/v1/badges/a1492aed55fd00bb9ba3/test_coverage" /></a>
+    <img alt="Build" src="https://github.com/croct-tech/time-js/actions/workflows/branch-validations.yaml/badge.svg" />
+    <a href="https://codeclimate.com/repos/6075b20f54dcd20f24000396/maintainability"><img src="https://api.codeclimate.com/v1/badges/ff00fd9545c98420a6be/maintainability" /></a>
+    <a href="https://codeclimate.com/repos/6075b20f54dcd20f24000396/test_coverage"><img src="https://api.codeclimate.com/v1/badges/ff00fd9545c98420a6be/test_coverage" /></a>
     <br />
     <br />
     <a href="https://github.com/croct-tech/value-object-js/releases">📦Releases</a>
@@ -21,40 +21,42 @@
         <a href="https://github.com/croct-tech/value-object-js/issues/new?labels=enhancement&template=feature-request.md">✨Request Feature</a>
 </p>
 
-# Instructions
-Follow the steps below to create a new repository:
-
-1. Customize the repository
-   1. Click on the _Use this template_ button at the top of this page
-   2. Clone the repository locally 
-   3. Update the `README.md` and `package.json` with the new package information
-2. Setup Code Climate
-   1. Add the project to [Croct's code climate organization](https://codeclimate.com/accounts/5e714648faaa9c00fb000081/dashboard)
-   2. Go to **Repo Settings > Test coverage** and copy the "_TEST REPORTER ID_"
-   3. Go to **Repo Settings > Badges** and copy the maintainability and coverage badges to the `README.md` 
-   4. On the Github repository page, go to **Settings > Secrets** and add a secret with name `CC_TEST_REPORTER_ID` and the ID from the previous step as value.
-   
 ## Installation
 Use the package manage [NPM](https://getcomposer.org) to install the package:
 
 ```sh
-npm install croct/project-ts
+npm install @croct-tech/time
 ```
 
 ## Basic usage
 
 ```typescript
-import {Example} from '@croct/project-ts';
+import {Instant} from '@croct-tech/time';
 
-const example = new Example();
-example.displayBasicUsage();
+const now = Instant.now();
+
+now.toMillis();
+```
+
+### Instant
+
+#### Constructors
+
+Instant can be constructed from a native Date, epoch milliseconds and epoch seconds. The following constructors are equivalent
+```typescript
+
+const aDate = new Date(5000)
+
+Instant.fromDate(aDate);
+Instant.fromEpochMillis(5000);
+Instant.fromEpochSeconds(5);
 ```
 
 ## Contributing
 Contributions to the package are always welcome! 
 
-- Report any bugs or issues on the [issue tracker](https://github.com/croct-tech/project-ts/issues).
-- For major changes, please [open an issue](https://github.com/croct-tech/project-ts/issues) first to discuss what you would like to change.
+- Report any bugs or issues on the [issue tracker](https://github.com/croct-tech/time-js/issues).
+- For major changes, please [open an issue](https://github.com/croct-tech/time-js/issues) first to discuss what you would like to change.
 - Please make sure to update tests as appropriate.
 
 ## Testing
@@ -82,22 +84,27 @@ npm run lint
 Before building the project, the dependencies must be installed:
 
 ```sh
-npm install
+npm run build
 ```
 
-Then, to build the CommonJS module:
+## Local development use
+
+To use a local development version on other projects, you must link the built artifacts with npm:
 
 ```sh
-npm run rollup
+npm run build
+cd build
+ln -s ../package.json package.json || true
+npm link
 ```
 
-The following command bundles a minified IIFE module for browsers:
+Then on any other project that uses the library:
 
-```
-npm run rollup-min
+```sh
+npm link @croct-tech/time
 ```
 
 ## License
-Copyright © 2015-2020 Croct Limited, All Rights Reserved.
+Copyright © 2015-2021 Croct Limited, All Rights Reserved.
 
 All information contained herein is, and remains the property of Croct Limited. The intellectual, design and technical concepts contained herein are proprietary to Croct Limited s and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law. Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained from Croct Limited.
