@@ -3,9 +3,9 @@
         <img src="https://cdn.croct.io/brand/logo/repo-icon-green.svg" alt="Croct" height="80"/>
     </a>
     <br />
-    <strong>Datetime Library</strong>
+    <strong>Time Library</strong>
     <br />
-    Additional date-time classes that complement the native JS Date object.
+    Additional date-time classes that complement the standard library.
 </p>
 <p align="center">
     <img alt="Language" src="https://img.shields.io/badge/language-TypeScript-blue" />
@@ -35,7 +35,7 @@ import {Instant} from '@croct-tech/time';
 
 const now = Instant.now();
 
-now.toMillis();
+console.log(now.toMillis());
 ```
 
 ### Instant
@@ -43,11 +43,9 @@ now.toMillis();
 #### Constructors
 
 Instant can be constructed from a native Date, epoch milliseconds and epoch seconds. The following constructors are equivalent
+
 ```typescript
-
-const aDate = new Date(5000)
-
-Instant.fromDate(aDate);
+Instant.fromDate(new Date(5000));
 Instant.fromEpochMillis(5000);
 Instant.fromEpochSeconds(5);
 ```
