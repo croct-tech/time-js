@@ -34,7 +34,7 @@ jobs:
 
       - name: Prepare release
         run: |-
-          cp package.json LICENSE README.md build/
+          cp package.json README.md build/
           cd build
           sed -i -e "s~\"version\": \"0.0.0-dev\"~\"version\": \"${GITHUB_REF##*/}\"~" package.json
 
@@ -44,7 +44,7 @@ jobs:
           cd build
           npm publish --tag next
         env:
-          NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish release to NPM
         if: ${{ !github.event.release.prerelease }}
@@ -52,4 +52,4 @@ jobs:
           cd build
           npm publish
         env:
-          NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
