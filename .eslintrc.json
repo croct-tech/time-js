@@ -16,10 +16,9 @@
       }
     }
   },
-  "env": {
-    "browser": true
-  },
   "rules": {
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": "error",
     "@typescript-eslint/explicit-member-accessibility": ["error"],
     "@typescript-eslint/member-delimiter-style": ["error", {
       "multiline": {
@@ -45,6 +44,7 @@
     "@typescript-eslint/no-use-before-define": "off",
     "@typescript-eslint/semi": ["error", "always"],
     "semi": "off",
+    "arrow-body-style": "off",
     "arrow-parens": ["error", "as-needed"],
     "class-methods-use-this": "off",
     "consistent-return": "off",
@@ -59,15 +59,39 @@
     "no-await-in-loop": "off",
     "no-bitwise": "off",
     "no-continue": "off",
-    "no-multiple-empty-lines": ["error", {"max":  1}],
-    "no-plusplus": "off",
-    "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1
+      }
+    ],
+    "no-plusplus": [
+      "error",
+      {
+        "allowForLoopAfterthoughts": true
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      "ForInStatement",
+      "LabeledStatement",
+      "WithStatement"
+    ],
     "no-unused-vars": "off",
     "no-use-before-define": "off",
-    "object-curly-newline": ["error", {"multiline": true, "consistent": true}],
-    "object-curly-spacing": ["error", "never"],
-    "object-shorthand": ["error", "consistent"],
-    "padding-line-between-statements": ["error",{ "blankLine": "always", "prev": "*", "next": ["return", "if", "function", "block-like"]}],
+    "object-curly-newline": [
+      "error",
+      {
+        "multiline": true,
+        "consistent": true
+      }
+    ],
+    "object-curly-spacing": "off",
+    "@typescript-eslint/object-curly-spacing": "error",
+    "object-shorthand": [
+      "error",
+      "consistent"
+    ],
     "require-await": "error"
   },
   "overrides": [
@@ -76,7 +100,8 @@
       "extends": ["plugin:jest/recommended"],
       "plugins": ["jest"],
       "rules": {
-        "no-new-object": "off"
+        "no-new-object": "off",
+        "jest/no-conditional-expect": "off"
       },
       "env": {
         "jest": true
