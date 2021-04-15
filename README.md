@@ -22,35 +22,15 @@
 </p>
 
 ## Installation
+
 Use the package manage [NPM](https://getcomposer.org) to install the package:
 
 ```sh
 npm install @croct-tech/time
 ```
 
-## Basic usage
-
-```typescript
-import {Instant} from '@croct-tech/time';
-
-const now = Instant.now();
-
-console.log(now.toMillis());
-```
-
-### Instant
-
-#### Constructors
-
-Instant can be constructed from a native Date, epoch milliseconds and epoch seconds. The following constructors are equivalent
-
-```typescript
-Instant.fromDate(new Date(5000));
-Instant.fromEpochMillis(5000);
-Instant.fromEpochSeconds(5);
-```
-
 ## Contributing
+
 Contributions to the package are always welcome! 
 
 - Report any bugs or issues on the [issue tracker](https://github.com/croct-tech/time-js/issues).
@@ -85,7 +65,7 @@ Before building the project, the dependencies must be installed:
 npm run build
 ```
 
-## Local development use
+## Local development
 
 To use a local development version on other projects, you must link the built artifacts with npm:
 
@@ -103,6 +83,7 @@ npm link @croct-tech/time
 ```
 
 ## License
+
 Copyright © 2015-2021 Croct Limited, All Rights Reserved.
 
 All information contained herein is, and remains the property of Croct Limited. The intellectual, design and technical concepts contained herein are proprietary to Croct Limited s and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law. Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained from Croct Limited.
