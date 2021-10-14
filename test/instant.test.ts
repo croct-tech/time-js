@@ -129,4 +129,10 @@ describe('A value object representing an instant in time', () => {
             Instant.fromEpochMillis(100000),
         ]);
     });
+
+    it('should serialize to JSON as the epoch millisecond', () => {
+        const instant = Instant.fromEpochMillis(5000);
+
+        expect(JSON.stringify(instant)).toEqual('5000');
+    });
 });
