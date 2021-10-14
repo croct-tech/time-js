@@ -80,6 +80,10 @@ export class Instant {
         return this.toDate().toISOString();
     }
 
+    public toJSON(): number {
+        return this.value;
+    }
+
     public plusSeconds(seconds: number): Instant {
         return new Instant(this.value + (seconds * 1000));
     }
