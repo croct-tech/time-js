@@ -16,7 +16,8 @@ describe('A value object representing an instant in time', () => {
     });
 
     it('should reject fractional seconds timestamp', () => {
-        expect(() => Instant.fromEpochSeconds(1.5)).toThrowError('The timestamp must be a safe integer.');
+        expect(() => Instant.fromEpochSeconds(1.5))
+            .toThrowError('The timestamp must be a safe integer.');
     });
 
     it('should reject unsafe seconds timestamp', () => {

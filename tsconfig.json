@@ -13,12 +13,14 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "removeComments": false,
-    "outDir": "build",
+    "noEmit": true,
     "downlevelIteration": true,
     "declaration": true,
+    "lib": ["es6"]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "test/**/*.ts"
   ],
   "exclude": ["node_modules", "build"]
 }
