@@ -51,7 +51,7 @@ describe('A value object representing a local date time', () => {
         const dateTime = '2015-08-30T14:20:05.123';
         const localDateTime = LocalDateTime.parse(dateTime);
 
-        expect(localDateTime.toString()).toBe('2015-08-30T14:20:05.000000123');
+        expect(localDateTime.toString()).toBe(dateTime);
     });
 
     it.each([

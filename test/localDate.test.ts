@@ -28,7 +28,7 @@ describe('A value object representing a local date', () => {
     });
 
     it('should reject invalid days number', () => {
-        expect(() => LocalDate.of(1970, 1, 1.5)).toThrowError('Day must be an integer.');
+        expect(() => LocalDate.of(1970, 1, 1.5)).toThrowError('Day must be an integer between 1 and 31.');
 
         expect(() => LocalDate.of(1970, 1, 0)).toThrowError('Day must be an integer between 1 and 31.');
 

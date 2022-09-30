@@ -95,7 +95,12 @@ export class LocalTime {
         const hour = Number.parseInt(match.groups.hour, 10);
         const minute = Number.parseInt(match.groups.minute, 10);
         const second = Number.parseInt(match.groups.second ?? '0', 10);
-        const nanos = Number.parseInt(match.groups.fraction ?? '0', 10);
+        const nanos = Number.parseInt(
+            match.groups
+                .fraction
+                ?.padEnd(9, '0') ?? '0',
+            10,
+        );
 
         return new LocalTime(hour, minute, second, nanos);
     }

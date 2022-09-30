@@ -39,7 +39,7 @@ export class LocalDate {
      * @param day   The day of month, in the range 1 to 31.
      */
     public static of(year: number, month: number, day: number): LocalDate {
-        if (!Number.isInteger(year) || !Number.isSafeInteger(year)) {
+        if (!Number.isSafeInteger(year)) {
             throw new Error('Year must be a safe integer.');
         }
 
@@ -47,13 +47,9 @@ export class LocalDate {
             throw new Error('Month must be an integer between 1 and 12.');
         }
 
-        if (!Number.isInteger(day)) {
-            throw new Error('Day must be an integer.');
-        }
-
         const maxDay = LocalDate.getMonthLength(month, LocalDate.isLeapYear(year));
 
-        if (day < 1 || day > maxDay) {
+        if (!Number.isInteger(day) || day < 1 || day > maxDay) {
             throw new Error(`Day must be an integer between 1 and ${maxDay}.`);
         }
 

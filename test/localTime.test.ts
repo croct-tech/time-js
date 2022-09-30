@@ -57,7 +57,7 @@ describe('A value object representing a local time', () => {
     });
 
     it('can be created from a string in the ISO-8601 format', () => {
-        expect(LocalTime.parse('14:20:05.123').toString()).toBe('14:20:05.000000123');
+        expect(LocalTime.parse('14:20:05.123').toString()).toBe('14:20:05.123');
 
         expect(LocalTime.parse('14:20').toString()).toBe('14:20');
     });
