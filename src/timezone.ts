@@ -1,5 +1,7 @@
 import {timeZonesNames} from '@vvo/tzdb';
 
+const timeZoneIds = timeZonesNames.concat('UTC');
+
 /**
  * A time zone.
  */
@@ -20,7 +22,7 @@ export class Timezone {
      * Returns the list of supported time zones.
      */
     public static getTimesZoneIds(): string[] {
-        return timeZonesNames.concat('UTC');
+        return timeZoneIds;
     }
 
     /**
