@@ -57,15 +57,15 @@ export class LocalDate {
     }
 
     public static parse(value: string): LocalDate {
-        const match = LocalDate.PATTERN.exec(value);
+        const {groups} = value.match(LocalDate.PATTERN) ?? {};
 
-        if (match?.groups === undefined) {
+        if (groups === undefined) {
             throw new Error(`Invalid ISO-8601 date string: ${value}`);
         }
 
-        const year = Number.parseInt(match.groups.year, 10);
-        const month = Number.parseInt(match.groups.month, 10);
-        const day = Number.parseInt(match.groups.day, 10);
+        const year = Number.parseInt(groups.year, 10);
+        const month = Number.parseInt(groups.month, 10);
+        const day = Number.parseInt(groups.day, 10);
 
         return LocalDate.of(year, month, day);
     }
@@ -97,6 +97,10 @@ export class LocalDate {
      * @param other The other date.
      */
     public equals(other: LocalDate): boolean {
+        if (this === other) {
+            return true;
+        }
+
         return this.year === other.year && this.month === other.month && this.day === other.day;
     }
 

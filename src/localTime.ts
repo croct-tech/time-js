@@ -86,21 +86,16 @@ export class LocalTime {
      * @param value The ISO-8601 time string.
      */
     public static parse(value: string): LocalTime {
-        const match = LocalTime.PATTERN.exec(value);
+        const {groups} = value.match(LocalTime.PATTERN) ?? {};
 
-        if (match?.groups === undefined) {
+        if (groups === undefined) {
             throw new Error(`Invalid ISO-8601 time string: ${value}`);
         }
 
-        const hour = Number.parseInt(match.groups.hour, 10);
-        const minute = Number.parseInt(match.groups.minute, 10);
-        const second = Number.parseInt(match.groups.second ?? '0', 10);
-        const nanos = Number.parseInt(
-            match.groups
-                .fraction
-                ?.padEnd(9, '0') ?? '0',
-            10,
-        );
+        const hour = Number.parseInt(groups.hour, 10);
+        const minute = Number.parseInt(groups.minute, 10);
+        const second = Number.parseInt(groups.second ?? '0', 10);
+        const nanos = Number.parseInt(groups.fraction?.padEnd(9, '0') ?? '0', 10);
 
         return new LocalTime(hour, minute, second, nanos);
     }
@@ -139,6 +134,10 @@ export class LocalTime {
      * @param other The other local time.
      */
     public equals(other: LocalTime): boolean {
+        if (this === other) {
+            return true;
+        }
+
         return this.hour === other.hour
             && this.minute === other.minute
             && this.second === other.second

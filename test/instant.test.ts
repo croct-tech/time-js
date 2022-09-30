@@ -111,8 +111,8 @@ describe('A value object representing an instant in time', () => {
         expect(one.isBeforeOrEqual(three)).toBe(true);
         expect(one.isBeforeOrEqual(three)).toBe(true);
 
+        expect(one.equals(one)).toBe(true);
         expect(one.equals(three)).toBe(true);
-
         expect(one.equals(two)).toBe(false);
         expect(one.equals(three)).toBe(true);
     });

@@ -63,6 +63,19 @@ describe('A value object representing a local time', () => {
     });
 
     it.each([
+        ['12:00', '12:00'],
+        ['12:00:00', '12:00'],
+        ['12:01:00', '12:01'],
+        ['12:01:01', '12:01:01'],
+        ['12:01:01.0', '12:01:01'],
+        ['12:01:01.1', '12:01:01.100'],
+        ['12:01:01.1001', '12:01:01.100100'],
+        ['12:01:01.1001001', '12:01:01.100100100'],
+    ])('should parse %s', (value, expected) => {
+        expect(LocalTime.parse(value).toString()).toStrictEqual(expected);
+    });
+
+    it.each([
         '2015-08-30T12:34:56',
         '123456',
         '12.34.56',
@@ -72,14 +85,21 @@ describe('A value object representing a local time', () => {
         '12:344:56',
         '12:34:566',
         '12:34:56:0000000056',
-    ])('should reject a string outside the ISO-8601 format', value => {
+    ])('should fail to parse %s', value => {
         expect(() => LocalTime.parse(value)).toThrowError(`Invalid ISO-8601 time string: ${value}`);
     });
 
-    it('can be converted to a string in the ISO-8601 format', () => {
-        const localTime = LocalTime.of(2, 53);
-
-        expect(localTime.toString()).toBe('02:53');
+    it.each([
+        ['12:00', '12:00'],
+        ['12:00:00', '12:00'],
+        ['12:01:00', '12:01'],
+        ['12:01:01', '12:01:01'],
+        ['12:01:01.0', '12:01:01'],
+        ['12:01:01.1', '12:01:01.100'],
+        ['12:01:01.1001', '12:01:01.100100'],
+        ['12:01:01.1001001', '12:01:01.100100100'],
+    ])('should format %s as %s', (input, expected) => {
+        expect(LocalTime.parse(input).toString()).toBe(expected);
     });
 
     it('should be comparable', () => {

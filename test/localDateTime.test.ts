@@ -29,12 +29,11 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.getLocalTime()).toBe(localTime);
     });
 
-    it('can be created without local time', () => {
+    it('can be created at the start of the day', () => {
         const year = 1970;
         const month = 1;
         const day = 1;
         const localDate = LocalDate.of(year, month, day);
-
         const localDateTime = LocalDateTime.of(localDate);
 
         expect(localDateTime.getYear()).toBe(year);
@@ -47,7 +46,7 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.getNano()).toBe(0);
     });
 
-    it('can be created from a string in the ISO-8601 format', () => {
+    it('should parse a valid ISO-8601 date time', () => {
         const dateTime = '2015-08-30T14:20:05.123';
         const localDateTime = LocalDateTime.parse(dateTime);
 
@@ -62,7 +61,7 @@ describe('A value object representing a local date time', () => {
         '2015/08/30 12:34:56',
         '2015T08-30T12:34:56',
         'Sun Aug 30 2015 12:34:56',
-    ])('should reject a string outside the ISO-8601 format', value => {
+    ])('should fail to parse %s', value => {
         expect(() => LocalDateTime.parse(value)).toThrowError('Invalid date time format.');
     });
 
@@ -82,6 +81,7 @@ describe('A value object representing a local date time', () => {
         const two = LocalDateTime.of(localDate, LocalTime.of(1));
         const three = LocalDateTime.of(localDate, localTime);
 
+        expect(one.equals(one)).toBe(true);
         expect(one.equals(two)).toBe(false);
         expect(one.equals(three)).toBe(true);
     });

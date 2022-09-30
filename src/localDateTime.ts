@@ -122,8 +122,11 @@ export class LocalDateTime {
      * @param other The other local date-time.
      */
     public equals(other: LocalDateTime): boolean {
-        return this.date.equals(other.date)
-            && this.time.equals(other.time);
+        if (this === other) {
+            return true;
+        }
+
+        return this.date.equals(other.date) && this.time.equals(other.time);
     }
 
     /**

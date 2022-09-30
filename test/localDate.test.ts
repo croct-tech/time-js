@@ -43,7 +43,7 @@ describe('A value object representing a local date', () => {
         expect(() => LocalDate.of(1970, 2, 29)).toThrowError('Day must be an integer between 1 and 28.');
     });
 
-    it('can be created from a string in the ISO-8601 format', () => {
+    it('should parse a valid ISO-8601 date', () => {
         const date = '2015-08-30';
         const localDate = LocalDate.parse(date);
 
@@ -57,7 +57,7 @@ describe('A value object representing a local date', () => {
         '30/08/2015',
         'Aug 30, 2015',
         '2015, Aug 30',
-    ])('should reject a string outside the ISO-8601 format', value => {
+    ])('should fail to parse invalid ISO-8601 dates', value => {
         expect(() => LocalDate.parse(value)).toThrowError(`Invalid ISO-8601 date string: ${value}`);
     });
 
@@ -72,6 +72,7 @@ describe('A value object representing a local date', () => {
         const two = LocalDate.of(2015, 9, 30);
         const three = LocalDate.of(2015, 8, 30);
 
+        expect(one.equals(one)).toBe(true);
         expect(one.equals(two)).toBe(false);
         expect(one.equals(three)).toBe(true);
     });
