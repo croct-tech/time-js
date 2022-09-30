@@ -8,7 +8,7 @@ describe('A value object representing a timezone', () => {
         expect(timezone.getId()).toBe('America/Sao_Paulo');
     });
 
-    it('should reject invalid timezone ID', () => {
+    it('should reject invalid timezone IDs', () => {
         expect(() => Timezone.of('America')).toThrowError('The timezone America is not supported.');
     });
 
