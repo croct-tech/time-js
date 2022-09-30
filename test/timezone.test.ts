@@ -13,13 +13,13 @@ describe('A value object representing a timezone', () => {
     });
 
     it('should return the list of supported time zones.', () => {
-        expect(Timezone.getTimesZoneIds()).toBe(timeZonesNames);
+        expect(Timezone.getTimesZoneIds()).toEqual(timeZonesNames.concat('UTC'));
     });
 
     it('can be converted to a string representation of the timezone', () => {
-        const timezone = Timezone.of('America/Sao_Paulo');
+        expect(Timezone.of('America/Sao_Paulo').toString()).toBe('America/Sao_Paulo');
 
-        expect(timezone.toString()).toBe('America/Sao_Paulo');
+        expect(Timezone.of('UTC').toString()).toBe('UTC');
     });
 
     it('should be comparable', () => {

@@ -20,7 +20,7 @@ export class Timezone {
      * Returns the list of supported time zones.
      */
     public static getTimesZoneIds(): string[] {
-        return timeZonesNames;
+        return timeZonesNames.concat('UTC');
     }
 
     /**
@@ -31,7 +31,7 @@ export class Timezone {
      * @throws {Error} If the timezone ID is not supported.
      */
     public static of(id: string): Timezone {
-        if (timeZonesNames.indexOf(id) === -1) {
+        if (Timezone.getTimesZoneIds().indexOf(id) === -1) {
             throw new Error(`The timezone ${id} is not supported.`);
         }
 
