@@ -25,6 +25,11 @@ describe('A value object representing an instant in time', () => {
             .toThrowError('The timestamp 4503599627370496 cannot be represented accurately.');
     });
 
+    it('should reject unsafe milliseconds timestamp', () => {
+        expect(() => Instant.fromEpochMillis(2 ** 53))
+            .toThrowError('The timestamp must be an integer.');
+    });
+
     it('can be created from a native Date object', () => {
         const date = new Date(123456);
         const instant = Instant.fromDate(date);
@@ -93,6 +98,23 @@ describe('A value object representing an instant in time', () => {
 
         expect(one.isAfter(three)).toBe(false);
         expect(one.isBefore(three)).toBe(false);
+
+        expect(one.isAfterOrEqual(two)).toBe(false);
+        expect(two.isAfterOrEqual(one)).toBe(true);
+
+        expect(one.isAfterOrEqual(three)).toBe(true);
+        expect(one.isAfterOrEqual(three)).toBe(true);
+
+        expect(one.isBeforeOrEqual(two)).toBe(true);
+        expect(two.isBeforeOrEqual(one)).toBe(false);
+
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+
+        expect(one.equals(one)).toBe(true);
+        expect(one.equals(three)).toBe(true);
+        expect(one.equals(two)).toBe(false);
+        expect(one.equals(three)).toBe(true);
     });
 
     it('should be sortable in ascending order', () => {
