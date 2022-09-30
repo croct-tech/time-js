@@ -39,7 +39,7 @@ export class LocalDate {
      * @param day   The day of month, in the range 1 to 31.
      */
     public static of(year: number, month: number, day: number): LocalDate {
-        if (!Number.isInteger(year) || Number.isSafeInteger(year)) {
+        if (!Number.isInteger(year) || !Number.isSafeInteger(year)) {
             throw new Error('Year must be a safe integer.');
         }
 
