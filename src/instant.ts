@@ -84,6 +84,10 @@ export class Instant {
         return this.value;
     }
 
+    public equals(other: Instant): boolean {
+        return this.value === other.value;
+    }
+
     public plusSeconds(seconds: number): Instant {
         return new Instant(this.value + (seconds * 1000));
     }

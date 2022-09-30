@@ -46,6 +46,7 @@
     "**/*.ts"
   ],
   "dependencies": {
+    "@vvo/tzdb": "^6.68.0",
     "image-size": "^0.9.7"
   }
 }
