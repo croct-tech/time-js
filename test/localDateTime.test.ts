@@ -1,4 +1,4 @@
-import {LocalDate, LocalDateTime, LocalTime} from '../src';
+import {LocalDate, LocalDateTime, LocalTime, TimeZone} from '../src';
 
 describe('A value object representing a local date time', () => {
     it('can be created from its components', () => {
@@ -44,6 +44,15 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.getMinute()).toBe(0);
         expect(localDateTime.getSecond()).toBe(0);
         expect(localDateTime.getNano()).toBe(0);
+    });
+
+    it('can provide the current date time', () => {
+        jest.useFakeTimers()
+            .setSystemTime(new Date('2015-08-31T12:11:59.123456789Z').getTime());
+
+        const now = LocalDateTime.now(TimeZone.of('America/Sao_Paulo'));
+
+        expect(now.toString()).toBe('2015-08-31T09:11:59.123');
     });
 
     it('should parse a valid ISO-8601 date time', () => {
