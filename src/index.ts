@@ -3,4 +3,4 @@ export {Weekday} from './weekday';
 export {LocalDate} from './localDate';
 export {LocalTime} from './localTime';
 export {LocalDateTime} from './localDateTime';
-export {Timezone} from './timezone';
+export {TimeZone} from './timeZone';

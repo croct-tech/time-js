@@ -5,7 +5,12 @@ const timeZoneIds = timeZonesNames.concat('UTC');
 /**
  * A time zone.
  */
-export class Timezone {
+export class TimeZone {
+    /**
+     * The UTC timezone.
+     */
+    public static readonly UTC = new TimeZone('UTC');
+
     /**
      * The time zone ID.
      */
@@ -32,12 +37,12 @@ export class Timezone {
      *
      * @throws {Error} If the timezone ID is not supported.
      */
-    public static of(id: string): Timezone {
-        if (Timezone.getTimesZoneIds().indexOf(id) === -1) {
+    public static of(id: string): TimeZone {
+        if (TimeZone.getTimesZoneIds().indexOf(id) === -1) {
             throw new Error(`The timezone ${id} is not supported.`);
         }
 
-        return new Timezone(id);
+        return new TimeZone(id);
     }
 
     /**
@@ -57,7 +62,7 @@ export class Timezone {
     /**
      * Checks if the timezone is equal to another timezone.
      */
-    public equals(other: Timezone): boolean {
+    public equals(other: TimeZone): boolean {
         return this.id === other.id;
     }
 
