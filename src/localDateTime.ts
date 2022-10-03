@@ -1,5 +1,6 @@
 import {LocalDate} from './localDate';
 import {LocalTime} from './localTime';
+import {TimeZone} from './timeZone';
 
 /**
  * A local date-time.
@@ -21,6 +22,50 @@ export class LocalDateTime {
     private constructor(date: LocalDate, time: LocalTime) {
         this.date = date;
         this.time = time;
+    }
+
+    /**
+     * Returns the current date-time from the system clock in the specified time-zone.
+     *
+     * Fractional seconds have three digits of precision due to the JavaScript date-time
+     * limitations.
+     *
+     * @param zone The time-zone to use.
+     */
+    public static now(zone: TimeZone): LocalDateTime {
+        const now = new Date().toLocaleString('en-US', {
+            timeZone: zone.getId(),
+            calendar: 'iso8601',
+            hour12: false,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Missing type definition.
+            // @ts-ignore
+            fractionalSecondDigits: 3,
+        });
+
+        // eslint-disable-next-line max-len -- Regex literal cannot be split.
+        const matches = now.match(/(?<month>\d{2})\/(?<day>\d{2})\/(?<year>\d{4}), (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2})\.(?<fraction>\d{3})/);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain -- Safe assertion.
+        const groups = matches?.groups!;
+
+        return LocalDateTime.of(
+            LocalDate.of(
+                Number.parseInt(groups.year, 10),
+                Number.parseInt(groups.month, 10),
+                Number.parseInt(groups.day, 10),
+            ),
+            LocalTime.of(
+                Number.parseInt(groups.hour, 10),
+                Number.parseInt(groups.minute, 10),
+                Number.parseInt(groups.second, 10),
+                Number.parseInt(groups.fraction.padEnd(9, '0'), 10),
+            ),
+        );
     }
 
     /**
