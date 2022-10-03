@@ -27,6 +27,9 @@ export class LocalDateTime {
     /**
      * Returns the current date-time from the system clock in the specified time-zone.
      *
+     * Fractional seconds have three digits of precision due to the JavaScript date-time
+     * limitations.
+     *
      * @param zone The time-zone to use.
      */
     public static now(zone: TimeZone): LocalDateTime {
