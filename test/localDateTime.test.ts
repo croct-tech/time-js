@@ -46,7 +46,7 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.getNano()).toBe(0);
     });
 
-    it('can provide the current date time', () => {
+    it('can provide the current local date time from the system clock in a given time zone', () => {
         jest.useFakeTimers()
             .setSystemTime(new Date('2015-08-31T12:11:59.123456789Z').getTime());
 
