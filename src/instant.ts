@@ -36,14 +36,14 @@ export class Instant {
     public static EPOCH = new Instant(0, 0);
 
     /**
-     * The instant representing the minimum supported instant.
+     * The minimum supported instant.
      *
      * The minimum is defined as the instant `-999999-01-01T00:00:00Z`.
      */
     public static MIN = new Instant(Instant.MIN_SECOND, 0);
 
     /**
-     * The instant representing the maximum supported instant.
+     * The maximum supported instant.
      *
      * The maximum is defined as the instant `+999999-01-01T23:59:59.999999999Z`.
      */
