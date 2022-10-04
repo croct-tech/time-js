@@ -268,7 +268,8 @@ export class LocalDateTime {
                 this.time.getSecond(),
                 // Assumes that the time-zone offset is at least 1 second.
                 // Historically, the tz database has never had a time-zone
-                // offset less than 1 minute, so it is safe assumption.
+                // offset less than 1 minute, so assuming a second precision
+                // should be safe.
                 0,
             ),
             zone.getId(),
