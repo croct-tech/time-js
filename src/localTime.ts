@@ -159,7 +159,7 @@ export class LocalTime {
      *
      * @param date The native date object.
      */
-    public static fromDate(date: Date): LocalTime {
+    public static fromNative(date: Date): LocalTime {
         return new LocalTime(
             date.getHours(),
             date.getMinutes(),

@@ -86,8 +86,8 @@ export class LocalDateTime {
      *
      * @param date The native date object.
      */
-    public static fromDate(date: Date): LocalDateTime {
-        return LocalDateTime.of(LocalDate.fromDate(date), LocalTime.fromDate(date));
+    public static fromNative(date: Date): LocalDateTime {
+        return LocalDateTime.of(LocalDate.fromNative(date), LocalTime.fromNative(date));
     }
 
     /**

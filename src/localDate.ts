@@ -72,7 +72,7 @@ export class LocalDate {
      *
      * @returns The local date.
      */
-    public static fromDate(date: Date): LocalDate {
+    public static fromNative(date: Date): LocalDate {
         return LocalDate.of(date.getFullYear(), date.getMonth() + 1, date.getDate());
     }
 
