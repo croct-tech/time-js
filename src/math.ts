@@ -12,7 +12,7 @@
 export function floorDiv(dividend: number, divisor: number): number {
     let result = Math.trunc(dividend / divisor);
 
-    // If the signs are different and modulo not zero, round down.
+    // If the signs are different and modulus not zero, round down.
     if ((dividend ^ divisor) < 0 && (result * divisor !== dividend)) {
         result--;
     }
@@ -36,7 +36,7 @@ export function floorDiv(dividend: number, divisor: number): number {
  * @internal
  */
 export function floorMod(dividend: number, divisor: number): number {
-    return dividend - floorDiv(dividend, divisor) * divisor;
+    return dividend - (floorDiv(dividend, divisor) * divisor);
 }
 
 /**

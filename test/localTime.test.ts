@@ -14,6 +14,13 @@ describe('A value object representing a local time', () => {
         expect(localTime.getNano()).toBe(nanos);
     });
 
+    it('can be created from a native Date object', () => {
+        const date = new Date('August 19, 1975 23:15:30.123');
+        const localTime = LocalTime.fromNative(date);
+
+        expect(localTime.toString()).toBe('23:15:30.123');
+    });
+
     it.each(Object.entries({
         'fractional hours number': 1.5,
         'hours number less than 0': -1,
@@ -107,8 +114,34 @@ describe('A value object representing a local time', () => {
         const two = LocalTime.of(20, 10, 10);
         const three = LocalTime.of(10, 20, 30);
 
+        expect(one.isAfter(two)).toBe(false);
+        expect(two.isAfter(one)).toBe(true);
+
+        expect(one.isBefore(two)).toBe(true);
+        expect(two.isBefore(one)).toBe(false);
+
+        expect(one.isAfter(three)).toBe(false);
+        expect(one.isBefore(three)).toBe(false);
+
+        expect(one.isAfterOrEqual(two)).toBe(false);
+        expect(two.isAfterOrEqual(one)).toBe(true);
+
+        expect(one.isAfterOrEqual(three)).toBe(true);
+        expect(one.isAfterOrEqual(three)).toBe(true);
+
+        expect(one.isBeforeOrEqual(two)).toBe(true);
+        expect(two.isBeforeOrEqual(one)).toBe(false);
+
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+
+        expect(one.equals(one)).toBe(true);
         expect(one.equals(two)).toBe(false);
         expect(one.equals(three)).toBe(true);
+
+        expect(LocalTime.of(1, 2, 3).compare(LocalTime.of(1, 1, 2))).toBe(1);
+        expect(LocalTime.of(1, 2, 3).compare(LocalTime.of(1, 2, 4))).toBe(-1);
+        expect(LocalTime.of(0).compare(LocalTime.of(0))).toBe(0);
     });
 
     it('should serialize to JSON in the ISO-8601 format', () => {

@@ -9,10 +9,9 @@ describe('A value object representing an instant in time', () => {
     });
 
     it('can be created from the number of seconds since the epoch', () => {
-        const unixSeconds = 123;
-        const instant = Instant.ofEpochSecond(unixSeconds);
+        expect(Instant.ofEpochSecond(123).toEpochMillis()).toBe(123000);
 
-        expect(instant.toEpochMillis()).toBe(123000);
+        expect(Instant.ofEpochSecond(0).toEpochMillis()).toBe(0);
     });
 
     it('should reject fractional seconds timestamp', () => {
@@ -21,13 +20,14 @@ describe('A value object representing an instant in time', () => {
     });
 
     it('should reject unsafe seconds timestamp', () => {
-        expect(() => Instant.ofEpochSecond(2 ** 52))
-            .toThrowError('The timestamp 4503599627370496 cannot be represented accurately.');
+        expect(() => Instant.ofEpochSecond(2 ** 52)).toThrowError(
+            'The value 4503599627370496 is out of the range [-31619087596800 - 31494753331199] of instant.',
+        );
     });
 
     it('should reject unsafe milliseconds timestamp', () => {
-        expect(() => Instant.ofEpochMilli(2 ** 53))
-            .toThrowError('The timestamp must be an integer.');
+        expect(() => Instant.ofEpochMilli(2 ** 63))
+            .toThrowError('The timestamp must be a safe integer.');
     });
 
     it('can be created from a native Date object', () => {
@@ -76,13 +76,32 @@ describe('A value object representing an instant in time', () => {
         const instant = Instant.ofEpochMilli(123456789);
         const forwardShift = instant.plusSeconds(876543);
         const backwardShift = instant.plusSeconds(-123456);
+        const noShift = instant.plusSeconds(0);
 
         expect(forwardShift).not.toBe(instant);
         expect(backwardShift).not.toBe(instant);
+        expect(noShift).toBe(instant);
 
         expect(instant.toEpochMillis()).toBe(123456789);
         expect(forwardShift.toEpochMillis()).toBe(999999789);
         expect(backwardShift.toEpochMillis()).toBe(789);
+        expect(noShift.toEpochMillis()).toBe(123456789);
+    });
+
+    it('should create a copy with an amount of time subtracted', () => {
+        const instant = Instant.ofEpochMilli(123456789);
+        const forwardShift = instant.minusSeconds(876543);
+        const backwardShift = instant.minusSeconds(-123456);
+        const noShift = instant.minusSeconds(0);
+
+        expect(forwardShift).not.toBe(instant);
+        expect(backwardShift).not.toBe(instant);
+        expect(noShift).toBe(instant);
+
+        expect(instant.toEpochMillis()).toBe(123456789);
+        expect(forwardShift.toEpochMillis()).toBe(-753086211);
+        expect(backwardShift.toEpochMillis()).toBe(246912789);
+        expect(noShift.toEpochMillis()).toBe(123456789);
     });
 
     it('should be comparable', () => {
@@ -112,7 +131,6 @@ describe('A value object representing an instant in time', () => {
         expect(one.isBeforeOrEqual(three)).toBe(true);
 
         expect(one.equals(one)).toBe(true);
-        expect(one.equals(three)).toBe(true);
         expect(one.equals(two)).toBe(false);
         expect(one.equals(three)).toBe(true);
     });
@@ -154,8 +172,20 @@ describe('A value object representing an instant in time', () => {
     });
 
     it('should serialize to JSON as the epoch millisecond', () => {
-        const instant = Instant.ofEpochMilli(5000);
+        const instant = Instant.ofEpochMilli(4321);
 
-        expect(JSON.stringify(instant)).toEqual('5000');
+        expect(JSON.stringify(instant)).toEqual('"1970-01-01T00:00:04.321Z"');
+    });
+
+    it('should return the seconds', () => {
+        const instant = Instant.ofEpochMilli(4321);
+
+        expect(instant.getSeconds()).toEqual(4);
+    });
+
+    it('should return the nanoseconds', () => {
+        const instant = Instant.ofEpochMilli(4321);
+
+        expect(instant.getNano()).toEqual(321000000);
     });
 });
