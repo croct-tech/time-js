@@ -95,6 +95,17 @@ describe('A value object representing a local date time', () => {
         expect(one.equals(three)).toBe(true);
     });
 
+    it('can be converted to an instant', () => {
+        const localDateTime = LocalDateTime.of(
+            LocalDate.of(2015, 8, 31),
+            LocalTime.of(12, 11, 59, 123456789),
+        );
+
+        const instant = localDateTime.toInstant(TimeZone.of('America/Sao_Paulo'));
+
+        expect(instant.toString()).toBe('2015-08-31T15:11:59.123456789Z');
+    });
+
     it('should serialize to JSON in the ISO-8601 format', () => {
         const localDate = LocalDate.of(2020, 4, 10);
         const localTime = LocalTime.of(15, 2, 1, 2222);

@@ -1,3 +1,6 @@
+/**
+ * A day of the week.
+ */
 export enum Weekday {
     SUNDAY = 'SUNDAY',
     MONDAY = 'MONDAY',
