@@ -103,6 +103,7 @@ describe('A value object representing a local date time', () => {
 
         const instant = localDateTime.toInstant(TimeZone.of('America/Sao_Paulo'));
 
+        // In 2015-08-31T12:11:59.123456789 America/Sao_Paulo was UTC-03:00
         expect(instant.toString()).toBe('2015-08-31T15:11:59.123456789Z');
     });
 
