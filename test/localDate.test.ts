@@ -13,14 +13,14 @@ describe('A value object representing a local date', () => {
     });
 
     it('can be created from a native Date object', () => {
-        const date = new Date('August 19, 1975');
+        const date = new Date('August 31, 2015');
         const localDate = LocalDate.fromNative(date);
 
-        expect(localDate.toString()).toBe('1975-08-19');
+        expect(localDate.toString()).toBe('2015-08-31');
     });
 
     it.each(Object.entries({
-        'unsafe years number': 2 ** 53,
+        'unsafe years number': Number.MAX_VALUE,
         'fractional years number': 1.5,
     }))('should reject %s', (_, year) => {
         expect(() => LocalDate.of(year, 1, 1)).toThrowError('Year must be a safe integer.');

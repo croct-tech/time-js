@@ -22,7 +22,7 @@ describe('A value object representing an instant in time', () => {
 
     it.each(Object.entries({
         'fractional seconds timestamp': 1.5,
-        'unsafe seconds timestamp': 2 ** 53,
+        'unsafe seconds timestamp': Number.MAX_VALUE,
         'non-numeric seconds timestamp': NaN,
         'infinity seconds timestamp': Infinity,
     }))('should reject %s', (_, seconds) => {
@@ -31,7 +31,7 @@ describe('A value object representing an instant in time', () => {
 
     it.each(Object.entries({
         'fractional nanosecond adjustment': 1.5,
-        'unsafe nanosecond adjustment': 2 ** 53,
+        'unsafe nanosecond adjustment': Number.MAX_VALUE,
         'non-numeric nanosecond adjustment': NaN,
         'infinity nanosecond adjustment': Infinity,
     }))('should reject %s', (_, nanoseconds) => {
@@ -45,7 +45,7 @@ describe('A value object representing an instant in time', () => {
     });
 
     it('should reject unsafe milliseconds timestamp', () => {
-        expect(() => Instant.ofEpochMilli(2 ** 63))
+        expect(() => Instant.ofEpochMilli(Number.MAX_VALUE))
             .toThrowError('The timestamp must be a safe integer.');
     });
 

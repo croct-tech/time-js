@@ -21,8 +21,10 @@ describe('A addExact function', () => {
         expect(addExact(12300, 1000)).toBe(13300);
     });
 
-    it('should reject if the sum result overflows', () => {
-        expect(() => addExact(2 ** 53 - 1, 1)).toThrowError('The result overflows the range of safe integers.');
+    it('should reject if the sum overflows', () => {
+        expect(() => addExact(Number.MAX_SAFE_INTEGER, 1)).toThrowError(
+            'The result overflows the range of safe integers.',
+        );
     });
 });
 
@@ -31,8 +33,10 @@ describe('A subtractExact function', () => {
         expect(subtractExact(12300, 1000)).toBe(11300);
     });
 
-    it('should reject if the difference result overflows', () => {
-        expect(() => subtractExact(2 ** 53 + 2, 1)).toThrowError('The result overflows the range of safe integers.');
+    it('should reject if the difference overflows', () => {
+        expect(() => subtractExact(Number.MAX_VALUE, 1)).toThrowError(
+            'The result overflows the range of safe integers.',
+        );
     });
 });
 
@@ -41,17 +45,19 @@ describe('A multiplyExact function', () => {
         expect(multiplyExact(12300, 1000)).toBe(12300000);
     });
 
-    it('should reject if the product result overflows', () => {
-        expect(() => multiplyExact(2 ** 52, 2)).toThrowError('The result overflows the range of safe integers.');
+    it('should reject if the product overflows', () => {
+        expect(() => multiplyExact(Number.MAX_VALUE, 2)).toThrowError(
+            'The result overflows the range of safe integers.',
+        );
     });
 });
 
 describe('A intDiv function', () => {
-    it('should return the quotient rounded down', () => {
+    it('should return the quotient towards zero', () => {
         expect(intDiv(12999, 1000)).toBe(12);
     });
 
-    it('should reject if the quotient result overflows', () => {
-        expect(() => intDiv(2 ** 54, 2)).toThrowError('The result overflows the range of safe integers.');
+    it('should reject if the quotient overflows', () => {
+        expect(() => intDiv(Number.MAX_VALUE, 2)).toThrowError('The result overflows the range of safe integers.');
     });
 });
