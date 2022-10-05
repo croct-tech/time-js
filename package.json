@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@croct/eslint-plugin": "^0.6.2",
+    "@types/date-fns": "^2.6.0",
     "@types/jest": "^27.4",
     "@types/uuid": "^8.3",
     "@typescript-eslint/parser": "^5.17",
