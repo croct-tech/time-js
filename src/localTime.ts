@@ -7,7 +7,7 @@
  *
  * This class does not store or represent a date or time-zone. Instead, it is a description
  * of the local time as seen on a wall clock. It cannot represent an instant on the
- * time-line without additional information such as an offset or time-zone.
+ * time-line without additional information such as a date and an offset or time-zone.
  */
 export class LocalTime {
     /**

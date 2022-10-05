@@ -100,7 +100,7 @@ export class Instant {
      *                                positive or negative.
      */
     public static ofEpochSecond(epochSecond: number, nanoAdjustment = 0): Instant {
-        if (!Number.isSafeInteger(epochSecond)) {
+        if (!Number.isSafeInteger(epochSecond) || !Number.isSafeInteger(nanoAdjustment)) {
             throw new Error('The timestamp must be a safe integer.');
         }
 

@@ -29,7 +29,7 @@ export function floorDiv(dividend: number, divisor: number): number {
  * @param dividend The dividend.
  * @param divisor  The divisor, non-zero.
  *
- * @return int The floor of the remainder after division of dividend by the divisor.
+ * @return int The floor modulus after division of dividend by the divisor.
  *
  * @throws {Error} If the result overflows the range of safe integers.
  *
@@ -107,12 +107,12 @@ export function multiplyExact(multiplicand: number, multiplier: number): number 
 }
 
 /**
- * Returns the quotient of the arguments rounded down.
+ * Returns the quotient of the arguments rounded towards zero.
  *
  * @param dividend The dividend.
  * @param divisor The divisor.
  *
- * @return int The quotient of the arguments rounded down.
+ * @return int The quotient of the arguments rounded towards zero.
  *
  * @throws {Error} If the result overflows the range of safe integers.
  *

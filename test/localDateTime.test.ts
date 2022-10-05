@@ -30,10 +30,10 @@ describe('A value object representing a local date time', () => {
     });
 
     it('can be created from a native Date object', () => {
-        const date = new Date('August 19, 1975 23:15:30.123');
+        const date = new Date('August, 31 2015 23:15:30.123');
         const localDateTime = LocalDateTime.fromNative(date);
 
-        expect(localDateTime.toString()).toBe('1975-08-19T23:15:30.123');
+        expect(localDateTime.toString()).toBe('2015-08-31T23:15:30.123');
     });
 
     it('can be created at the start of the day', () => {

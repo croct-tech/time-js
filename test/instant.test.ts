@@ -8,18 +8,37 @@ describe('A value object representing an instant in time', () => {
         expect(instant.toEpochMillis()).toBe(123456);
     });
 
-    it('can be created from the number of seconds since the epoch', () => {
-        expect(Instant.ofEpochSecond(123).toEpochMillis()).toBe(123000);
-
-        expect(Instant.ofEpochSecond(0).toEpochMillis()).toBe(0);
+    it.each([
+        [123, undefined, 123000],
+        [0, undefined, 0],
+        [123, 100_000_000, 123100],
+        [-123, 100_000_000, -122900],
+        [123, -100_000_000, 122900],
+        [-123, -100_000_000, -123100],
+        [123, 1_000_000_000, 124000],
+    ])('can be created from the number of seconds since the epoch', (seconds, nanoseconds, result) => {
+        expect(Instant.ofEpochSecond(seconds, nanoseconds).toEpochMillis()).toBe(result);
     });
 
-    it('should reject fractional seconds timestamp', () => {
-        expect(() => Instant.ofEpochSecond(1.5))
-            .toThrowError('The timestamp must be a safe integer.');
+    it.each(Object.entries({
+        'fractional seconds timestamp': 1.5,
+        'unsafe seconds timestamp': 2 ** 53,
+        'non-numeric seconds timestamp': NaN,
+        'infinity seconds timestamp': Infinity,
+    }))('should reject %s', (_, seconds) => {
+        expect(() => Instant.ofEpochSecond(seconds)).toThrowError('The timestamp must be a safe integer.');
     });
 
-    it('should reject unsafe seconds timestamp', () => {
+    it.each(Object.entries({
+        'fractional nanosecond adjustment': 1.5,
+        'unsafe nanosecond adjustment': 2 ** 53,
+        'non-numeric nanosecond adjustment': NaN,
+        'infinity nanosecond adjustment': Infinity,
+    }))('should reject %s', (_, nanoseconds) => {
+        expect(() => Instant.ofEpochSecond(0, nanoseconds)).toThrowError('The timestamp must be a safe integer.');
+    });
+
+    it('should reject seconds timestamp out of accuracy range', () => {
         expect(() => Instant.ofEpochSecond(2 ** 52)).toThrowError(
             'The value 4503599627370496 is out of the range [-31619087596800 - 31494753331199] of instant.',
         );
