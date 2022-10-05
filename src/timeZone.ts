@@ -3,7 +3,7 @@ import {timeZonesNames} from '@vvo/tzdb';
 const timeZoneIds = timeZonesNames.concat('UTC');
 
 /**
- * A time zone.
+ * A time-zone ID, such as Europe/Paris.
  */
 export class TimeZone {
     /**

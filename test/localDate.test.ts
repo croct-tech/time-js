@@ -12,8 +12,15 @@ describe('A value object representing a local date', () => {
         expect(localDate.getDay()).toBe(day);
     });
 
+    it('can be created from a native Date object', () => {
+        const date = new Date('August 31, 2015');
+        const localDate = LocalDate.fromNative(date);
+
+        expect(localDate.toString()).toBe('2015-08-31');
+    });
+
     it.each(Object.entries({
-        'unsafe years number': 2 ** 53,
+        'unsafe years number': Number.MAX_VALUE,
         'fractional years number': 1.5,
     }))('should reject %s', (_, year) => {
         expect(() => LocalDate.of(year, 1, 1)).toThrowError('Year must be a safe integer.');
@@ -72,9 +79,34 @@ describe('A value object representing a local date', () => {
         const two = LocalDate.of(2015, 9, 30);
         const three = LocalDate.of(2015, 8, 30);
 
+        expect(one.isAfter(two)).toBe(false);
+        expect(two.isAfter(one)).toBe(true);
+
+        expect(one.isBefore(two)).toBe(true);
+        expect(two.isBefore(one)).toBe(false);
+
+        expect(one.isAfter(three)).toBe(false);
+        expect(one.isBefore(three)).toBe(false);
+
+        expect(one.isAfterOrEqual(two)).toBe(false);
+        expect(two.isAfterOrEqual(one)).toBe(true);
+
+        expect(one.isAfterOrEqual(three)).toBe(true);
+        expect(one.isAfterOrEqual(three)).toBe(true);
+
+        expect(one.isBeforeOrEqual(two)).toBe(true);
+        expect(two.isBeforeOrEqual(one)).toBe(false);
+
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+
         expect(one.equals(one)).toBe(true);
         expect(one.equals(two)).toBe(false);
         expect(one.equals(three)).toBe(true);
+
+        expect(LocalDate.of(1, 2, 3).compare(LocalDate.of(1, 1, 2))).toBe(1);
+        expect(LocalDate.of(1, 2, 3).compare(LocalDate.of(1, 2, 4))).toBe(-1);
+        expect(LocalDate.of(1, 1, 1).compare(LocalDate.of(1, 1, 1))).toBe(0);
     });
 
     it('should serialize to JSON in the ISO-8601 format', () => {

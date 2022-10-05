@@ -3,45 +3,64 @@ import {Instant} from '../src';
 describe('A value object representing an instant in time', () => {
     it('can be created from the number of milliseconds since the epoch', () => {
         const unixMillis = 123456;
-        const instant = Instant.fromEpochMillis(unixMillis);
+        const instant = Instant.ofEpochMilli(unixMillis);
 
-        expect(instant.toMillis()).toBe(123456);
+        expect(instant.toEpochMillis()).toBe(123456);
     });
 
-    it('can be created from the number of seconds since the epoch', () => {
-        const unixSeconds = 123;
-        const instant = Instant.fromEpochSeconds(unixSeconds);
-
-        expect(instant.toMillis()).toBe(123000);
+    it.each([
+        [123, undefined, 123000],
+        [0, undefined, 0],
+        [123, 100_000_000, 123100],
+        [-123, 100_000_000, -122900],
+        [123, -100_000_000, 122900],
+        [-123, -100_000_000, -123100],
+        [123, 1_000_000_000, 124000],
+    ])('can be created from the number of seconds since the epoch', (seconds, nanoseconds, result) => {
+        expect(Instant.ofEpochSecond(seconds, nanoseconds).toEpochMillis()).toBe(result);
     });
 
-    it('should reject fractional seconds timestamp', () => {
-        expect(() => Instant.fromEpochSeconds(1.5))
-            .toThrowError('The timestamp must be a safe integer.');
+    it.each(Object.entries({
+        'fractional seconds timestamp': 1.5,
+        'unsafe seconds timestamp': Number.MAX_VALUE,
+        'non-numeric seconds timestamp': NaN,
+        'infinity seconds timestamp': Infinity,
+    }))('should reject %s', (_, seconds) => {
+        expect(() => Instant.ofEpochSecond(seconds)).toThrowError('The timestamp must be a safe integer.');
     });
 
-    it('should reject unsafe seconds timestamp', () => {
-        expect(() => Instant.fromEpochSeconds(2 ** 52))
-            .toThrowError('The timestamp 4503599627370496 cannot be represented accurately.');
+    it.each(Object.entries({
+        'fractional nanosecond adjustment': 1.5,
+        'unsafe nanosecond adjustment': Number.MAX_VALUE,
+        'non-numeric nanosecond adjustment': NaN,
+        'infinity nanosecond adjustment': Infinity,
+    }))('should reject %s', (_, nanoseconds) => {
+        expect(() => Instant.ofEpochSecond(0, nanoseconds)).toThrowError('The timestamp must be a safe integer.');
+    });
+
+    it('should reject seconds timestamp out of accuracy range', () => {
+        expect(() => Instant.ofEpochSecond(2 ** 52)).toThrowError(
+            'The value 4503599627370496 is out of the range [-31619087596800 - 31494753331199] of instant.',
+        );
     });
 
     it('should reject unsafe milliseconds timestamp', () => {
-        expect(() => Instant.fromEpochMillis(2 ** 53))
-            .toThrowError('The timestamp must be an integer.');
+        expect(() => Instant.ofEpochMilli(Number.MAX_VALUE))
+            .toThrowError('The timestamp must be a safe integer.');
     });
 
     it('can be created from a native Date object', () => {
         const date = new Date(123456);
         const instant = Instant.fromDate(date);
 
-        expect(instant.toMillis()).toBe(123456);
+        expect(instant.toEpochMillis()).toBe(123456);
     });
 
     it('can be created from a string in the ISO-8601 format', () => {
         const date = '2015-08-30T12:34:56Z';
         const instant = Instant.parse(date);
 
-        expect(instant.toMillis()).toBe(1440938096000);
+        expect(instant.toEpochMillis()).toBe(1440938096000);
     });
 
     it('should obtain the current instant from the system clock', () => {
@@ -51,44 +70,63 @@ describe('A value object representing an instant in time', () => {
 
         const instant = Instant.now();
 
-        expect(instant.toMillis()).toBe(currentTimestamp);
+        expect(instant.toEpochMillis()).toBe(currentTimestamp);
     });
 
     it('can be converted to an epoch millisecond', () => {
-        const instant = Instant.fromEpochMillis(123456789);
+        const instant = Instant.ofEpochMilli(123456789);
 
-        expect(instant.toMillis()).toBe(123456789);
+        expect(instant.toEpochMillis()).toBe(123456789);
     });
 
     it('can be converted to a native Date object', () => {
-        const instant = Instant.fromEpochMillis(123456789);
+        const instant = Instant.ofEpochMilli(123456789);
 
         expect(instant.toDate()).toEqual(new Date(123456789));
     });
 
     it('can be converted to a string in the ISO-8601 format', () => {
-        const instant = Instant.fromEpochMillis(123456789);
+        const instant = Instant.ofEpochMilli(123456789);
 
         expect(instant.toString()).toBe('1970-01-02T10:17:36.789Z');
     });
 
     it('should create a copy with an amount of time added', () => {
-        const instant = Instant.fromEpochMillis(123456789);
+        const instant = Instant.ofEpochMilli(123456789);
         const forwardShift = instant.plusSeconds(876543);
         const backwardShift = instant.plusSeconds(-123456);
+        const noShift = instant.plusSeconds(0);
 
         expect(forwardShift).not.toBe(instant);
         expect(backwardShift).not.toBe(instant);
+        expect(noShift).toBe(instant);
 
-        expect(instant.toMillis()).toBe(123456789);
-        expect(forwardShift.toMillis()).toBe(999999789);
-        expect(backwardShift.toMillis()).toBe(789);
+        expect(instant.toEpochMillis()).toBe(123456789);
+        expect(forwardShift.toEpochMillis()).toBe(999999789);
+        expect(backwardShift.toEpochMillis()).toBe(789);
+        expect(noShift.toEpochMillis()).toBe(123456789);
+    });
+
+    it('should create a copy with an amount of time subtracted', () => {
+        const instant = Instant.ofEpochMilli(123456789);
+        const forwardShift = instant.minusSeconds(876543);
+        const backwardShift = instant.minusSeconds(-123456);
+        const noShift = instant.minusSeconds(0);
+
+        expect(forwardShift).not.toBe(instant);
+        expect(backwardShift).not.toBe(instant);
+        expect(noShift).toBe(instant);
+
+        expect(instant.toEpochMillis()).toBe(123456789);
+        expect(forwardShift.toEpochMillis()).toBe(-753086211);
+        expect(backwardShift.toEpochMillis()).toBe(246912789);
+        expect(noShift.toEpochMillis()).toBe(123456789);
     });
 
     it('should be comparable', () => {
-        const one = Instant.fromEpochMillis(1000000);
-        const two = Instant.fromEpochMillis(2000000);
-        const three = Instant.fromEpochMillis(1000000);
+        const one = Instant.ofEpochMilli(1000000);
+        const two = Instant.ofEpochMilli(2000000);
+        const three = Instant.ofEpochMilli(1000000);
 
         expect(one.isAfter(two)).toBe(false);
         expect(two.isAfter(one)).toBe(true);
@@ -112,50 +150,61 @@ describe('A value object representing an instant in time', () => {
         expect(one.isBeforeOrEqual(three)).toBe(true);
 
         expect(one.equals(one)).toBe(true);
-        expect(one.equals(three)).toBe(true);
         expect(one.equals(two)).toBe(false);
         expect(one.equals(three)).toBe(true);
     });
 
     it('should be sortable in ascending order', () => {
         const values = [
-            Instant.fromEpochMillis(100001),
-            Instant.fromEpochMillis(100000),
-            Instant.fromEpochMillis(123456),
-            Instant.fromEpochMillis(100001),
+            Instant.ofEpochMilli(100001),
+            Instant.ofEpochMilli(100000),
+            Instant.ofEpochMilli(123456),
+            Instant.ofEpochMilli(100001),
         ];
 
         const sorted = [...values].sort(Instant.compareAscending);
 
         expect(sorted).toEqual([
-            Instant.fromEpochMillis(100000),
-            Instant.fromEpochMillis(100001),
-            Instant.fromEpochMillis(100001),
-            Instant.fromEpochMillis(123456),
+            Instant.ofEpochMilli(100000),
+            Instant.ofEpochMilli(100001),
+            Instant.ofEpochMilli(100001),
+            Instant.ofEpochMilli(123456),
         ]);
     });
 
     it('should be sortable in descending order', () => {
         const values = [
-            Instant.fromEpochMillis(100001),
-            Instant.fromEpochMillis(100000),
-            Instant.fromEpochMillis(123456),
-            Instant.fromEpochMillis(100001),
+            Instant.ofEpochMilli(100001),
+            Instant.ofEpochMilli(100000),
+            Instant.ofEpochMilli(123456),
+            Instant.ofEpochMilli(100001),
         ];
 
         const sorted = [...values].sort(Instant.compareDescending);
 
         expect(sorted).toEqual([
-            Instant.fromEpochMillis(123456),
-            Instant.fromEpochMillis(100001),
-            Instant.fromEpochMillis(100001),
-            Instant.fromEpochMillis(100000),
+            Instant.ofEpochMilli(123456),
+            Instant.ofEpochMilli(100001),
+            Instant.ofEpochMilli(100001),
+            Instant.ofEpochMilli(100000),
         ]);
     });
 
     it('should serialize to JSON as the epoch millisecond', () => {
-        const instant = Instant.fromEpochMillis(5000);
+        const instant = Instant.ofEpochMilli(4321);
 
-        expect(JSON.stringify(instant)).toEqual('5000');
+        expect(JSON.stringify(instant)).toEqual('"1970-01-01T00:00:04.321Z"');
+    });
+
+    it('should return the seconds', () => {
+        const instant = Instant.ofEpochMilli(4321);
+
+        expect(instant.getSeconds()).toEqual(4);
+    });
+
+    it('should return the nanoseconds', () => {
+        const instant = Instant.ofEpochMilli(4321);
+
+        expect(instant.getNano()).toEqual(321000000);
     });
 });

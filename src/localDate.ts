@@ -1,5 +1,14 @@
 /**
- * A local date in the ISO 8601 calendar system, such as 2007-12-03.
+ * A date without a time-zone in the ISO-8601 calendar system, such as 2007-12-03.
+ *
+ * `LocalDate` is an immutable date-time object that represents a date, often
+ * presented as year-month-day. For example, the value "2nd October 2007" can be
+ * represented as `LocalDate`.
+ *
+ * This class does not store or represent a time or time-zone. Instead, it is
+ * a description of the date, as used for birthdays. It cannot represent
+ * an instant on the time-line without additional information such as
+ * an offset or time-zone.
  */
 export class LocalDate {
     /**
@@ -56,6 +65,24 @@ export class LocalDate {
         return new LocalDate(year, month, day);
     }
 
+    /**
+     * Obtains the local date from the native date object.
+     *
+     * @param date The native date object.
+     *
+     * @returns The local date.
+     */
+    public static fromNative(date: Date): LocalDate {
+        return LocalDate.of(date.getFullYear(), date.getMonth() + 1, date.getDate());
+    }
+
+    /**
+     * Parses a local date from its ISO-8601 string representation.
+     *
+     * @param value The ISO-8601 string representation of the date.
+     *
+     * @returns The parsed date.
+     */
     public static parse(value: string): LocalDate {
         const {groups} = value.match(LocalDate.PATTERN) ?? {};
 
@@ -102,6 +129,62 @@ export class LocalDate {
         }
 
         return this.year === other.year && this.month === other.month && this.day === other.day;
+    }
+
+    /**
+     * Checks whether this date comes after another in the local time-line.
+     *
+     * @param date The date to compare.
+     */
+    public isAfter(date: LocalDate): boolean {
+        return this.compare(date) > 0;
+    }
+
+    /**
+     * Checks whether this date comes after or is equal to another in the local time-line.
+     *
+     * @param date The date to compare.
+     */
+    public isAfterOrEqual(date: LocalDate): boolean {
+        return this.compare(date) >= 0;
+    }
+
+    /**
+     * Checks whether this date comes before another in the local time-line.
+     *
+     * @param date The date to compare.
+     */
+    public isBefore(date: LocalDate): boolean {
+        return this.compare(date) < 0;
+    }
+
+    /**
+     * Checks whether this date comes before or is equal to another in the local time-line.
+     *
+     * @param date The date to compare.
+     */
+    public isBeforeOrEqual(date: LocalDate): boolean {
+        return this.compare(date) <= 0;
+    }
+
+    /**
+     * Compares this date to another for order.
+     *
+     * @param date The date to compare.
+     *
+     * @returns A negative, zero or positive number if this date is less than, equal to or
+     *          greater than the other date, respectively.
+     */
+    public compare(date: LocalDate): number {
+        if (this.year !== date.year) {
+            return this.year - date.year;
+        }
+
+        if (this.month !== date.month) {
+            return this.month - date.month;
+        }
+
+        return this.day - date.day;
     }
 
     /**

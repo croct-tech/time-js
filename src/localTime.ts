@@ -1,5 +1,13 @@
 /**
- * A local time.
+ * A time without a time-zone in the ISO-8601 calendar system, such as 10:15:30.
+ *
+ * `LocalTime` is an immutable date-time object that represents a time,
+ * often presented as hour-minute-second. Time is represented to nanosecond precision.
+ * For example, the value "13:45.30.123456789" can be stored in a `LocalTime`.
+ *
+ * This class does not store or represent a date or time-zone. Instead, it is a description
+ * of the local time as seen on a wall clock. It cannot represent an instant on the
+ * time-line without additional information such as a date and an offset or time-zone.
  */
 export class LocalTime {
     /**
@@ -7,6 +15,86 @@ export class LocalTime {
      */
     // eslint-disable-next-line max-len -- Regex literals can't be split
     private static PATTERN = /^(?<hour>\d{2}):(?<minute>\d{2})(?::(?<second>\d{2})(?:.(?<fraction>\d{1,9}))?)?$/;
+
+    /**
+     * Hours per day.
+     */
+    public static HOURS_PER_DAY = 24;
+
+    /**
+     * Minutes per day.
+     */
+    public static MINUTES_PER_DAY = 1_440;
+
+    /**
+     * Minutes per hour.
+     */
+    public static MINUTES_PER_HOUR = 60;
+
+    /**
+     * Seconds per day.
+     */
+    public static SECONDS_PER_DAY = 86_400;
+
+    /**
+     * Seconds per hour.
+     */
+    public static SECONDS_PER_HOUR = 3_600;
+
+    /**
+     * Seconds per minute.
+     */
+    public static SECONDS_PER_MINUTE = 60;
+
+    /**
+     * Microseconds per day.
+     */
+    public static MICROS_PER_DAY = 86_400_000_000;
+
+    /**
+     * Microseconds per second.
+     */
+    public static MICROS_PER_SECOND = 1_000_000;
+
+    /**
+     * Milliseconds per day.
+     */
+    public static MILLIS_PER_DAY = 86_400_000;
+
+    /**
+     * Milliseconds per second.
+     */
+    public static MILLIS_PER_SECOND = 1_000;
+
+    /**
+     * Nanoseconds per day.
+     */
+    public static NANOS_PER_DAY = 86_400_000_000_000;
+
+    /**
+     * Nanoseconds per hour.
+     */
+    public static NANOS_PER_HOUR = 3_600_000_000_000;
+
+    /**
+     * Nanoseconds per minute.
+     */
+    public static NANOS_PER_MINUTE = 60_000_000_000;
+
+    /**
+     * Nanoseconds per second.
+     */
+    public static NANOS_PER_SECOND = 1_000_000_000;
+
+    /**
+     * Nanoseconds per millisecond.
+     */
+    public static NANOS_PER_MILLI = 1_000_000;
+
+    /**
+     * Nanoseconds per microsecond.
+     */
+    public static NANOS_PER_MICRO = 1_000;
 
     /**
      * The hour.
@@ -64,6 +152,20 @@ export class LocalTime {
         }
 
         return new LocalTime(hour, minute, second, nanos);
+    }
+
+    /**
+     * Obtains the local time from a native date object.
+     *
+     * @param date The native date object.
+     */
+    public static fromNative(date: Date): LocalTime {
+        return new LocalTime(
+            date.getHours(),
+            date.getMinutes(),
+            date.getSeconds(),
+            date.getMilliseconds() * LocalTime.NANOS_PER_MILLI,
+        );
     }
 
     /**
@@ -142,6 +244,66 @@ export class LocalTime {
             && this.minute === other.minute
             && this.second === other.second
             && this.nanos === other.nanos;
+    }
+
+    /**
+     * Checks whether this time comes after another in the local time-line.
+     *
+     * @param time The time to compare.
+     */
+    public isAfter(time: LocalTime): boolean {
+        return this.compare(time) > 0;
+    }
+
+    /**
+     * Checks whether this time comes after or is equal to another in the local time-line.
+     *
+     * @param time The time to compare.
+     */
+    public isAfterOrEqual(time: LocalTime): boolean {
+        return this.compare(time) >= 0;
+    }
+
+    /**
+     * Checks whether this time comes before another in the local time-line.
+     *
+     * @param time The time to compare.
+     */
+    public isBefore(time: LocalTime): boolean {
+        return this.compare(time) < 0;
+    }
+
+    /**
+     * Checks whether this time comes before or is equal to another in the local time-line.
+     *
+     * @param time The time to compare.
+     */
+    public isBeforeOrEqual(time: LocalTime): boolean {
+        return this.compare(time) <= 0;
+    }
+
+    /**
+     * Compares this time to another for order.
+     *
+     * @param time The time to compare.
+     *
+     * @returns A negative, zero or positive number if this time is less than, equal to or
+     *          greater than the other time, respectively.
+     */
+    public compare(time: LocalTime): number {
+        if (this.hour !== time.hour) {
+            return this.hour - time.hour;
+        }
+
+        if (this.minute !== time.minute) {
+            return this.minute - time.minute;
+        }
+
+        if (this.second !== time.second) {
+            return this.second - time.second;
+        }
+
+        return this.nanos - time.nanos;
     }
 
     /**

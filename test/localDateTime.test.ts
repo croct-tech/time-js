@@ -29,6 +29,13 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.getLocalTime()).toBe(localTime);
     });
 
+    it('can be created from a native Date object', () => {
+        const date = new Date('August, 31 2015 23:15:30.123');
+        const localDateTime = LocalDateTime.fromNative(date);
+
+        expect(localDateTime.toString()).toBe('2015-08-31T23:15:30.123');
+    });
+
     it('can be created at the start of the day', () => {
         const year = 1970;
         const month = 1;
@@ -83,16 +90,46 @@ describe('A value object representing a local date time', () => {
     });
 
     it('should be comparable', () => {
-        const localDate = LocalDate.of(2020, 4, 10);
-        const localTime = LocalTime.of(15, 2, 1, 2222);
+        const one = LocalDateTime.of(LocalDate.of(2020, 4, 10), LocalTime.of(1));
+        const two = LocalDateTime.of(LocalDate.of(2021, 4, 10), LocalTime.of(15, 2, 1, 1));
+        const three = LocalDateTime.of(LocalDate.of(2020, 4, 10), LocalTime.of(1));
 
-        const one = LocalDateTime.of(localDate, localTime);
-        const two = LocalDateTime.of(localDate, LocalTime.of(1));
-        const three = LocalDateTime.of(localDate, localTime);
+        expect(one.isAfter(two)).toBe(false);
+        expect(two.isAfter(one)).toBe(true);
+
+        expect(one.isBefore(two)).toBe(true);
+        expect(two.isBefore(one)).toBe(false);
+
+        expect(one.isAfter(three)).toBe(false);
+        expect(one.isBefore(three)).toBe(false);
+
+        expect(one.isAfterOrEqual(two)).toBe(false);
+        expect(two.isAfterOrEqual(one)).toBe(true);
+
+        expect(one.isAfterOrEqual(three)).toBe(true);
+        expect(one.isAfterOrEqual(three)).toBe(true);
+
+        expect(one.isBeforeOrEqual(two)).toBe(true);
+        expect(two.isBeforeOrEqual(one)).toBe(false);
+
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+        expect(one.isBeforeOrEqual(three)).toBe(true);
 
         expect(one.equals(one)).toBe(true);
         expect(one.equals(two)).toBe(false);
         expect(one.equals(three)).toBe(true);
+    });
+
+    it('can be converted to an instant', () => {
+        const localDateTime = LocalDateTime.of(
+            LocalDate.of(2015, 8, 31),
+            LocalTime.of(12, 11, 59, 123456789),
+        );
+
+        const instant = localDateTime.toInstant(TimeZone.of('America/Sao_Paulo'));
+
+        // In 2015-08-31T12:11:59.123456789 America/Sao_Paulo was UTC-03:00
+        expect(instant.toString()).toBe('2015-08-31T15:11:59.123456789Z');
     });
 
     it('should serialize to JSON in the ISO-8601 format', () => {
