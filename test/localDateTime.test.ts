@@ -53,14 +53,20 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.getNano()).toBe(0);
     });
 
-    it('can provide the current local date time from the system clock in a given time zone', () => {
-        jest.useFakeTimers()
-            .setSystemTime(new Date('2015-08-31T12:11:59.123456789Z').getTime());
+    it.each([
+        ['2015-08-31T12:11:59.123456789Z', TimeZone.of('America/Sao_Paulo'), '2015-08-31T09:11:59.123'],
+        ['2015-08-31T00:00:00.123456789Z', TimeZone.of('UTC'), '2015-08-31T00:00:00.123'],
+    ])(
+        'can provide the current local date time from the system clock in a given time zone',
+        (currentTime: string, timeZone: TimeZone, localDateTime: string) => {
+            jest.useFakeTimers()
+                .setSystemTime(new Date(currentTime).getTime());
 
-        const now = LocalDateTime.now(TimeZone.of('America/Sao_Paulo'));
+            const now = LocalDateTime.now(timeZone);
 
-        expect(now.toString()).toBe('2015-08-31T09:11:59.123');
-    });
+            expect(now.toString()).toBe(localDateTime);
+        },
+    );
 
     it('should parse a valid ISO-8601 date time', () => {
         const dateTime = '2015-08-30T14:20:05.123';
