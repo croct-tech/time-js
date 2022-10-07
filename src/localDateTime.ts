@@ -49,7 +49,7 @@ export class LocalDateTime {
         const now = new Date().toLocaleString('en-US', {
             timeZone: zone.getId(),
             calendar: 'iso8601',
-            hour12: false,
+            hourCycle: 'h23',
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
