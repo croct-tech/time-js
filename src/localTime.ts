@@ -1,3 +1,5 @@
+import {intDiv} from './math';
+
 /**
  * A time without a time-zone in the ISO-8601 calendar system, such as 10:15:30.
  *
@@ -228,6 +230,69 @@ export class LocalTime {
      */
     public getNano(): number {
         return this.nanos;
+    }
+
+    /**
+     * Converts this local time to the number of minutes in the day.
+     */
+    public toMinuteOfDay(): number {
+        return this.hour * LocalTime.MINUTES_PER_HOUR + this.minute;
+    }
+
+    /**
+     * Converts this local time to the number of seconds in the day.
+     */
+    public toSecondOfDay(): number {
+        return this.toMinuteOfDay() * LocalTime.SECONDS_PER_MINUTE + this.second;
+    }
+
+    /**
+     * Converts this local time to the number of milliseconds in the day.
+     */
+    public toMilliOfDay(): number {
+        return intDiv(this.toNanoOfDay(), LocalTime.NANOS_PER_MILLI);
+    }
+
+    /**
+     * Converts this local time to the number of microseconds in the day.
+     */
+    public toMicroOfDay(): number {
+        return intDiv(this.toNanoOfDay(), LocalTime.NANOS_PER_MICRO);
+    }
+
+    /**
+     * Converts this local time to the number of nanoseconds in the day.
+     */
+    public toNanoOfDay(): number {
+        return this.toSecondOfDay() * LocalTime.NANOS_PER_SECOND + this.nanos;
+    }
+
+    /**
+     * Adds a duration in seconds to this local time.
+     *
+     * @param seconds The number of seconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public plusSeconds(seconds: number): LocalTime {
+        if (seconds === 0) {
+            return this;
+        }
+
+        const amount = seconds % LocalTime.SECONDS_PER_DAY;
+
+        const secondOfDay = this.toSecondOfDay();
+        const newSecondOfDay = (amount + secondOfDay + LocalTime.SECONDS_PER_DAY) % LocalTime.SECONDS_PER_DAY;
+
+        if (secondOfDay === newSecondOfDay) {
+            return this;
+        }
+
+        const newHour = intDiv(newSecondOfDay, LocalTime.SECONDS_PER_HOUR);
+        const newMinute = intDiv(newSecondOfDay, LocalTime.SECONDS_PER_MINUTE) % LocalTime.MINUTES_PER_HOUR;
+        const newSecond = newSecondOfDay % LocalTime.SECONDS_PER_MINUTE;
+
+        return LocalTime.of(newHour, newMinute, newSecond, this.nanos);
     }
 
     /**

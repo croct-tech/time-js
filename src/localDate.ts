@@ -1,3 +1,5 @@
+import {addExact, floorDiv, floorMod, intDiv} from './math';
+
 /**
  * A date without a time-zone in the ISO-8601 calendar system, such as 2007-12-03.
  *
@@ -63,6 +65,58 @@ export class LocalDate {
         }
 
         return new LocalDate(year, month, day);
+    }
+
+    /**
+     * Obtains a local date using days from the epoch.
+     *
+     * @param {number} epochDay The number of days from the epoch of 1970-01-01T00:00:00Z
+     */
+    public static ofEpochDay(epochDay: number): LocalDate {
+        // Credits:
+        // https://howardhinnant.github.io/date_algorithms.html
+
+        // Shift the epoch from 1970-01-01 to 0000-03-01
+        const zeroDay = addExact(epochDay, 719468);
+
+        // Cycle number
+        const cycle = floorDiv(zeroDay, 146097);
+
+        // 0 <= year-of-cycle <= 146096
+        const dayOfCycle = floorMod(zeroDay, 146097);
+
+        // Extra days added by leap years
+        let correction = intDiv(dayOfCycle, 1460);
+
+        correction -= intDiv(dayOfCycle, 36524);
+        correction += intDiv(dayOfCycle, 146096);
+
+        // 0 <= year-of-cycle <= 399
+        const yearOfCycle = intDiv(dayOfCycle - correction, 365);
+
+        // March-based components
+        let year = yearOfCycle + cycle * 400;
+
+        // Number of the first day of the year
+        const startOfYear = (
+            (365 * yearOfCycle)
+            + intDiv(yearOfCycle, 4)
+            - intDiv(yearOfCycle, 100)
+        );
+
+        // Number of the first day of the year
+        const dayOfYear = dayOfCycle - startOfYear;
+
+        // Number of the month, from March to January
+        let month = intDiv(dayOfYear * 5 + 2, 153);
+
+        // January-based components
+        year += intDiv(month, 10);
+        const dayOfMonth = dayOfYear - intDiv(month * 306 + 5, 10) + 1;
+
+        month = ((month + 2) % 12) + 1;
+
+        return LocalDate.of(year, month, dayOfMonth);
     }
 
     /**
@@ -132,6 +186,45 @@ export class LocalDate {
     }
 
     /**
+     * Adds a duration in days to this local date.
+     *
+     * @param days The number of days to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local dates.
+     */
+    public plusDays(days: number): LocalDate {
+        if (days === 0) {
+            return this;
+        }
+
+        const dayOfMonth = this.day + days;
+
+        if (dayOfMonth > 0) {
+            // optimization
+            if (dayOfMonth <= 28) {
+                return LocalDate.of(this.year, this.month, dayOfMonth);
+            }
+
+            // 58th day is 28th Feb, 59th day is 29th Feb or 31st Mar
+            if (dayOfMonth <= 59) {
+                const monthLen = LocalDate.getMonthLength(this.month, LocalDate.isLeapYear(this.year));
+
+                if (dayOfMonth <= monthLen) {
+                    return LocalDate.of(this.year, this.month, dayOfMonth);
+                }
+
+                if (this.month < 12) {
+                    return LocalDate.of(this.year, this.month + 1, dayOfMonth - monthLen);
+                }
+
+                return LocalDate.of(this.year + 1, 1, dayOfMonth - monthLen);
+            }
+        }
+
+        return LocalDate.ofEpochDay(addExact(this.toEpochDay(), days));
+    }
+
+    /**
      * Checks whether this date comes after another in the local time-line.
      *
      * @param date The date to compare.
@@ -185,6 +278,51 @@ export class LocalDate {
         }
 
         return this.day - date.day;
+    }
+
+    /**
+     * Converts this local date to the number of days since the epoch.
+     *
+     * @throws {Error} If the local date cannot be represented as a number of days.
+     */
+    public toEpochDay(): number {
+        // Explanation: https://howardhinnant.github.io/date_algorithms.html
+
+        let {year} = this;
+
+        if (this.month <= 2) {
+            // March-based year
+            year--;
+        }
+
+        // Cycle number
+        const cycle = floorDiv(year, 400);
+
+        // Number of the month, from March to January
+        const month = (this.month + 9) % 12;
+
+        // Number of days since the start of the year
+        const dayOfYear = intDiv(153 * month + 2, 5) + this.day - 1;
+
+        // Count of years since the start of the cycle
+        const yearOfCycle = year - cycle * 400;
+
+        // Number of the first day of the year
+        const startOfYear = (
+            (365 * yearOfCycle)
+            + intDiv(yearOfCycle, 4)
+            - intDiv(yearOfCycle, 100)
+        );
+
+        // Number of days since the start of the cycle
+        const dayOfCycle = startOfYear + dayOfYear;
+
+        return (
+            // Number of days since 0000-03-01
+            dayOfCycle + (cycle * 146097)
+            // Shift the epoch from 0000-03-01 to 1970-01-01;
+            - 719468
+        );
     }
 
     /**

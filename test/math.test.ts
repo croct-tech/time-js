@@ -5,6 +5,8 @@ describe('A floorDiv function', () => {
         expect(floorDiv(12300, 1000)).toBe(12);
 
         expect(floorDiv(-12300, 1000)).toBe(-13);
+
+        expect(floorDiv(3_000_000_000, 2_000_000_000)).toBe(1);
     });
 });
 

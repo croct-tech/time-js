@@ -95,6 +95,26 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.toString()).toBe('2020-04-10T15:02:01.000002222');
     });
 
+    it.each([
+        [-86400, LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(1, 2, 3))],
+        [-5, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 1, 58))],
+        [-4, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 1, 59))],
+        [-3, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 0))],
+        [-2, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 1))],
+        [-1, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 2))],
+        [0, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3))],
+        [1, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 4))],
+        [2, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 5))],
+        [3, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 6))],
+        [4, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 7))],
+        [5, LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 8))],
+        [86400, LocalDateTime.of(LocalDate.of(2015, 9, 1), LocalTime.of(1, 2, 3))],
+    ])('can create a copy with an amount of seconds added', (seconds: number, expected: LocalDateTime) => {
+        const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
+
+        expect(localDateTime.plusSeconds(seconds)).toStrictEqual(expected);
+    });
+
     it('should be comparable', () => {
         const one = LocalDateTime.of(LocalDate.of(2020, 4, 10), LocalTime.of(1));
         const two = LocalDateTime.of(LocalDate.of(2021, 4, 10), LocalTime.of(15, 2, 1, 1));

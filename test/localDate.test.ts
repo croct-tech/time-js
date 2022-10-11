@@ -12,6 +12,16 @@ describe('A value object representing a local date', () => {
         expect(localDate.getDay()).toBe(day);
     });
 
+    it.each([
+        [16678, LocalDate.of(2015, 8, 31)],
+        [16493, LocalDate.of(2015, 2, 27)],
+        [16858, LocalDate.of(2016, 2, 27)],
+        [-1, LocalDate.of(1969, 12, 31)],
+        [1, LocalDate.of(1970, 1, 2)],
+    ])('can be created from the number of days since the epoch', (days: number, expected: LocalDate) => {
+        expect(LocalDate.ofEpochDay(days)).toStrictEqual(expected);
+    });
+
     it('can be created from a native Date object', () => {
         const date = new Date('August 31, 2015');
         const localDate = LocalDate.fromNative(date);
@@ -74,6 +84,23 @@ describe('A value object representing a local date', () => {
         expect(localDate.toString()).toBe('2015-08-30');
     });
 
+    it.each([
+        [LocalDate.of(2015, 8, 31), -365, LocalDate.of(2014, 8, 31)],
+        [LocalDate.of(2015, 8, 31), -2, LocalDate.of(2015, 8, 29)],
+        [LocalDate.of(2015, 8, 31), -1, LocalDate.of(2015, 8, 30)],
+        [LocalDate.of(2015, 8, 31), 0, LocalDate.of(2015, 8, 31)],
+        [LocalDate.of(2015, 8, 31), 1, LocalDate.of(2015, 9, 1)],
+        [LocalDate.of(2015, 8, 31), 2, LocalDate.of(2015, 9, 2)],
+        [LocalDate.of(2015, 8, 31), 366, LocalDate.of(2016, 8, 31)],
+        [LocalDate.of(2015, 12, 10), 5, LocalDate.of(2015, 12, 15)],
+        [LocalDate.of(2015, 12, 10), 40, LocalDate.of(2016, 1, 19)],
+    ])(
+        'can create a copy with an amount of days added',
+        (localDate: LocalDate, days: number, expected: LocalDate) => {
+            expect(localDate.plusDays(days)).toStrictEqual(expected);
+        },
+    );
+
     it('should be comparable', () => {
         const one = LocalDate.of(2015, 8, 30);
         const two = LocalDate.of(2015, 9, 30);
@@ -107,6 +134,16 @@ describe('A value object representing a local date', () => {
         expect(LocalDate.of(1, 2, 3).compare(LocalDate.of(1, 1, 2))).toBe(1);
         expect(LocalDate.of(1, 2, 3).compare(LocalDate.of(1, 2, 4))).toBe(-1);
         expect(LocalDate.of(1, 1, 1).compare(LocalDate.of(1, 1, 1))).toBe(0);
+    });
+
+    it.each([
+        [LocalDate.of(2015, 8, 31), 16678],
+        [LocalDate.of(2015, 2, 27), 16493],
+        [LocalDate.of(2016, 2, 27), 16858],
+        [LocalDate.of(1969, 12, 31), -1],
+        [LocalDate.of(1970, 1, 2), 1],
+    ])('can be converted to an epoch day', (localDate: LocalDate, expected: number) => {
+        expect(localDate.toEpochDay()).toStrictEqual(expected);
     });
 
     it('should serialize to JSON in the ISO-8601 format', () => {
