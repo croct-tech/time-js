@@ -23,12 +23,11 @@ describe('A value object representing a local date', () => {
     });
 
     it.each([
-        -365243219163,
-        365241780472,
+        LocalDate.MIN_EPOCH_DAY - 1,
+        LocalDate.MAX_EPOCH_DAY + 1,
     ])('should fail to create from an epoch day out of range', epochDay => {
         expect(() => LocalDate.ofEpochDay(epochDay)).toThrowError(
-            `The value ${epochDay} is out of the range `
-            + `[${LocalDate.MIN_EPOCH_DAY} - ${LocalDate.MAX_EPOCH_DAY}] of local date.`,
+            `The day ${epochDay} is out of the range [${LocalDate.MIN_EPOCH_DAY} - ${LocalDate.MAX_EPOCH_DAY}].`,
         );
     });
 
@@ -41,12 +40,12 @@ describe('A value object representing a local date', () => {
 
     it.each(Object.entries({
         'unsafe years number': Number.MAX_VALUE,
-        'years number less than -999999999': -1_000_000_000,
-        'years number greater than 999999999': 1_000_000_000,
+        [`years number less than ${LocalDate.MIN_YEAR}`]: LocalDate.MIN_YEAR - 1,
+        [`years number greater than ${LocalDate.MAX_YEAR}`]: LocalDate.MAX_YEAR + 1,
         'fractional years number': 1.5,
     }))('should reject %s', (_, year) => {
         expect(() => LocalDate.of(year, 1, 1)).toThrowError(
-            'Year must be a safe integer between -999999999 and 999999999.',
+            `Year must be a safe integer between ${LocalDate.MIN_YEAR} and ${LocalDate.MAX_YEAR}.`,
         );
     });
 

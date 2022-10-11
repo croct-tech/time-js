@@ -29,6 +29,16 @@ export class LocalDate {
     public static MAX_EPOCH_DAY = 365241780471;
 
     /**
+     * The minimum year.
+     */
+    public static MIN_YEAR = -999_999_999;
+
+    /**
+     * The maximum year.
+     */
+    public static MAX_YEAR = 999_999_999;
+
+    /**
      * The year.
      */
     private readonly year: number;
@@ -60,8 +70,8 @@ export class LocalDate {
      * @param day   The day of month, in the range 1 to 31.
      */
     public static of(year: number, month: number, day: number): LocalDate {
-        if (!Number.isSafeInteger(year) || year < -999_999_999 || year > 999_999_999) {
-            throw new Error('Year must be a safe integer between -999999999 and 999999999.');
+        if (!Number.isSafeInteger(year) || year < LocalDate.MIN_YEAR || year > LocalDate.MAX_YEAR) {
+            throw new Error(`Year must be a safe integer between ${LocalDate.MIN_YEAR} and ${LocalDate.MAX_YEAR}.`);
         }
 
         if (!Number.isInteger(month) || month < 1 || month > 12) {
@@ -85,8 +95,7 @@ export class LocalDate {
     public static ofEpochDay(epochDay: number): LocalDate {
         if (epochDay < LocalDate.MIN_EPOCH_DAY || epochDay > LocalDate.MAX_EPOCH_DAY) {
             throw new Error(
-                `The value ${epochDay} is out of the range `
-                + `[${LocalDate.MIN_EPOCH_DAY} - ${LocalDate.MAX_EPOCH_DAY}] of local date.`,
+                `The day ${epochDay} is out of the range [${LocalDate.MIN_EPOCH_DAY} - ${LocalDate.MAX_EPOCH_DAY}].`,
             );
         }
 
