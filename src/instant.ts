@@ -26,9 +26,9 @@ export class Instant {
     /**
      * The maximum supported epoch second.
      *
-     * The maximum is defined as the instant `+999999-01-01T23:59:59Z`.
+     * The maximum is defined as the instant `+999999-12-31T23:59:59Z`.
      */
-    private static MAX_SECOND = 31494753331199;
+    private static MAX_SECOND = 31494784780799;
 
     /**
      * The instant representing the epoch of 1970-01-01T00:00:00Z.
@@ -45,7 +45,7 @@ export class Instant {
     /**
      * The maximum supported instant.
      *
-     * The maximum is defined as the instant `+999999-01-01T23:59:59.999999999Z`.
+     * The maximum is defined as the instant `+999999-12-31T23:59:59.999999999Z`.
      */
     public static MAX = new Instant(Instant.MAX_SECOND, 999999999);
 

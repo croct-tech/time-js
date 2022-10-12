@@ -1,9 +1,9 @@
 import {zonedTimeToUtc} from 'date-fns-tz';
+import {Instant} from './instant';
 import {LocalDate} from './localDate';
 import {LocalTime} from './localTime';
+import {floorDiv, intDiv} from './math';
 import {TimeZone} from './timeZone';
-import {Instant} from './instant';
-import {intDiv} from './math';
 
 /**
  * A date-time without a time-zone in the ISO-8601 calendar system, such as 2007-12-03T10:15:30.
@@ -181,6 +181,33 @@ export class LocalDateTime {
      */
     public getNano(): number {
         return this.time.getNano();
+    }
+
+    /**
+     * Adds a duration in seconds to this local date-time.
+     *
+     * @param seconds The number of seconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public plusSeconds(seconds: number): LocalDateTime {
+        if (seconds === 0) {
+            return this;
+        }
+
+        let days = intDiv(seconds, LocalTime.SECONDS_PER_DAY);
+        const remainder = seconds % LocalTime.SECONDS_PER_DAY;
+        const total = remainder * LocalTime.NANOS_PER_SECOND + this.time.toNanoOfDay();
+
+        days += floorDiv(total, LocalTime.NANOS_PER_DAY);
+
+        const time = this.time.plusSeconds(remainder);
+
+        if (days !== 0) {
+            return LocalDateTime.of(this.date.plusDays(days), time);
+        }
+
+        return LocalDateTime.of(this.date, time);
     }
 
     /**

@@ -109,6 +109,76 @@ describe('A value object representing a local time', () => {
         expect(LocalTime.parse(input).toString()).toBe(expected);
     });
 
+    it.each([
+        [LocalTime.of(0), 0],
+        [LocalTime.of(1), 60],
+        [LocalTime.of(1, 2), 62],
+        [LocalTime.of(1, 2, 3), 62],
+        [LocalTime.of(1, 2, 3, 345678912), 62],
+    ])('can be converted to a minute of day', (localTime: LocalTime, expected: number) => {
+        expect(localTime.toMinuteOfDay()).toBe(expected);
+    });
+
+    it.each([
+        [LocalTime.of(0), 0],
+        [LocalTime.of(1), 3600],
+        [LocalTime.of(1, 2), 3720],
+        [LocalTime.of(1, 2, 3), 3723],
+        [LocalTime.of(1, 2, 3, 345678912), 3723],
+    ])('can be converted to a second of day', (localTime: LocalTime, expected: number) => {
+        expect(localTime.toSecondOfDay()).toBe(expected);
+    });
+
+    it.each([
+        [LocalTime.of(0), 0],
+        [LocalTime.of(1), 3600000],
+        [LocalTime.of(1, 2), 3720000],
+        [LocalTime.of(1, 2, 3), 3723000],
+        [LocalTime.of(1, 2, 3, 345678912), 3723345],
+    ])('can be converted to a millisecond of day', (localTime: LocalTime, expected: number) => {
+        expect(localTime.toMilliOfDay()).toBe(expected);
+    });
+
+    it.each([
+        [LocalTime.of(0), 0],
+        [LocalTime.of(1), 3600000000],
+        [LocalTime.of(1, 2), 3720000000],
+        [LocalTime.of(1, 2, 3), 3723000000],
+        [LocalTime.of(1, 2, 3, 345678912), 3723345678],
+    ])('can be converted to a microsecond of day', (localTime: LocalTime, expected: number) => {
+        expect(localTime.toMicroOfDay()).toBe(expected);
+    });
+
+    it.each([
+        [LocalTime.of(0), 0],
+        [LocalTime.of(1), 3600000000000],
+        [LocalTime.of(1, 2), 3720000000000],
+        [LocalTime.of(1, 2, 3), 3723000000000],
+        [LocalTime.of(1, 2, 3, 345678912), 3723345678912],
+    ])('can be converted to a nanosecond of day', (localTime: LocalTime, expected: number) => {
+        expect(localTime.toNanoOfDay()).toBe(expected);
+    });
+
+    it.each([
+        [-86400, LocalTime.of(1, 2, 3)],
+        [-5, LocalTime.of(1, 1, 58)],
+        [-4, LocalTime.of(1, 1, 59)],
+        [-3, LocalTime.of(1, 2, 0)],
+        [-2, LocalTime.of(1, 2, 1)],
+        [-1, LocalTime.of(1, 2, 2)],
+        [0, LocalTime.of(1, 2, 3)],
+        [1, LocalTime.of(1, 2, 4)],
+        [2, LocalTime.of(1, 2, 5)],
+        [3, LocalTime.of(1, 2, 6)],
+        [4, LocalTime.of(1, 2, 7)],
+        [5, LocalTime.of(1, 2, 8)],
+        [86400, LocalTime.of(1, 2, 3)],
+    ])('can create a copy with an amount of seconds added', (seconds: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.plusSeconds(seconds)).toStrictEqual(expected);
+    });
+
     it('should be comparable', () => {
         const one = LocalTime.of(10, 20, 30);
         const two = LocalTime.of(20, 10, 10);
