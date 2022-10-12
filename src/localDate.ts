@@ -21,22 +21,22 @@ export class LocalDate {
     /**
      * The minimum epoch day.
      */
-    public static MIN_EPOCH_DAY = -365243219162;
+    public static MIN_EPOCH_DAY = -365_961_662;
 
     /**
      * The maximum epoch day.
      */
-    public static MAX_EPOCH_DAY = 365241780471;
+    public static MAX_EPOCH_DAY = 364_522_607;
 
     /**
      * The minimum year.
      */
-    public static MIN_YEAR = -999_999_999;
+    public static MIN_YEAR = -999_999;
 
     /**
      * The maximum year.
      */
-    public static MAX_YEAR = 999_999_999;
+    public static MAX_YEAR = 999_999;
 
     /**
      * The year.

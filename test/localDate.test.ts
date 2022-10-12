@@ -18,6 +18,8 @@ describe('A value object representing a local date', () => {
         [16858, LocalDate.of(2016, 2, 27)],
         [-1, LocalDate.of(1969, 12, 31)],
         [1, LocalDate.of(1970, 1, 2)],
+        [LocalDate.MIN_EPOCH_DAY, LocalDate.of(-999999, 1, 1)],
+        [LocalDate.MAX_EPOCH_DAY, LocalDate.of(999999, 1, 1)],
     ])('can be created from the number of days since the epoch', (days: number, expected: LocalDate) => {
         expect(LocalDate.ofEpochDay(days)).toStrictEqual(expected);
     });
@@ -155,6 +157,8 @@ describe('A value object representing a local date', () => {
         [LocalDate.of(2016, 2, 27), 16858],
         [LocalDate.of(1969, 12, 31), -1],
         [LocalDate.of(1970, 1, 2), 1],
+        [LocalDate.of(-999999, 1, 1), LocalDate.MIN_EPOCH_DAY],
+        [LocalDate.of(999999, 1, 1), LocalDate.MAX_EPOCH_DAY],
     ])('can be converted to an epoch day', (localDate: LocalDate, expected: number) => {
         expect(localDate.toEpochDay()).toStrictEqual(expected);
     });
