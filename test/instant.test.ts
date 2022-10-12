@@ -40,7 +40,7 @@ describe('A value object representing an instant in time', () => {
 
     it('should reject seconds timestamp out of accuracy range', () => {
         expect(() => Instant.ofEpochSecond(2 ** 52)).toThrowError(
-            'The value 4503599627370496 is out of the range [-31619087596800 - 31494753331199] of instant.',
+            'The value 4503599627370496 is out of the range [-31619087596800 - 31494784780799] of instant.',
         );
     });
 

@@ -26,7 +26,7 @@ export class LocalDate {
     /**
      * The maximum epoch day.
      */
-    public static MAX_EPOCH_DAY = 364_522_607;
+    public static MAX_EPOCH_DAY = 364_522_971;
 
     /**
      * The minimum year.
@@ -48,9 +48,9 @@ export class LocalDate {
     /**
      * The maximum supported local date.
      *
-     * The maximum is defined as the local date `+999999-01-01`.
+     * The maximum is defined as the local date `+999999-12-31`.
      */
-    public static MAX = new LocalDate(LocalDate.MAX_YEAR, 1, 1);
+    public static MAX = new LocalDate(LocalDate.MAX_YEAR, 12, 31);
 
     /**
      * The year.
