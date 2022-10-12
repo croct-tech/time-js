@@ -39,6 +39,20 @@ export class LocalDate {
     public static MAX_YEAR = 999_999;
 
     /**
+     * The minimum supported local date.
+     *
+     * The minimum is defined as the local date `-999999-01-01`.
+     */
+    public static MIN = new LocalDate(LocalDate.MIN_YEAR, 1, 1);
+
+    /**
+     * The maximum supported local date.
+     *
+     * The maximum is defined as the local date `+999999-01-01`.
+     */
+    public static MAX = new LocalDate(LocalDate.MAX_YEAR, 1, 1);
+
+    /**
      * The year.
      */
     private readonly year: number;
