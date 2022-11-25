@@ -56,11 +56,67 @@ describe('A value object representing an instant in time', () => {
         expect(instant.toEpochMillis()).toBe(123456);
     });
 
-    it('can be created from a string in the ISO-8601 format', () => {
+    it('can be created from a string in the ISO-8601 date format', () => {
+        const date = '2015-08-30';
+        const instant = Instant.parse(date);
+
+        expect(instant.toEpochMillis()).toBe(1440892800000);
+    });
+
+    it('can be created from a string in the ISO-8601 date format just with year and month', () => {
+        const date = '2015-08';
+        const instant = Instant.parse(date);
+
+        expect(instant.toEpochMillis()).toBe(1438387200000);
+    });
+
+    it('can be created from a string in the ISO-8601 date format just with year', () => {
+        const date = '2015';
+        const instant = Instant.parse(date);
+
+        expect(instant.toEpochMillis()).toBe(1420070400000);
+    });
+
+    it('can be created from a string in the ISO-8601 date-time format UTC', () => {
         const date = '2015-08-30T12:34:56Z';
         const instant = Instant.parse(date);
 
         expect(instant.toEpochMillis()).toBe(1440938096000);
+    });
+
+    it('can be created from a string in the ISO-8601 date-time format with timezone', () => {
+        const date = '2015-08-30T12:34:56-03:00';
+        const instant = Instant.parse(date);
+
+        expect(instant.toEpochMillis()).toBe(1440948896000);
+    });
+
+    it('can be created from a string in the ISO-8601 date-time format UTC with milliseconds', () => {
+        const date = '2015-08-30T12:34:56.155Z';
+        const instant = Instant.parse(date);
+
+        expect(instant.toEpochMillis()).toBe(1440938096155);
+    });
+
+    it('can be created from a string in the ISO-8601 date-time format with milliseconds and timezone', () => {
+        const date = '2015-08-30T12:34:56.155-03:00';
+        const instant = Instant.parse(date);
+
+        expect(instant.toEpochMillis()).toBe(1440948896155);
+    });
+
+    it('cannot be created from a string in the ISO-8601 date-time format without any timezone', () => {
+        const date = '2015-08-30T12:34:56';
+
+        expect(() => Instant.parse(date))
+            .toThrow('Invalid string format. Must be an ISO date or an ISO date-time with seconds and timezone');
+    });
+
+    it('cannot be created from a string in the ISO-8601 date-time format without seconds', () => {
+        const date = '2015-08-30T12:34Z';
+
+        expect(() => Instant.parse(date))
+            .toThrowError('Invalid string format. Must be an ISO date or an ISO date-time with seconds and timezone');
     });
 
     it('should obtain the current instant from the system clock', () => {

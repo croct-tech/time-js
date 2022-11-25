@@ -129,13 +129,17 @@ export class Instant {
     /**
      * Parses an instant from a string.
      *
-     * Any format supported by the native date object is supported.
-     *
      * @param value The string to parse.
      *
      * @returns The parsed instant.
      */
     public static parse(value: string): Instant {
+        const isInvalidDateTime = !Instant.isValidDateTimeString(value);
+
+        if (isInvalidDateTime) {
+            throw new Error('Invalid string format. Must be an ISO date or an ISO date-time with seconds and timezone');
+        }
+
         return Instant.ofEpochMilli(Date.parse(value));
     }
 
@@ -313,5 +317,39 @@ export class Instant {
         }
 
         return this.nanos - instant.nanos;
+    }
+
+    /**
+         * Checks if a string is a valid ISO-8601 date time.
+         *
+         * Supported formats:
+         *
+         * YYYY-MM
+         *
+         * YYYY-MM-DD
+         *
+         * YYYY-MM-DDTHH:MM:SSTZ
+         *
+         * YYYY-MM-DDTHH:MM:SS.mmmTZ
+         *
+         * @param value The date-time string to validate.
+         *
+         * @returns The result of validation.
+         */
+    private static isValidDateTimeString(value: string): boolean {
+        let isValid = false;
+
+        // Checks YYYY
+        isValid = isValid || /\d{4}$/.test(value);
+        // Checks YYYY-MM
+        isValid = isValid || /\d{4}-[01]\d$/.test(value);
+        // Checks YYYY-MM-DD
+        isValid = isValid || /\d{4}-[01]\d-[0-3]\d$/.test(value);
+        // Checks YYYY-MM-DDTHH:MM:SSTZ
+        isValid = isValid || /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)$/.test(value);
+        // Checks YYYY-MM-DDTHH:MM:SS.mmmTZ
+        isValid = isValid || /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)$/.test(value);
+
+        return isValid;
     }
 }
