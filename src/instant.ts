@@ -129,6 +129,16 @@ export class Instant {
     /**
      * Parses an instant from a string.
      *
+     * Supported ISO-8601 formats:
+     *
+     * YYYY-MM
+     *
+     * YYYY-MM-DD
+     *
+     * YYYY-MM-DDTHH:MM:SSTZ
+     *
+     * YYYY-MM-DDTHH:MM:SS.mmmTZ
+     *
      * @param value The string to parse.
      *
      * @returns The parsed instant.
@@ -137,7 +147,9 @@ export class Instant {
         const isInvalidDateTime = !Instant.isValidDateTimeString(value);
 
         if (isInvalidDateTime) {
-            throw new Error('Invalid string format. Must be an ISO date or an ISO date-time with seconds and timezone');
+            throw new Error(
+                'Invalid string format. Must be an ISO-8601 date or an ISO-8601 date-time with seconds and timezone',
+            );
         }
 
         return Instant.ofEpochMilli(Date.parse(value));

@@ -108,15 +108,17 @@ describe('A value object representing an instant in time', () => {
     it('cannot be created from a string in the ISO-8601 date-time format without any timezone', () => {
         const date = '2015-08-30T12:34:56';
 
-        expect(() => Instant.parse(date))
-            .toThrow('Invalid string format. Must be an ISO date or an ISO date-time with seconds and timezone');
+        expect(() => Instant.parse(date)).toThrow(
+            'Invalid string format. Must be an ISO-8601 date or an ISO-8601 date-time with seconds and timezone',
+        );
     });
 
     it('cannot be created from a string in the ISO-8601 date-time format without seconds', () => {
         const date = '2015-08-30T12:34Z';
 
-        expect(() => Instant.parse(date))
-            .toThrowError('Invalid string format. Must be an ISO date or an ISO date-time with seconds and timezone');
+        expect(() => Instant.parse(date)).toThrow(
+            'Invalid string format. Must be an ISO-8601 date or an ISO-8601 date-time with seconds and timezone',
+        );
     });
 
     it('should obtain the current instant from the system clock', () => {
