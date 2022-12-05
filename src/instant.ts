@@ -1,5 +1,6 @@
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
 import {LocalTime} from './localTime';
+import {LocalDate} from './localDate';
 
 /**
  * An instantaneous point on the time-line.
@@ -52,7 +53,8 @@ export class Instant {
     /**
      * A regular expression that matches ISO-8601 date-time strings in UTC.
      */
-    private static PATTERN = /^(\d{4})-(\d{2})-(\d{2})T(\d{2})(:\d{2})(:\d{2})?(.\d{1,3})?Z$/;
+    // eslint-disable-next-line max-len -- Regex literal cannot be split.
+    private static PATTERN = /^(?<year>[+-]?\d{4,19})-(?<month>\d{2})-(?<day>\d{2})T(?<hour>\d{2})(?::(?<minute>\d{2})(:(?<second>\d{2})(?:.(?<fraction>\d{1,9}))?)?)?Z$/;
 
     /**
      * The point on the time-line as seconds since the epoch.
@@ -135,23 +137,40 @@ export class Instant {
      * Parses an instant from a string.
      *
      * Supported formats:
-     *
-     * YYYY-MM-DDTHH:MMZ
-     *
-     * YYYY-MM-DDTHH:MM:SSZ
-     *
-     * YYYY-MM-DDTHH:MM:SS.mmmZ
+     * - YYYY-MM-DDTHHZ
+     * - YYYY-MM-DDTHH:MMZ
+     * - YYYY-MM-DDTHH:MM:SSZ
+     * - YYYY-MM-DDTHH:MM:SS.fZ
      *
      * @param value The string to parse.
      *
      * @returns The parsed instant.
      */
     public static parse(value: string): Instant {
-        if (!Instant.PATTERN.test(value)) {
-            throw new Error(`Invalid UTC ISO-8601 date-time string: ${value}`);
+        const matches = value.match(Instant.PATTERN);
+        const groups = matches?.groups;
+
+        if (groups == null) {
+            throw new Error(`Unrecognized UTC ISO-8601 date-time string "${value}".`);
         }
 
-        return Instant.ofEpochMilli(Date.parse(value));
+        const daysSinceEpoch = LocalDate.of(
+            Number.parseInt(groups.year, 10),
+            Number.parseInt(groups.month, 10),
+            Number.parseInt(groups.day, 10),
+        ).toEpochDay();
+
+        const nanoOfDay = LocalTime.of(
+            Number.parseInt(groups.hour, 10),
+            Number.parseInt(groups.minute ?? '0', 10),
+            Number.parseInt(groups.second ?? '0', 10) ?? 0,
+            Number.parseInt(groups.fraction?.padEnd(9, '0') ?? '0', 10),
+        ).toNanoOfDay();
+
+        const epochSeconds = daysSinceEpoch * LocalTime.SECONDS_PER_DAY;
+        const nanoAdjustment = nanoOfDay;
+
+        return Instant.ofEpochSecond(epochSeconds, nanoAdjustment);
     }
 
     /**

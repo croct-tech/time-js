@@ -57,29 +57,57 @@ describe('A value object representing an instant in time', () => {
     });
 
     it.each([
-        ['2015-08-30T12:34:56.155Z', 1440938096155],
-        ['2015-08-30T12:34:56Z', 1440938096000],
-        ['2015-08-30T12:34Z', 1440938040000],
-    ])('can be created from a string in the ISO-8601 UTC date-time format', (dateTime, result) => {
+        ['-2015-08-30T12:34:56.155155155Z', -125733554703845, 155155155],
+        ['+2015-08-30T12:34:56.155155155Z', 1440938096155, 155155155],
+        ['2015-08-30T12:34:56.155155155Z', 1440938096155, 155155155],
+        ['2015-08-30T12:34:56.155155Z', 1440938096155, 155155000],
+        ['2015-08-30T12:34:56.155Z', 1440938096155, 155000000],
+        ['2015-08-30T12:34:56.1Z', 1440938096100, 100000000],
+        ['2015-08-30T12:34:56Z', 1440938096000, 0],
+        ['2015-08-30T12:34Z', 1440938040000, 0],
+        ['2015-08-30T12Z', 1440936000000, 0],
+    ])('can be created from a string in the ISO-8601 UTC date-time format', (dateTime, milli, nano) => {
         const instant = Instant.parse(dateTime);
 
-        expect(instant.toEpochMillis()).toBe(result);
+        expect(instant.getNano()).toBe(nano);
+        expect(instant.toEpochMillis()).toBe(milli);
     });
 
     it.each([
         ['2015-08-30T12:34:56.155'],
         ['2015-08-30T12:34:56.155-03:00'],
     ])('cannot be created from a non explicit UTC date-time', dateTime => {
-        expect(() => Instant.parse(dateTime)).toThrow(`Invalid UTC ISO-8601 date-time string: ${dateTime}`);
+        expect(() => Instant.parse(dateTime)).toThrow(`Unrecognized UTC ISO-8601 date-time string "${dateTime}".`);
     });
 
     it.each([
-        ['2015-08-30T12Z'],
         ['2015-08-30'],
         ['2015-08'],
         ['2015'],
-    ])('cannot be created from a date-time hiding anything before seconds', dateTime => {
-        expect(() => Instant.parse(dateTime)).toThrow(`Invalid UTC ISO-8601 date-time string: ${dateTime}`);
+    ])('cannot be created from a date-time hiding anything before minutes', dateTime => {
+        expect(() => Instant.parse(dateTime)).toThrow(`Unrecognized UTC ISO-8601 date-time string "${dateTime}".`);
+    });
+
+    it.each([
+        ['2015-08-30T12:00.155'],
+        ['2015-08-30T12.155'],
+        ['2015-08-30T155'],
+    ])('should contain seconds if fraction was passed', dateTime => {
+        expect(() => Instant.parse(dateTime)).toThrow(`Unrecognized UTC ISO-8601 date-time string "${dateTime}".`);
+    });
+
+    it.each([
+        ['2015-08-30T12:34:56.'],
+        ['2015-08-30T12:34:'],
+        ['2015-08-30T12:'],
+        ['2015-08-30T'],
+        ['2015-08-30T12:34:0.'],
+        ['2015-08-30T12:34:0'],
+        ['2015-08-30T12:0'],
+        ['2015-08-30T0'],
+        ['2015-08-30T00:00:000'],
+    ])('should throw error if badly formatted date-time was received', dateTime => {
+        expect(() => Instant.parse(dateTime)).toThrow(`Unrecognized UTC ISO-8601 date-time string "${dateTime}".`);
     });
 
     it('should obtain the current instant from the system clock', () => {
