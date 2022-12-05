@@ -50,9 +50,9 @@ export class Instant {
     public static MAX = new Instant(Instant.MAX_SECOND, 999999999);
 
     /**
-     * The allowed pattern to string parsing.
+     * A regular expression that matches ISO-8601 date-time strings in UTC.
      */
-    private static PATTERN = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(:\d{2})?(.\d{1,3})?Z$/;
+    private static PATTERN = /^(\d{4})-(\d{2})-(\d{2})T(\d{2})(:\d{2})(:\d{2})?(.\d{1,3})?Z$/;
 
     /**
      * The point on the time-line as seconds since the epoch.
@@ -148,9 +148,7 @@ export class Instant {
      */
     public static parse(value: string): Instant {
         if (!Instant.PATTERN.test(value)) {
-            throw new Error(
-                'Invalid string format. Must be an UTC ISO-8601 date-time',
-            );
+            throw new Error(`Invalid UTC ISO-8601 date-time string: ${value}`);
         }
 
         return Instant.ofEpochMilli(Date.parse(value));

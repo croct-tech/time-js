@@ -70,9 +70,7 @@ describe('A value object representing an instant in time', () => {
         ['2015-08-30T12:34:56.155'],
         ['2015-08-30T12:34:56.155-03:00'],
     ])('cannot be created from a non explicit UTC date-time', dateTime => {
-        expect(() => Instant.parse(dateTime)).toThrow(
-            'Invalid string format. Must be an UTC ISO-8601 date-time',
-        );
+        expect(() => Instant.parse(dateTime)).toThrow(`Invalid UTC ISO-8601 date-time string: ${dateTime}`);
     });
 
     it.each([
@@ -80,14 +78,9 @@ describe('A value object representing an instant in time', () => {
         ['2015-08-30'],
         ['2015-08'],
         ['2015'],
-    ])(
-        'cannot be created from a date-time hiding anything before seconds',
-        dateTime => {
-            expect(() => Instant.parse(dateTime)).toThrow(
-                'Invalid string format. Must be an UTC ISO-8601 date-time',
-            );
-        },
-    );
+    ])('cannot be created from a date-time hiding anything before seconds', dateTime => {
+        expect(() => Instant.parse(dateTime)).toThrow(`Invalid UTC ISO-8601 date-time string: ${dateTime}`);
+    });
 
     it('should obtain the current instant from the system clock', () => {
         const currentTimestamp = 123456789;
