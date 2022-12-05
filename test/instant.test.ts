@@ -84,7 +84,7 @@ describe('A value object representing an instant in time', () => {
         ['2015-08-30'],
         ['2015-08'],
         ['2015'],
-    ])('cannot be created from a date-time hiding anything before minutes', dateTime => {
+    ])('cannot be created from a date-only string', dateTime => {
         expect(() => Instant.parse(dateTime)).toThrow(`Unrecognized UTC ISO-8601 date-time string "${dateTime}".`);
     });
 
