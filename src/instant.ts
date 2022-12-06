@@ -1,6 +1,7 @@
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
 import {LocalTime} from './localTime';
 import {LocalDate} from './localDate';
+import {LocalDateTime} from './localDateTime';
 
 /**
  * An instantaneous point on the time-line.
@@ -167,10 +168,10 @@ export class Instant {
             Number.parseInt(groups.fraction?.padEnd(9, '0') ?? '0', 10),
         ).toNanoOfDay();
 
-        const epochSeconds = daysSinceEpoch * LocalTime.SECONDS_PER_DAY;
-        const nanoAdjustment = nanoOfDay;
-
-        return Instant.ofEpochSecond(epochSeconds, nanoAdjustment);
+        return Instant.ofEpochSecond(
+            multiplyExact(daysSinceEpoch, LocalTime.SECONDS_PER_DAY),
+            nanoOfDay,
+        );
     }
 
     /**
@@ -237,16 +238,17 @@ export class Instant {
      * Converts this instant to a string in ISO-8601 format.
      */
     public toString(): string {
-        let string = new Date(this.seconds * LocalTime.MILLIS_PER_SECOND).toISOString();
+        // 1970 - 400 < year of cycle < 1970 + 400
+        const secondOfCycle = this.seconds % (146097 * 86400);
+        const dateTime = LocalDateTime.ofEpochSecond(secondOfCycle, this.nanos);
+        const year = dateTime.getYear() + intDiv(this.seconds, 146097 * 86400) * 400;
+        const yearPadding = year > 9999 ? 5 : 4;
+        const paddedYear = year.toString().padStart(yearPadding, '0');
 
-        // Strip the milliseconds and zone ID from the end of the string.
-        string = string.slice(0, string.indexOf('.'));
+        let string = dateTime.toString().replace(/.+?(?=-)/, paddedYear);
 
-        if (this.nanos > 0) {
-            const fraction = `${this.nanos}`.padStart(9, '0').replace(/0+$/, '');
-            const scale = Math.floor((fraction.length + 2) / 3) * 3;
-
-            string += `.${fraction.padEnd(scale, '0')}`;
+        if (dateTime.getSecond() === 0 && dateTime.getNano() === 0) {
+            string += ':00';
         }
 
         string += 'Z';

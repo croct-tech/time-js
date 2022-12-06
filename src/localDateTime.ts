@@ -2,7 +2,7 @@ import {zonedTimeToUtc} from 'date-fns-tz';
 import {Instant} from './instant';
 import {LocalDate} from './localDate';
 import {LocalTime} from './localTime';
-import {floorDiv, intDiv} from './math';
+import {floorDiv, floorMod, intDiv} from './math';
 import {TimeZone} from './timeZone';
 
 /**
@@ -79,6 +79,15 @@ export class LocalDateTime {
                 Number.parseInt(groups.fraction.padEnd(9, '0'), 10),
             ),
         );
+    }
+
+    public static ofEpochSecond(epochSecond: number, nanoOfSecond: number): LocalDateTime {
+        const epochDay = floorDiv(epochSecond, LocalTime.SECONDS_PER_DAY);
+        const secondOfDay = floorMod(epochSecond, LocalTime.SECONDS_PER_DAY);
+        const date = LocalDate.ofEpochDay(epochDay);
+        const time = LocalTime.ofSecondOfDay(secondOfDay, nanoOfSecond);
+
+        return LocalDateTime.of(date, time);
     }
 
     /**

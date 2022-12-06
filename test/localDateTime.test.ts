@@ -87,6 +87,18 @@ describe('A value object representing a local date time', () => {
         expect(() => LocalDateTime.parse(value)).toThrowError('Invalid date time format.');
     });
 
+    it('can be created from the number of seconds since the epoch of 1970-01-01T00:00:00Z.', () => {
+        const localDateTime = LocalDateTime.ofEpochSecond(1440979200, 0);
+
+        expect(localDateTime.getYear()).toEqual(2015);
+        expect(localDateTime.getMonth()).toEqual(8);
+        expect(localDateTime.getDay()).toEqual(31);
+        expect(localDateTime.getHour()).toEqual(0);
+        expect(localDateTime.getMinute()).toEqual(0);
+        expect(localDateTime.getSecond()).toEqual(0);
+        expect(localDateTime.getNano()).toEqual(0);
+    });
+
     it('can be converted to a string in the ISO-8601 format', () => {
         const localDate = LocalDate.of(2020, 4, 10);
         const localTime = LocalTime.of(15, 2, 1, 2222);

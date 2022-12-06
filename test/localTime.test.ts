@@ -110,6 +110,36 @@ describe('A value object representing a local time', () => {
     });
 
     it.each([
+        // with nanoseconds
+        [LocalTime.ofSecondOfDay(0, 1), 0, 0, 0, 1],
+        [LocalTime.ofSecondOfDay(1, 1), 0, 0, 1, 1],
+        [LocalTime.ofSecondOfDay(15, 1), 0, 0, 15, 1],
+        [LocalTime.ofSecondOfDay(60, 1), 0, 1, 0, 1],
+        [LocalTime.ofSecondOfDay(75, 1), 0, 1, 15, 1],
+        [LocalTime.ofSecondOfDay(3600, 1), 1, 0, 0, 1],
+        [LocalTime.ofSecondOfDay(4500, 1), 1, 15, 0, 1],
+        // without nanoseconds
+        [LocalTime.ofSecondOfDay(0), 0, 0, 0, 0],
+        [LocalTime.ofSecondOfDay(1), 0, 0, 1, 0],
+        [LocalTime.ofSecondOfDay(15), 0, 0, 15, 0],
+        [LocalTime.ofSecondOfDay(60), 0, 1, 0, 0],
+        [LocalTime.ofSecondOfDay(75), 0, 1, 15, 0],
+        [LocalTime.ofSecondOfDay(3600), 1, 0, 0, 0],
+        [LocalTime.ofSecondOfDay(4500), 1, 15, 0, 0],
+    ])('can be created from a second-of-day value', (
+        localTime: LocalTime,
+        hour: number,
+        minute: number,
+        second: number,
+        nanosecond: number,
+    ) => {
+        expect(localTime.getHour()).toEqual(hour);
+        expect(localTime.getMinute()).toEqual(minute);
+        expect(localTime.getSecond()).toEqual(second);
+        expect(localTime.getNano()).toEqual(nanosecond);
+    });
+
+    it.each([
         [LocalTime.of(0), 0],
         [LocalTime.of(1), 60],
         [LocalTime.of(1, 2), 62],
