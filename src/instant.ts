@@ -164,7 +164,7 @@ export class Instant {
         const nanoOfDay = LocalTime.of(
             Number.parseInt(groups.hour, 10),
             Number.parseInt(groups.minute ?? '0', 10),
-            Number.parseInt(groups.second ?? '0', 10) ?? 0,
+            Number.parseInt(groups.second ?? '0', 10),
             Number.parseInt(groups.fraction?.padEnd(9, '0') ?? '0', 10),
         ).toNanoOfDay();
 
