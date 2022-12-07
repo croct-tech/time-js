@@ -71,7 +71,7 @@ describe('A value object representing an instant in time', () => {
     });
 
     it.each([
-        // Date-time doesn't have without Z designator.
+        // Date-times without Z designator.
         ['2015-08-30T12:34:56.155'],
         ['2015-08-30T12:34:56.155-03:00'],
         // Date-only.
