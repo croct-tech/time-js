@@ -134,18 +134,20 @@ describe('A value object representing a local time', () => {
         -1,
         LocalTime.SECONDS_PER_DAY,
     ])('should fail to create from a second-of-day out of range', (secondOfDay: number) => {
-        expect(() => LocalTime.ofSecondOfDay(secondOfDay, 0))
-            .toThrowError(`The second value ${secondOfDay} is out of the range `
-                + `[0 - ${LocalTime.SECONDS_PER_DAY - 1}] of local time.`);
+        expect(() => LocalTime.ofSecondOfDay(secondOfDay, 0)).toThrowError(
+            `The second value ${secondOfDay} is out of the range `
+                + `[0 - ${LocalTime.SECONDS_PER_DAY - 1}] of local time.`,
+        );
     });
 
     it.each([
         -1,
         LocalTime.NANOS_PER_SECOND,
     ])('should fail to create from a second-of-day with nanoseconds out of range', (nanoOfSecond: number) => {
-        expect(() => LocalTime.ofSecondOfDay(0, nanoOfSecond))
-            .toThrowError(`The nanosecond value ${nanoOfSecond} is out of the range `
-                + `[0 - ${LocalTime.NANOS_PER_SECOND - 1}] of local time.`);
+        expect(() => LocalTime.ofSecondOfDay(0, nanoOfSecond)).toThrowError(
+            `The nanosecond value ${nanoOfSecond} is out of the range `
+                + `[0 - ${LocalTime.NANOS_PER_SECOND - 1}] of local time.`,
+        );
     });
 
     it.each([
