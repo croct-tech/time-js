@@ -111,32 +111,41 @@ describe('A value object representing a local time', () => {
 
     it.each([
         // with nanoseconds
-        [LocalTime.ofSecondOfDay(0, 1), 0, 0, 0, 1],
-        [LocalTime.ofSecondOfDay(1, 1), 0, 0, 1, 1],
-        [LocalTime.ofSecondOfDay(15, 1), 0, 0, 15, 1],
-        [LocalTime.ofSecondOfDay(60, 1), 0, 1, 0, 1],
-        [LocalTime.ofSecondOfDay(75, 1), 0, 1, 15, 1],
-        [LocalTime.ofSecondOfDay(3600, 1), 1, 0, 0, 1],
-        [LocalTime.ofSecondOfDay(4500, 1), 1, 15, 0, 1],
+        [LocalTime.ofSecondOfDay(0, 1), '00:00:00.000000001'],
+        [LocalTime.ofSecondOfDay(1, 1), '00:00:01.000000001'],
+        [LocalTime.ofSecondOfDay(15, 1), '00:00:15.000000001'],
+        [LocalTime.ofSecondOfDay(60, 1), '00:01:00.000000001'],
+        [LocalTime.ofSecondOfDay(75, 1), '00:01:15.000000001'],
+        [LocalTime.ofSecondOfDay(3600, 1), '01:00:00.000000001'],
+        [LocalTime.ofSecondOfDay(4500, 1), '01:15:00.000000001'],
         // without nanoseconds
-        [LocalTime.ofSecondOfDay(0), 0, 0, 0, 0],
-        [LocalTime.ofSecondOfDay(1), 0, 0, 1, 0],
-        [LocalTime.ofSecondOfDay(15), 0, 0, 15, 0],
-        [LocalTime.ofSecondOfDay(60), 0, 1, 0, 0],
-        [LocalTime.ofSecondOfDay(75), 0, 1, 15, 0],
-        [LocalTime.ofSecondOfDay(3600), 1, 0, 0, 0],
-        [LocalTime.ofSecondOfDay(4500), 1, 15, 0, 0],
-    ])('can be created from a second-of-day value', (
-        localTime: LocalTime,
-        hour: number,
-        minute: number,
-        second: number,
-        nanosecond: number,
-    ) => {
-        expect(localTime.getHour()).toEqual(hour);
-        expect(localTime.getMinute()).toEqual(minute);
-        expect(localTime.getSecond()).toEqual(second);
-        expect(localTime.getNano()).toEqual(nanosecond);
+        [LocalTime.ofSecondOfDay(0), '00:00'],
+        [LocalTime.ofSecondOfDay(1), '00:00:01'],
+        [LocalTime.ofSecondOfDay(15), '00:00:15'],
+        [LocalTime.ofSecondOfDay(60), '00:01'],
+        [LocalTime.ofSecondOfDay(75), '00:01:15'],
+        [LocalTime.ofSecondOfDay(3600), '01:00'],
+        [LocalTime.ofSecondOfDay(4500), '01:15'],
+    ])('can be created from a second-of-day value', (localTime: LocalTime, expected: string) => {
+        expect(localTime.toString()).toEqual(expected);
+    });
+
+    it.each([
+        -1,
+        LocalTime.SECONDS_PER_DAY,
+    ])('should throw error if an out of range second-of-day was passed', (secondOfDay: number) => {
+        expect(() => LocalTime.ofSecondOfDay(secondOfDay, 0))
+            .toThrowError(`The second value ${secondOfDay} is out of the range `
+                + `[0 - ${LocalTime.SECONDS_PER_DAY - 1}] of local time.`);
+    });
+
+    it.each([
+        -1,
+        LocalTime.NANOS_PER_SECOND,
+    ])('should throw error if an out of range second-of-day was passed', (nanoOfSecond: number) => {
+        expect(() => LocalTime.ofSecondOfDay(0, nanoOfSecond))
+            .toThrowError(`The nanosecond value ${nanoOfSecond} is out of the range `
+                + `[0 - ${LocalTime.NANOS_PER_SECOND - 1}] of local time.`);
     });
 
     it.each([

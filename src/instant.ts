@@ -243,9 +243,19 @@ export class Instant {
         const dateTime = LocalDateTime.ofEpochSecond(secondOfCycle, this.nanos);
         const year = dateTime.getYear() + intDiv(this.seconds, 146097 * 86400) * 400;
         const yearPadding = year > 9999 ? 5 : 4;
-        const paddedYear = year.toString().padStart(yearPadding, '0');
+        let prefix = '';
 
-        let string = dateTime.toString().replace(/.+?(?=-)/, paddedYear);
+        if (year < 0) {
+            prefix = '-';
+        } else if (year > 9999) {
+            prefix = '+';
+        }
+
+        const paddedYear = prefix + Math.abs(year)
+            .toString()
+            .padStart(yearPadding, '0');
+
+        let string = paddedYear + dateTime.toString().slice(4);
 
         if (dateTime.getSecond() === 0 && dateTime.getNano() === 0) {
             string += ':00';

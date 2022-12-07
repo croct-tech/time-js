@@ -58,30 +58,31 @@ describe('A value object representing an instant in time', () => {
 
     it.each([
         ['-22015-08-30T12:34:56.155155155Z'],
+        ['+22015-08-30T12:34:56.155155155Z'],
         ['-2015-08-30T12:34:56.155155155Z'],
-        ['22015-08-30T12:34:56.155155155Z'],
         ['2015-08-30T12:34:56.155155155Z'],
         ['2015-08-30T12:34:56.155155Z'],
         ['2015-08-30T12:34:56.155Z'],
         ['2015-08-30T12:34:56Z'],
         ['2015-08-30T12:00:00Z'],
+        ['-0001-08-30T12:00:00Z'],
     ])('can parse a ISO-8601 UTC date-time string', dateTime => {
         expect(Instant.parse(dateTime).toString()).toBe(dateTime);
     });
 
     it.each([
-        // cannot parse a date-time string without Z designator
+        // Date-time doesn't have without Z designator.
         ['2015-08-30T12:34:56.155'],
         ['2015-08-30T12:34:56.155-03:00'],
-        // cannot be created from a date-only string
+        // Date-only.
         ['2015-08-30'],
         ['2015-08'],
         ['2015'],
-        // should contain seconds if fraction was passed
+        // Date-time with fractions and without the complete time data.
         ['2015-08-30T12:00.155'],
         ['2015-08-30T12.155'],
         ['2015-08-30T155'],
-        // should throw error if badly formatted date-time was received
+        // Badly formatted date-times.
         ['2015-08-30T12:34:56.'],
         ['2015-08-30T12:34:'],
         ['2015-08-30T12:'],
@@ -91,7 +92,7 @@ describe('A value object representing an instant in time', () => {
         ['2015-08-30T12:0'],
         ['2015-08-30T0'],
         ['2015-08-30T00:00:000'],
-    ])('cannot parse an malformed date-time string', dateTime => {
+    ])('cannot parse a malformed date-time string', dateTime => {
         expect(() => Instant.parse(dateTime)).toThrow(`Unrecognized UTC ISO-8601 date-time string "${dateTime}".`);
     });
 

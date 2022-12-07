@@ -160,14 +160,14 @@ export class LocalTime {
         if (second < 0 || second > LocalTime.SECONDS_PER_DAY - 1) {
             throw new Error(
                 `The second value ${second} is out of the range `
-                + `[${0} - ${LocalTime.SECONDS_PER_DAY - 1}] of local time.`,
+                + `[0 - ${LocalTime.SECONDS_PER_DAY - 1}] of local time.`,
             );
         }
 
         if (nanosecond < 0 || nanosecond > LocalTime.NANOS_PER_SECOND - 1) {
             throw new Error(
                 `The nanosecond value ${nanosecond} is out of the range `
-                + `[${0} - ${LocalTime.NANOS_PER_SECOND - 1}] of local time.`,
+                + `[0 - ${LocalTime.NANOS_PER_SECOND - 1}] of local time.`,
             );
         }
 
