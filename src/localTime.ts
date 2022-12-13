@@ -156,6 +156,12 @@ export class LocalTime {
         return new LocalTime(hour, minute, second, nanos);
     }
 
+    /**
+     * Obtains a local time using seconds from the day and nanoseconds from the second.
+     *
+     * @param {number} second The seconds of the day, in range 0 to 86,399
+     * @param {number} nanosecond The nanoseconds of the second, in the range 0 to 999,999,999.
+     */
     public static ofSecondOfDay(second: number, nanosecond = 0): LocalTime {
         if (second < 0 || second > LocalTime.SECONDS_PER_DAY - 1) {
             throw new Error(

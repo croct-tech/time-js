@@ -242,7 +242,6 @@ export class Instant {
         const secondOfCycle = this.seconds % (146097 * 86400);
         const dateTime = LocalDateTime.ofEpochSecond(secondOfCycle, this.nanos);
         const year = dateTime.getYear() + intDiv(this.seconds, 146097 * 86400) * 400;
-        const yearPadding = year > 9999 ? 5 : 4;
         let prefix = '';
 
         if (year < 0) {
@@ -253,7 +252,7 @@ export class Instant {
 
         const paddedYear = prefix + Math.abs(year)
             .toString()
-            .padStart(yearPadding, '0');
+            .padStart(4, '0');
 
         let string = paddedYear + dateTime.toString().slice(4);
 
