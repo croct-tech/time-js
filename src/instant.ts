@@ -1,5 +1,7 @@
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
 import {LocalTime} from './localTime';
+import {LocalDate} from './localDate';
+import {LocalDateTime} from './localDateTime';
 
 /**
  * An instantaneous point on the time-line.
@@ -48,6 +50,12 @@ export class Instant {
      * The maximum is defined as the instant `+999999-12-31T23:59:59.999999999Z`.
      */
     public static MAX = new Instant(Instant.MAX_SECOND, 999999999);
+
+    /**
+     * A regular expression that matches ISO-8601 date-time strings in UTC.
+     */
+    // eslint-disable-next-line max-len -- Regex literal cannot be split.
+    private static PATTERN = /^(?<year>[+-]?\d{4,19})-(?<month>\d{2})-(?<day>\d{2})T(?<hour>\d{2})(?::(?<minute>\d{2})(:(?<second>\d{2})(?:.(?<fraction>\d{1,9}))?)?)?Z$/;
 
     /**
      * The point on the time-line as seconds since the epoch.
@@ -129,14 +137,41 @@ export class Instant {
     /**
      * Parses an instant from a string.
      *
-     * Any format supported by the native date object is supported.
+     * Supported formats:
+     * - YYYY-MM-DDTHHZ
+     * - YYYY-MM-DDTHH:MMZ
+     * - YYYY-MM-DDTHH:MM:SSZ
+     * - YYYY-MM-DDTHH:MM:SS.fZ
      *
      * @param value The string to parse.
      *
      * @returns The parsed instant.
      */
     public static parse(value: string): Instant {
-        return Instant.ofEpochMilli(Date.parse(value));
+        const matches = value.match(Instant.PATTERN);
+        const groups = matches?.groups;
+
+        if (groups == null) {
+            throw new Error(`Unrecognized UTC ISO-8601 date-time string "${value}".`);
+        }
+
+        const daysSinceEpoch = LocalDate.of(
+            Number.parseInt(groups.year, 10),
+            Number.parseInt(groups.month, 10),
+            Number.parseInt(groups.day, 10),
+        ).toEpochDay();
+
+        const nanoOfDay = LocalTime.of(
+            Number.parseInt(groups.hour, 10),
+            Number.parseInt(groups.minute ?? '0', 10),
+            Number.parseInt(groups.second ?? '0', 10),
+            Number.parseInt(groups.fraction?.padEnd(9, '0') ?? '0', 10),
+        ).toNanoOfDay();
+
+        return Instant.ofEpochSecond(
+            multiplyExact(daysSinceEpoch, LocalTime.SECONDS_PER_DAY),
+            nanoOfDay,
+        );
     }
 
     /**
@@ -203,16 +238,26 @@ export class Instant {
      * Converts this instant to a string in ISO-8601 format.
      */
     public toString(): string {
-        let string = new Date(this.seconds * LocalTime.MILLIS_PER_SECOND).toISOString();
+        // 1970 - 400 < year of cycle < 1970 + 400
+        const secondOfCycle = this.seconds % (146097 * 86400);
+        const dateTime = LocalDateTime.ofEpochSecond(secondOfCycle, this.nanos);
+        const year = dateTime.getYear() + intDiv(this.seconds, 146097 * 86400) * 400;
+        let prefix = '';
 
-        // Strip the milliseconds and zone ID from the end of the string.
-        string = string.slice(0, string.indexOf('.'));
+        if (year < 0) {
+            prefix = '-';
+        } else if (year > 9999) {
+            prefix = '+';
+        }
 
-        if (this.nanos > 0) {
-            const fraction = `${this.nanos}`.padStart(9, '0').replace(/0+$/, '');
-            const scale = Math.floor((fraction.length + 2) / 3) * 3;
+        const paddedYear = prefix + Math.abs(year)
+            .toString()
+            .padStart(4, '0');
 
-            string += `.${fraction.padEnd(scale, '0')}`;
+        let string = paddedYear + dateTime.toString().slice(4);
+
+        if (dateTime.getSecond() === 0 && dateTime.getNano() === 0) {
+            string += ':00';
         }
 
         string += 'Z';

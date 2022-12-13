@@ -56,11 +56,44 @@ describe('A value object representing an instant in time', () => {
         expect(instant.toEpochMillis()).toBe(123456);
     });
 
-    it('can be created from a string in the ISO-8601 format', () => {
-        const date = '2015-08-30T12:34:56Z';
-        const instant = Instant.parse(date);
+    it.each([
+        ['-22015-08-30T12:34:56.155155155Z'],
+        ['+22015-08-30T12:34:56.155155155Z'],
+        ['-2015-08-30T12:34:56.155155155Z'],
+        ['2015-08-30T12:34:56.155155155Z'],
+        ['2015-08-30T12:34:56.155155Z'],
+        ['2015-08-30T12:34:56.155Z'],
+        ['2015-08-30T12:34:56Z'],
+        ['2015-08-30T12:00:00Z'],
+        ['-0001-08-30T12:00:00Z'],
+    ])('can parse a ISO-8601 UTC date-time string', dateTime => {
+        expect(Instant.parse(dateTime).toString()).toBe(dateTime);
+    });
 
-        expect(instant.toEpochMillis()).toBe(1440938096000);
+    it.each([
+        // Date-times without Z designator.
+        ['2015-08-30T12:34:56.155'],
+        ['2015-08-30T12:34:56.155-03:00'],
+        // Date-only.
+        ['2015-08-30'],
+        ['2015-08'],
+        ['2015'],
+        // Date-time with fractions and without the complete time data.
+        ['2015-08-30T12:00.155'],
+        ['2015-08-30T12.155'],
+        ['2015-08-30T155'],
+        // Badly formatted date-times.
+        ['2015-08-30T12:34:56.'],
+        ['2015-08-30T12:34:'],
+        ['2015-08-30T12:'],
+        ['2015-08-30T'],
+        ['2015-08-30T12:34:0.'],
+        ['2015-08-30T12:34:0'],
+        ['2015-08-30T12:0'],
+        ['2015-08-30T0'],
+        ['2015-08-30T00:00:000'],
+    ])('cannot parse a malformed date-time string', dateTime => {
+        expect(() => Instant.parse(dateTime)).toThrow(`Unrecognized UTC ISO-8601 date-time string "${dateTime}".`);
     });
 
     it('should obtain the current instant from the system clock', () => {

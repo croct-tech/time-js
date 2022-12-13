@@ -110,6 +110,47 @@ describe('A value object representing a local time', () => {
     });
 
     it.each([
+        // with nanoseconds
+        [LocalTime.ofSecondOfDay(0, 1), '00:00:00.000000001'],
+        [LocalTime.ofSecondOfDay(1, 1), '00:00:01.000000001'],
+        [LocalTime.ofSecondOfDay(15, 1), '00:00:15.000000001'],
+        [LocalTime.ofSecondOfDay(60, 1), '00:01:00.000000001'],
+        [LocalTime.ofSecondOfDay(75, 1), '00:01:15.000000001'],
+        [LocalTime.ofSecondOfDay(3600, 1), '01:00:00.000000001'],
+        [LocalTime.ofSecondOfDay(4500, 1), '01:15:00.000000001'],
+        // without nanoseconds
+        [LocalTime.ofSecondOfDay(0), '00:00'],
+        [LocalTime.ofSecondOfDay(1), '00:00:01'],
+        [LocalTime.ofSecondOfDay(15), '00:00:15'],
+        [LocalTime.ofSecondOfDay(60), '00:01'],
+        [LocalTime.ofSecondOfDay(75), '00:01:15'],
+        [LocalTime.ofSecondOfDay(3600), '01:00'],
+        [LocalTime.ofSecondOfDay(4500), '01:15'],
+    ])('can be created from a second-of-day value', (localTime: LocalTime, expected: string) => {
+        expect(localTime.toString()).toEqual(expected);
+    });
+
+    it.each([
+        -1,
+        LocalTime.SECONDS_PER_DAY,
+    ])('should fail to create from a second-of-day out of range', (secondOfDay: number) => {
+        expect(() => LocalTime.ofSecondOfDay(secondOfDay, 0)).toThrowError(
+            `The second value ${secondOfDay} is out of the range `
+                + `[0 - ${LocalTime.SECONDS_PER_DAY - 1}] of local time.`,
+        );
+    });
+
+    it.each([
+        -1,
+        LocalTime.NANOS_PER_SECOND,
+    ])('should fail to create from a second-of-day with nanoseconds out of range', (nanoOfSecond: number) => {
+        expect(() => LocalTime.ofSecondOfDay(0, nanoOfSecond)).toThrowError(
+            `The nanosecond value ${nanoOfSecond} is out of the range `
+                + `[0 - ${LocalTime.NANOS_PER_SECOND - 1}] of local time.`,
+        );
+    });
+
+    it.each([
         [LocalTime.of(0), 0],
         [LocalTime.of(1), 60],
         [LocalTime.of(1, 2), 62],

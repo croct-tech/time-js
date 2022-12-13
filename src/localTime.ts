@@ -157,6 +157,39 @@ export class LocalTime {
     }
 
     /**
+     * Obtains a local time using seconds from the day and nanoseconds from the second.
+     *
+     * @param {number} second The seconds of the day, in range 0 to 86,399
+     * @param {number} nanosecond The nanoseconds of the second, in the range 0 to 999,999,999.
+     */
+    public static ofSecondOfDay(second: number, nanosecond = 0): LocalTime {
+        if (second < 0 || second > LocalTime.SECONDS_PER_DAY - 1) {
+            throw new Error(
+                `The second value ${second} is out of the range `
+                + `[0 - ${LocalTime.SECONDS_PER_DAY - 1}] of local time.`,
+            );
+        }
+
+        if (nanosecond < 0 || nanosecond > LocalTime.NANOS_PER_SECOND - 1) {
+            throw new Error(
+                `The nanosecond value ${nanosecond} is out of the range `
+                + `[0 - ${LocalTime.NANOS_PER_SECOND - 1}] of local time.`,
+            );
+        }
+
+        let localSecond = second;
+        const hour = intDiv(localSecond, LocalTime.SECONDS_PER_HOUR);
+
+        localSecond -= hour * LocalTime.SECONDS_PER_HOUR;
+
+        const minute = intDiv(localSecond, LocalTime.SECONDS_PER_MINUTE);
+
+        localSecond -= minute * LocalTime.SECONDS_PER_MINUTE;
+
+        return LocalTime.of(hour, minute, localSecond, nanosecond);
+    }
+
+    /**
      * Obtains the local time from a native date object.
      *
      * @param date The native date object.
