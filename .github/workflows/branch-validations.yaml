@@ -13,12 +13,12 @@ on:
 
 jobs:
   security-checks:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 18
 
       - name: Cache dependencies
         id: cache-dependencies
@@ -37,12 +37,12 @@ jobs:
           npx check-audit
 
   validate:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 18
 
       - name: Cache dependencies
         id: cache-dependencies
@@ -59,12 +59,12 @@ jobs:
         run: npm run validate
 
   lint:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 18
 
       - name: Cache dependencies
         id: cache-dependencies
@@ -81,12 +81,12 @@ jobs:
         run: npm run lint
 
   test:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 18
 
       - name: Cache dependencies
         id: cache-dependencies
