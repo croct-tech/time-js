@@ -1,8 +1,7 @@
-import {zonedTimeToUtc} from 'date-fns-tz';
 import {Instant} from './instant';
 import {LocalDate} from './localDate';
 import {LocalTime} from './localTime';
-import {floorDiv, floorMod, intDiv} from './math';
+import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
 import {TimeZone} from './timeZone';
 
 /**
@@ -46,7 +45,11 @@ export class LocalDateTime {
      * @param zone The time-zone to use.
      */
     public static now(zone: TimeZone): LocalDateTime {
-        const now = new Date().toLocaleString('en-US', {
+        return LocalDateTime.fromZonedDate(new Date(), zone);
+    }
+
+    private static fromZonedDate(date: Date, zone: TimeZone): LocalDateTime {
+        const localDateTime = date.toLocaleString('en-US', {
             timeZone: zone.getId(),
             calendar: 'iso8601',
             hourCycle: 'h23',
@@ -62,7 +65,7 @@ export class LocalDateTime {
         });
 
         // eslint-disable-next-line max-len -- Regex literal cannot be split.
-        const matches = now.match(/(?<month>\d{2})\/(?<day>\d{2})\/(?<year>\d{4}), (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2})\.(?<fraction>\d{3})/);
+        const matches = localDateTime.match(/(?<month>\d{2})\/(?<day>\d{2})\/(?<year>\d{4}), (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2})\.(?<fraction>\d{3})/);
         // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain -- Safe assertion.
         const groups = matches?.groups!;
 
@@ -300,27 +303,137 @@ export class LocalDateTime {
      * @returns The instant in the UTC time-line.
      */
     public toInstant(zone: TimeZone): Instant {
-        const zonedDateTime = zonedTimeToUtc(
-            new Date(
-                this.date.getYear(),
-                this.date.getMonth() - 1,
-                this.date.getDay(),
+        // Since JavaScript doesn't expose an API to get the time-zone offset
+        // for a given local date-time. The workaround is to convert the local
+        // date-time to a point in the UTC time-line and iteravely add/subtract
+        // the time-zone offset until finding the correct offset.
+        //
+        // This is not the most efficient way to do this, but it's
+        // the only way to do it in JavaScript without using a third-party
+        // library.
+
+        const epochDay = this.date.toEpochDay();
+        const seconds = multiplyExact(epochDay, LocalTime.SECONDS_PER_DAY);
+
+        // Assumes the target timezone is in a range of -12 to +14 hours.
+        // While most time zones differ from Coordinated Universal Time (UTC) by a number of full
+        // hours, some time zones have 30-minute or 45-minute offsets.
+        const startFromEpoch = subtractExact(
+            addExact(seconds, this.time.toSecondOfDay()),
+            14 * LocalTime.SECONDS_PER_HOUR,
+        );
+
+        const endFromEpoch = addExact(
+            startFromEpoch,
+            26 * LocalTime.SECONDS_PER_HOUR,
+        );
+
+        const target = LocalDateTime.of(
+            this.date,
+            LocalTime.of(
                 this.time.getHour(),
                 this.time.getMinute(),
                 this.time.getSecond(),
-                // Assumes that the time-zone offset is at least 1 second.
-                // Historically, the tz database has never had a time-zone
-                // offset less than 1 minute, so assuming a second precision
-                // should be safe.
-                0,
             ),
-            zone.getId(),
         );
+
+        const zonedDateTime = new Date(startFromEpoch * LocalTime.MILLIS_PER_SECOND);
+        let localDateTime = LocalDateTime.fromZonedDate(zonedDateTime, zone);
+
+        // Determine the time-zone offset multiple. As of 2023, most time zones
+        // have 1h offsets, but some time zones have 30m or 45m offsets.
+        // There are cases where the multiple changes during transitions.
+        // Lord Howe Island uses an offset of UTC + 11 during the summer. In the winter,
+        // after Daylight Saving is over they set the clocks back a half hour (UTC + 10:30).
+        const step = Math.min(
+            LocalDateTime.getTimeZoneMultiple(zonedDateTime, zone.getId()),
+            LocalDateTime.getTimeZoneMultiple(
+                new Date(endFromEpoch * LocalTime.MILLIS_PER_SECOND),
+                zone.getId(),
+            ),
+        );
+
+        // Worst case scenario, we have to loop 26 hours * 4 15-minute increments,
+        // which is 104 iterations.
+        //
+        // Benchmarks on a 2020 MacBook Pro (Apple M1 chip 8-core CPU):
+        // For Pacific/Niue (UTC-11), the loop runs 25 times and takes on average 1.7ms
+        // For America/Sao_Paulo (UTC-3), the loop runs 17 times and takes on average 1.2ms
+        while (!localDateTime.equals(target)) {
+            zonedDateTime.setTime(addExact(zonedDateTime.getTime(), step * LocalTime.MILLIS_PER_SECOND));
+            localDateTime = LocalDateTime.fromZonedDate(zonedDateTime, zone);
+
+            if (localDateTime.isAfter(target)) {
+                // There is a gap, the local date-time doesn't exist in the target time-zone.
+                // For gaps, the general strategy is that if the local date-time falls in the middle
+                // of a gap, then the resulting zoned date-time will have a local date-time shifted
+                // forwards by the length of the gap, resulting in a date-time in the later offset,
+                // typically "summer" time.
+
+                break;
+            }
+
+            // For overlaps, the general strategy is that if the local date-time falls in the
+            // middle of an Overlap, then the previous offset will be retained. If there is no
+            // previous offset, or the previous offset is invalid, then the earlier offset is used,
+            // typically "summer" time.
+            // Since the time is shifted forwards, the first local date-time that is equal to
+            // the target is the one that meets the criteria.
+        }
 
         const epochSeconds = intDiv(zonedDateTime.getTime(), LocalTime.MILLIS_PER_SECOND);
         const nanoAdjustment = this.time.getNano();
 
         return Instant.ofEpochSecond(epochSeconds, nanoAdjustment);
+    }
+
+    /**
+     * Returns the time-zone offset multiple.
+     *
+     * As of 2023, most time zones have 1h offsets, but some time zones have 30m or 45m offsets.
+     * This function returns either 1h, 30m, or 15m, whichever is the smallest multiple of the
+     * time-zone offset.
+     *
+     * @param date     The point in time to check the offset.
+     * @param timezone The time zone in which to check the offset.
+     *
+     * @returns The time-zone offset multiple in seconds.
+     */
+    private static getTimeZoneMultiple(date: Date, timezone: string): number {
+        const offset = Math.abs(LocalDateTime.getTimeZoneOffset(date, timezone));
+
+        if (offset % LocalTime.SECONDS_PER_HOUR === 0) {
+            return LocalTime.SECONDS_PER_HOUR;
+        }
+
+        if (offset % (LocalTime.SECONDS_PER_HOUR / 2) === 0) {
+            return LocalTime.SECONDS_PER_HOUR / 2;
+        }
+
+        return LocalTime.SECONDS_PER_HOUR / 4;
+    }
+
+    /**
+     * Finds the time-zone offset in seconds for the given date at the given time-zone.
+     *
+     * @param date The point in time to check the offset.
+     * @param timezone The time zone in which to check the offset.
+     *
+     * @returns The time-zone offset in seconds.
+     */
+    private static getTimeZoneOffset(date: Date, timezone: string): number {
+        const timeZoneName = new Intl.DateTimeFormat('en-US', {
+            timeZone: timezone,
+            calendar: 'iso8601',
+            timeZoneName: 'short',
+        }).format(date);
+
+        const matches = timeZoneName.match(/([+-]\d+)(?::(\d+))?/);
+        const hours = Number.parseInt(matches?.[1] ?? '0', 10);
+        const minutes = Number.parseInt(matches?.[2] ?? '0', 10);
+
+        return hours * LocalTime.SECONDS_PER_HOUR
+            + minutes * LocalTime.SECONDS_PER_MINUTE;
     }
 
     /**
