@@ -75,6 +75,11 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.toString()).toBe(dateTime);
     });
 
+    it('should fail to parse a invalid ISO-8601 date time', () => {
+        expect(() => LocalDateTime.parse('2015-08-30'))
+            .toThrowError('Malformed local date-time "2015-08-30".');
+    });
+
     type ConversionScenario = {
         input: LocalDateTime,
         timeZone: TimeZone,

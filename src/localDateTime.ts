@@ -129,7 +129,7 @@ export class LocalDateTime {
         const parts = value.split('T');
 
         if (parts.length !== 2) {
-            throw new Error('Invalid date time format.');
+            throw new Error(`Malformed local date-time "${value}".`);
         }
 
         return LocalDateTime.of(
