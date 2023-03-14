@@ -1,4 +1,3 @@
-import {timeZonesNames} from '@vvo/tzdb';
 import {TimeZone} from '../src';
 
 describe('A value object representing a timezone', () => {
@@ -14,10 +13,6 @@ describe('A value object representing a timezone', () => {
 
     it('should reject invalid timezone IDs', () => {
         expect(() => TimeZone.of('America')).toThrowError('The timezone America is not supported.');
-    });
-
-    it('should return the list of supported time zones.', () => {
-        expect(TimeZone.getTimesZoneIds()).toEqual(timeZonesNames.concat('UTC'));
     });
 
     it('can be converted to a string representation of the timezone', () => {

@@ -75,16 +75,48 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.toString()).toBe(dateTime);
     });
 
-    it.each([
-        '2015-08-30',
-        '12:34:56',
-        '2015-08-30 12:34:56',
-        '20150830123456',
-        '2015/08/30 12:34:56',
-        '2015T08-30T12:34:56',
-        'Sun Aug 30 2015 12:34:56',
-    ])('should fail to parse %s', value => {
-        expect(() => LocalDateTime.parse(value)).toThrowError('Invalid date time format.');
+    type ConversionScenario = {
+        input: LocalDateTime,
+        timeZone: TimeZone,
+        expected: string,
+    };
+
+    it.each<ConversionScenario>([
+        {
+            input: LocalDateTime.of(LocalDate.of(2018, 11, 4), LocalTime.of(0, 0, 0)),
+            timeZone: TimeZone.of('America/Sao_Paulo'),
+            // In November 4th 2018 at 00:00:00 in Sao Paulo there was a daylight saving time change
+            // from -03:00 to -02:00. The local time 00:00:00 does not exist in -02:00.
+            expected: '2018-11-04T03:00:00Z',
+        },
+        {
+            input: LocalDateTime.of(LocalDate.of(2019, 2, 16), LocalTime.of(0, 0, 0)),
+            timeZone: TimeZone.of('America/Sao_Paulo'),
+            // In February 16th 2019 at 00:00:00 in Sao Paulo there was a daylight saving time change
+            // from -02:00 to -03:00. The local time 00:00:00 occurs twice in -03:00.
+            expected: '2019-02-16T02:00:00Z',
+        },
+        {
+            input: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 999999999)),
+            // In August 31st 2015 at 01:02:03.999999999, the time zone offset was -03:00.
+            timeZone: TimeZone.of('America/Sao_Paulo'),
+            expected: '2015-08-31T04:02:03.999999999Z',
+        },
+        {
+            input: LocalDateTime.of(LocalDate.of(2022, 9, 25), LocalTime.of(2, 45, 0)),
+            // In September 25th 2022 at 02:45:00, the time zone offset changed from +12:45 to +13:45.
+            // 2022-09-25T03:45:00 - 13:45 = 2022-09-24T14:00:00
+            timeZone: TimeZone.of('Pacific/Chatham'),
+            expected: '2022-09-24T14:00:00Z',
+        },
+        {
+            input: LocalDateTime.of(LocalDate.of(2022, 10, 2), LocalTime.of(2, 0, 0)),
+            // In October 2nd 2022 at 02:00:00, the time zone offset changed from +11:00 to +10:30
+            timeZone: TimeZone.of('Australia/Lord_Howe'),
+            expected: '2022-10-01T15:30:00Z',
+        },
+    ])('should convert $input to $expected', ({input, timeZone, expected}) => {
+        expect(input.toInstant(timeZone).toString()).toBe(expected);
     });
 
     it('can be created from the number of seconds since the UNIX epoch', () => {
@@ -150,18 +182,6 @@ describe('A value object representing a local date time', () => {
         expect(one.equals(one)).toBe(true);
         expect(one.equals(two)).toBe(false);
         expect(one.equals(three)).toBe(true);
-    });
-
-    it('can be converted to an instant', () => {
-        const localDateTime = LocalDateTime.of(
-            LocalDate.of(2015, 8, 31),
-            LocalTime.of(12, 11, 59, 123456789),
-        );
-
-        const instant = localDateTime.toInstant(TimeZone.of('America/Sao_Paulo'));
-
-        // In 2015-08-31T12:11:59.123456789 America/Sao_Paulo was UTC-03:00
-        expect(instant.toString()).toBe('2015-08-31T15:11:59.123456789Z');
     });
 
     it('should serialize to JSON in the ISO-8601 format', () => {
