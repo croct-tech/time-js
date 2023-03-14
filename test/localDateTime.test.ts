@@ -30,10 +30,8 @@ describe('A value object representing a local date time', () => {
     });
 
     it('can be created from a native Date object', () => {
-        const date = new Date('August, 31 2015 23:15:30.123');
-        const localDateTime = LocalDateTime.fromNative(date);
-
-        expect(localDateTime.toString()).toBe('2015-08-31T23:15:30.123');
+        expect(LocalDateTime.fromNative(new Date(2015, 7, 31, 23, 15, 30, 123)).toString())
+            .toBe('2015-08-31T23:15:30.123');
     });
 
     it('can be created at the start of the day', () => {
@@ -119,6 +117,11 @@ describe('A value object representing a local date time', () => {
             // In October 2nd 2022 at 02:00:00, the time zone offset changed from +11:00 to +10:30
             timeZone: TimeZone.of('Australia/Lord_Howe'),
             expected: '2022-10-01T15:30:00Z',
+        },
+        {
+            input: LocalDateTime.of(LocalDate.of(1, 10, 2)),
+            timeZone: TimeZone.of('UTC'),
+            expected: '0001-10-02T00:00:00Z',
         },
     ])('should convert $input to $expected', ({input, timeZone, expected}) => {
         expect(input.toInstant(timeZone).toString()).toBe(expected);
