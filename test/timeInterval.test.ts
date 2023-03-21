@@ -939,4 +939,16 @@ describe('A value object representing a time interval', () => {
 
         expect(interval.equals(TimeInterval.between(start, end))).toBe(true);
     });
+
+    it.each([
+        '',
+        '/',
+        '1970-01-01T00:00:00Z',
+        '1970-01-01T00:00:00Z/',
+        '1970-01-01T00:00:00Z/1970-01-01T00:00:01Z/',
+        '/1970-01-01T00:00:00Z/1970-01-01T00:00:01Z',
+        '1970-01-01T00:00:00Z//1970-01-01T00:00:01Z',
+    ])('cannot be parsed from a malformed string interval in the ISO-8601 format', value => {
+        expect(() => TimeInterval.parse(value)).toThrowError(`Malformed time interval "${value}".`);
+    });
 });

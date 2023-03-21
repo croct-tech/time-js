@@ -32,9 +32,13 @@ export class TimeInterval {
      * Parses an interval from its ISO-8601 representation.
      */
     public static parse(value: string): TimeInterval {
-        const [start, end] = value.split('/');
+        const parts = value.split('/');
 
-        return TimeInterval.between(Instant.parse(start), Instant.parse(end));
+        if (parts.length !== 2 || parts[0] === '' || parts[1] === '') {
+            throw new Error(`Malformed time interval "${value}".`);
+        }
+
+        return TimeInterval.between(Instant.parse(parts[0]), Instant.parse(parts[1]));
     }
 
     /**
