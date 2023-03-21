@@ -939,15 +939,4 @@ describe('A value object representing a time interval', () => {
 
         expect(interval.equals(TimeInterval.between(start, end))).toBe(true);
     });
-
-    it.each([
-        [TimeInterval.all(), true],
-        [TimeInterval.between(Instant.ofEpochSecond(0), Instant.ofEpochSecond(1)), true],
-        [Instant.now(), false],
-        [new Object(), false],
-        [null, false],
-        [undefined, false],
-    ])('can determine whether a given value is a time interval instance', (value, expected) => {
-        expect(TimeInterval.isTimeInterval(value)).toBe(expected);
-    });
 });

@@ -279,13 +279,4 @@ export class TimeInterval {
     public toJSON(): string {
         return this.toString();
     }
-
-    /**
-     * Type guard for TimeInterval.
-     *
-     * @param data The data to checks.
-     */
-    public static isTimeInterval(data: unknown): data is TimeInterval {
-        return data instanceof TimeInterval;
-    }
 }
