@@ -282,6 +282,108 @@ export class Instant {
     }
 
     /**
+     * Adds a duration in days to this instant.
+     *
+     * @param days The number of days to add.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public plusDays(days: number): Instant {
+        if (days === 0) {
+            return this;
+        }
+
+        const seconds = multiplyExact(days, LocalTime.SECONDS_PER_DAY);
+
+        return this.plusSeconds(seconds);
+    }
+
+    /**
+     * Subtracts a duration in days from this instant.
+     *
+     * @param days The number of days to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public minusDays(days: number): Instant {
+        if (days === 0) {
+            return this;
+        }
+
+        const seconds = multiplyExact(days, LocalTime.SECONDS_PER_DAY);
+
+        return this.minusSeconds(seconds);
+    }
+
+    /**
+     * Adds a duration in hours to this instant.
+     *
+     * @param hours The number of hours to add.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public plusHours(hours: number): Instant {
+        if (hours === 0) {
+            return this;
+        }
+
+        const seconds = multiplyExact(hours, LocalTime.SECONDS_PER_HOUR);
+
+        return this.plusSeconds(seconds);
+    }
+
+    /**
+     * Subtracts a duration in hours from this instant.
+     *
+     * @param hours The number of hours to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public minusHours(hours: number): Instant {
+        if (hours === 0) {
+            return this;
+        }
+
+        const seconds = multiplyExact(hours, LocalTime.SECONDS_PER_HOUR);
+
+        return this.minusSeconds(seconds);
+    }
+
+    /**
+     * Adds a duration in minutes to this instant.
+     *
+     * @param minutes The number of minutes to add.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public plusMinutes(minutes: number): Instant {
+        if (minutes === 0) {
+            return this;
+        }
+
+        const seconds = multiplyExact(minutes, LocalTime.SECONDS_PER_MINUTE);
+
+        return this.plusSeconds(seconds);
+    }
+
+    /**
+     * Subtracts a duration in minutes from this instant.
+     *
+     * @param minutes The number of minutes to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public minusMinutes(minutes: number): Instant {
+        if (minutes === 0) {
+            return this;
+        }
+
+        const seconds = multiplyExact(minutes, LocalTime.SECONDS_PER_MINUTE);
+
+        return this.minusSeconds(seconds);
+    }
+
+    /**
      * Adds a duration in seconds to this instant.
      *
      * @param seconds The number of seconds to add.
@@ -309,6 +411,102 @@ export class Instant {
         }
 
         return Instant.ofEpochSecond(subtractExact(this.seconds, seconds), this.nanos);
+    }
+
+    /**
+     * Adds a duration in milliseconds to this instant.
+     *
+     * @param millis The number of milliseconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public plusMillis(millis: number): Instant {
+        if (millis === 0) {
+            return this;
+        }
+
+        const extra = intDiv(millis, LocalTime.MILLIS_PER_SECOND);
+        const seconds = addExact(this.seconds, extra);
+
+        const remainder = millis % LocalTime.MILLIS_PER_SECOND;
+        const nanos = this.nanos + (remainder * LocalTime.NANOS_PER_MILLI);
+
+        return Instant.ofEpochSecond(seconds, nanos);
+    }
+
+    /**
+     * Subtracts a duration in milliseconds from this instant.
+     *
+     * @param millis The number of milliseconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public minusMillis(millis: number): Instant {
+        return this.plusMillis(-millis);
+    }
+
+    /**
+     * Adds a duration in microseconds to this instant.
+     *
+     * @param micros The number of microseconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public plusMicros(micros: number): Instant {
+        if (micros === 0) {
+            return this;
+        }
+
+        const extra = intDiv(micros, LocalTime.MICROS_PER_SECOND);
+        const seconds = addExact(this.seconds, extra);
+
+        const remainder = micros % LocalTime.MICROS_PER_SECOND;
+        const nanos = this.nanos + (remainder * LocalTime.NANOS_PER_MICRO);
+
+        return Instant.ofEpochSecond(seconds, nanos);
+    }
+
+    /**
+     * Subtracts a duration in microseconds from this instant.
+     *
+     * @param micros The number of microseconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public minusMicros(micros: number): Instant {
+        return this.plusMicros(-micros);
+    }
+
+    /**
+     * Adds a duration in nanoseconds to this instant.
+     *
+     * @param nanos The number of nanoseconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public plusNanos(nanos: number): Instant {
+        if (nanos === 0) {
+            return this;
+        }
+
+        const extra = intDiv(nanos, LocalTime.NANOS_PER_SECOND);
+        const seconds = addExact(this.seconds, extra);
+
+        const remainder = nanos % LocalTime.NANOS_PER_SECOND;
+        const newNanos = this.nanos + remainder;
+
+        return Instant.ofEpochSecond(seconds, newNanos);
+    }
+
+    /**
+     * Subtracts a duration in nanoseconds from this instant.
+     *
+     * @param nanos The number of nanoseconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported instants.
+     */
+    public minusNanos(nanos: number): Instant {
+        return this.plusNanos(-nanos);
     }
 
     /**

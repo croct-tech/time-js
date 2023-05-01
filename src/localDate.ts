@@ -1,4 +1,4 @@
-import {addExact, floorDiv, floorMod, intDiv} from './math';
+import {addExact, floorDiv, floorMod, intDiv, multiplyExact} from './math';
 
 /**
  * A date without a time-zone in the ISO-8601 calendar system, such as 2007-12-03.
@@ -226,6 +226,93 @@ export class LocalDate {
     }
 
     /**
+     * Adds a duration in years to this local date.
+     *
+     * @param years The number of years to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local dates.
+     */
+    public plusYears(years: number): LocalDate {
+        if (years === 0) {
+            return this;
+        }
+
+        const year = addExact(this.year, years);
+
+        return LocalDate.resolvePreviousValid(year, this.month, this.day);
+    }
+
+    /**
+     * Subtracts a duration in years from local date.
+     *
+     * @param years The number of years to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local dates.
+     */
+    public minusYears(years: number): LocalDate {
+        return this.plusYears(-years);
+    }
+
+    /**
+     * Adds a duration in months to this local date.
+     *
+     * @param months The number of months to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local dates.
+     */
+    public plusMonths(months: number): LocalDate {
+        if (months === 0) {
+            return this;
+        }
+
+        // safe overflow
+        const tempYear = this.year + intDiv(months, 12);
+        const tempMonth = this.month + (months % 12);
+
+        const year = tempYear + floorDiv(tempMonth - 1, 12);
+        const month = floorMod(tempMonth - 1, 12) + 1;
+
+        return LocalDate.resolvePreviousValid(year, month, this.day);
+    }
+
+    /**
+     * Subtracts a duration in months from local date.
+     *
+     * @param months The number of months to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local dates.
+     */
+    public minusMonths(months: number): LocalDate {
+        return this.plusMonths(-months);
+    }
+
+    /**
+     * Adds a duration in weeks to this local date.
+     *
+     * @param weeks The number of weeks to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local dates.
+     */
+    public plusWeeks(weeks: number): LocalDate {
+        if (weeks === 0) {
+            return this;
+        }
+
+        return this.plusDays(multiplyExact(weeks, 7));
+    }
+
+    /**
+     * Subtracts a duration in weeks from local date.
+     *
+     * @param weeks The number of weeks to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local dates.
+     */
+    public minusWeeks(weeks: number): LocalDate {
+        return this.plusWeeks(-weeks);
+    }
+
+    /**
      * Adds a duration in days to this local date.
      *
      * @param days The number of days to add.
@@ -262,6 +349,17 @@ export class LocalDate {
         }
 
         return LocalDate.ofEpochDay(addExact(this.toEpochDay(), days));
+    }
+
+    /**
+     * Subtracts a duration in days from local date.
+     *
+     * @param days The number of days to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local dates.
+     */
+    public minusDays(days: number): LocalDate {
+        return this.plusDays(-days);
     }
 
     /**
@@ -373,6 +471,19 @@ export class LocalDate {
         const day = `${this.day}`.padStart(2, '0');
 
         return `${this.year}-${month}-${day}`;
+    }
+
+    /**
+     * Resolves a new date to a valid day of month.
+     *
+     * @param year The year in the ISO-8601 calendar system.
+     * @param month The month of the year.
+     * @param day The day of the month.
+     */
+    private static resolvePreviousValid(year: number, month: number, day: number): LocalDate {
+        const maxDay = LocalDate.getMonthLength(month, LocalDate.isLeapYear(year));
+
+        return LocalDate.of(year, month, Math.min(day, maxDay));
     }
 
     /**
