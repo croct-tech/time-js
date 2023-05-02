@@ -22,7 +22,7 @@ describe('A value object representing a time interval', () => {
         const end = Instant.ofEpochSecond(0);
 
         expect(() => TimeInterval.between(start, end))
-            .toThrowError('The end instant must be equal or after start instant.');
+            .toThrow('The end instant must be equal or after start instant.');
     });
 
     it('can be created with a specified start instant and unbounded end', () => {
@@ -374,7 +374,7 @@ describe('A value object representing a time interval', () => {
         const interval = TimeInterval.between(Instant.ofEpochSecond(1), Instant.ofEpochSecond(2));
         const other = TimeInterval.between(Instant.ofEpochSecond(3), Instant.ofEpochSecond(4));
 
-        expect(() => interval.intersection(other)).toThrowError('The intervals are not connected.');
+        expect(() => interval.intersection(other)).toThrow('The intervals are not connected.');
     });
 
     it.each(Object.entries({
@@ -433,7 +433,7 @@ describe('A value object representing a time interval', () => {
         const interval = TimeInterval.between(Instant.ofEpochSecond(1), Instant.ofEpochSecond(2));
         const other = TimeInterval.between(Instant.ofEpochSecond(3), Instant.ofEpochSecond(4));
 
-        expect(() => interval.union(other)).toThrowError('The intervals are not connected.');
+        expect(() => interval.union(other)).toThrow('The intervals are not connected.');
     });
 
     it.each(Object.entries({
@@ -949,6 +949,6 @@ describe('A value object representing a time interval', () => {
         '/1970-01-01T00:00:00Z/1970-01-01T00:00:01Z',
         '1970-01-01T00:00:00Z//1970-01-01T00:00:01Z',
     ])('cannot be parsed from a malformed string interval in the ISO-8601 format', value => {
-        expect(() => TimeInterval.parse(value)).toThrowError(`Malformed time interval "${value}".`);
+        expect(() => TimeInterval.parse(value)).toThrow(`Malformed time interval "${value}".`);
     });
 });

@@ -28,7 +28,7 @@ describe('A value object representing a local date', () => {
         LocalDate.MIN_EPOCH_DAY - 1,
         LocalDate.MAX_EPOCH_DAY + 1,
     ])('should fail to create from an epoch day out of range', epochDay => {
-        expect(() => LocalDate.ofEpochDay(epochDay)).toThrowError(
+        expect(() => LocalDate.ofEpochDay(epochDay)).toThrow(
             `The day ${epochDay} is out of the range [${LocalDate.MIN_EPOCH_DAY} - ${LocalDate.MAX_EPOCH_DAY}].`,
         );
     });
@@ -46,7 +46,7 @@ describe('A value object representing a local date', () => {
         [`years number greater than ${LocalDate.MAX_YEAR}`]: LocalDate.MAX_YEAR + 1,
         'fractional years number': 1.5,
     }))('should reject %s', (_, year) => {
-        expect(() => LocalDate.of(year, 1, 1)).toThrowError(
+        expect(() => LocalDate.of(year, 1, 1)).toThrow(
             `Year must be a safe integer between ${LocalDate.MIN_YEAR} and ${LocalDate.MAX_YEAR}.`,
         );
     });
@@ -56,23 +56,23 @@ describe('A value object representing a local date', () => {
         'months number less than 1': 0,
         'months number greater than 12': 13,
     }))('should reject %s', (_, month) => {
-        expect(() => LocalDate.of(1970, month, 1)).toThrowError('Month must be an integer between 1 and 12.');
+        expect(() => LocalDate.of(1970, month, 1)).toThrow('Month must be an integer between 1 and 12.');
     });
 
     it('should reject invalid days number', () => {
-        expect(() => LocalDate.of(1970, 1, 1.5)).toThrowError('Day must be an integer between 1 and 31.');
+        expect(() => LocalDate.of(1970, 1, 1.5)).toThrow('Day must be an integer between 1 and 31.');
 
-        expect(() => LocalDate.of(1970, 1, 0)).toThrowError('Day must be an integer between 1 and 31.');
+        expect(() => LocalDate.of(1970, 1, 0)).toThrow('Day must be an integer between 1 and 31.');
 
-        expect(() => LocalDate.of(1970, 1, 32)).toThrowError('Day must be an integer between 1 and 31.');
+        expect(() => LocalDate.of(1970, 1, 32)).toThrow('Day must be an integer between 1 and 31.');
 
-        expect(() => LocalDate.of(1970, 4, 31)).toThrowError('Day must be an integer between 1 and 30.');
+        expect(() => LocalDate.of(1970, 4, 31)).toThrow('Day must be an integer between 1 and 30.');
 
-        expect(() => LocalDate.of(1976, 2, 30)).toThrowError('Day must be an integer between 1 and 29.');
+        expect(() => LocalDate.of(1976, 2, 30)).toThrow('Day must be an integer between 1 and 29.');
 
-        expect(() => LocalDate.of(2000, 2, 30)).toThrowError('Day must be an integer between 1 and 29.');
+        expect(() => LocalDate.of(2000, 2, 30)).toThrow('Day must be an integer between 1 and 29.');
 
-        expect(() => LocalDate.of(1970, 2, 29)).toThrowError('Day must be an integer between 1 and 28.');
+        expect(() => LocalDate.of(1970, 2, 29)).toThrow('Day must be an integer between 1 and 28.');
     });
 
     it('should parse a valid ISO-8601 date', () => {
@@ -90,7 +90,7 @@ describe('A value object representing a local date', () => {
         'Aug 30, 2015',
         '2015, Aug 30',
     ])('should fail to parse invalid ISO-8601 dates', value => {
-        expect(() => LocalDate.parse(value)).toThrowError(`Invalid ISO-8601 date string: ${value}`);
+        expect(() => LocalDate.parse(value)).toThrow(`Invalid ISO-8601 date string: ${value}`);
     });
 
     it('can be converted to a string in the ISO-8601 format', () => {
@@ -125,7 +125,7 @@ describe('A value object representing a local date', () => {
         (years: number, errorMessage: string) => {
             const localDate = LocalDate.of(2015, 8, 31);
 
-            expect(() => localDate.plusYears(years)).toThrowError(errorMessage);
+            expect(() => localDate.plusYears(years)).toThrow(errorMessage);
         },
     );
 
@@ -155,7 +155,7 @@ describe('A value object representing a local date', () => {
         (years: number, errorMessage: string) => {
             const localDate = LocalDate.of(2015, 8, 31);
 
-            expect(() => localDate.minusYears(years)).toThrowError(errorMessage);
+            expect(() => localDate.minusYears(years)).toThrow(errorMessage);
         },
     );
 
@@ -238,7 +238,7 @@ describe('A value object representing a local date', () => {
         (months: number) => {
             const localDate = LocalDate.of(2015, 8, 31);
 
-            expect(() => localDate.plusMonths(months)).toThrowError(
+            expect(() => localDate.plusMonths(months)).toThrow(
                 'Year must be a safe integer between -999999 and 999999.',
             );
         },
@@ -323,7 +323,7 @@ describe('A value object representing a local date', () => {
         (months: number) => {
             const localDate = LocalDate.of(2015, 8, 31);
 
-            expect(() => localDate.minusMonths(months)).toThrowError(
+            expect(() => localDate.minusMonths(months)).toThrow(
                 'Year must be a safe integer between -999999 and 999999.',
             );
         },
@@ -349,7 +349,7 @@ describe('A value object representing a local date', () => {
         (weeks: number) => {
             const localDate = LocalDate.of(2015, 8, 31);
 
-            expect(() => localDate.plusWeeks(weeks)).toThrowError('The result overflows the range of safe integers.');
+            expect(() => localDate.plusWeeks(weeks)).toThrow('The result overflows the range of safe integers.');
         },
     );
 
@@ -373,7 +373,7 @@ describe('A value object representing a local date', () => {
         (weeks: number) => {
             const localDate = LocalDate.of(2015, 8, 31);
 
-            expect(() => localDate.minusWeeks(weeks)).toThrowError('The result overflows the range of safe integers.');
+            expect(() => localDate.minusWeeks(weeks)).toThrow('The result overflows the range of safe integers.');
         },
     );
 
@@ -438,7 +438,7 @@ describe('A value object representing a local date', () => {
         (days: number, errorMessage: string) => {
             const localDate = LocalDate.of(2015, 8, 31);
 
-            expect(() => localDate.plusDays(days)).toThrowError(errorMessage);
+            expect(() => localDate.plusDays(days)).toThrow(errorMessage);
         },
     );
 
@@ -503,7 +503,7 @@ describe('A value object representing a local date', () => {
         (days: number, errorMessage: string) => {
             const localDate = LocalDate.of(2015, 8, 31);
 
-            expect(() => localDate.minusDays(days)).toThrowError(errorMessage);
+            expect(() => localDate.minusDays(days)).toThrow(errorMessage);
         },
     );
 

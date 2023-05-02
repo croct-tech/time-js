@@ -75,7 +75,7 @@ describe('A value object representing a local date time', () => {
 
     it('should fail to parse a invalid ISO-8601 date time', () => {
         expect(() => LocalDateTime.parse('2015-08-30'))
-            .toThrowError('Malformed local date-time "2015-08-30".');
+            .toThrow('Malformed local date-time "2015-08-30".');
     });
 
     type ConversionScenario = {
@@ -167,7 +167,7 @@ describe('A value object representing a local date time', () => {
         (years: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.plusYears(years)).toThrowError(errorMessage);
+            expect(() => localDateTime.plusYears(years)).toThrow(errorMessage);
         },
     );
 
@@ -197,7 +197,7 @@ describe('A value object representing a local date time', () => {
         (years: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.minusYears(years)).toThrowError(errorMessage);
+            expect(() => localDateTime.minusYears(years)).toThrow(errorMessage);
         },
     );
 
@@ -279,7 +279,7 @@ describe('A value object representing a local date time', () => {
         (months: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.plusMonths(months)).toThrowError(errorMessage);
+            expect(() => localDateTime.plusMonths(months)).toThrow(errorMessage);
         },
     );
 
@@ -362,7 +362,7 @@ describe('A value object representing a local date time', () => {
         (months: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.minusMonths(months)).toThrowError(errorMessage);
+            expect(() => localDateTime.minusMonths(months)).toThrow(errorMessage);
         },
     );
 
@@ -386,7 +386,7 @@ describe('A value object representing a local date time', () => {
         (weeks: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.plusWeeks(weeks)).toThrowError(errorMessage);
+            expect(() => localDateTime.plusWeeks(weeks)).toThrow(errorMessage);
         },
     );
 
@@ -410,7 +410,7 @@ describe('A value object representing a local date time', () => {
         (weeks: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.minusWeeks(weeks)).toThrowError(errorMessage);
+            expect(() => localDateTime.minusWeeks(weeks)).toThrow(errorMessage);
         },
     );
 
@@ -470,7 +470,7 @@ describe('A value object representing a local date time', () => {
         (days: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.plusDays(days)).toThrowError(errorMessage);
+            expect(() => localDateTime.plusDays(days)).toThrow(errorMessage);
         },
     );
 
@@ -530,7 +530,7 @@ describe('A value object representing a local date time', () => {
         (days: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.minusDays(days)).toThrowError(errorMessage);
+            expect(() => localDateTime.minusDays(days)).toThrow(errorMessage);
         },
     );
 
@@ -562,7 +562,7 @@ describe('A value object representing a local date time', () => {
         (hours: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.plusHours(hours)).toThrowError(errorMessage);
+            expect(() => localDateTime.plusHours(hours)).toThrow(errorMessage);
         },
     );
 
@@ -594,7 +594,7 @@ describe('A value object representing a local date time', () => {
         (hours: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.minusHours(hours)).toThrowError(errorMessage);
+            expect(() => localDateTime.minusHours(hours)).toThrow(errorMessage);
         },
     );
 
@@ -626,7 +626,7 @@ describe('A value object representing a local date time', () => {
         (minutes: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.plusMinutes(minutes)).toThrowError(errorMessage);
+            expect(() => localDateTime.plusMinutes(minutes)).toThrow(errorMessage);
         },
     );
 
@@ -658,7 +658,7 @@ describe('A value object representing a local date time', () => {
         (minutes: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.minusMinutes(minutes)).toThrowError(errorMessage);
+            expect(() => localDateTime.minusMinutes(minutes)).toThrow(errorMessage);
         },
     );
 
@@ -690,7 +690,7 @@ describe('A value object representing a local date time', () => {
         (seconds: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.plusSeconds(seconds)).toThrowError(errorMessage);
+            expect(() => localDateTime.plusSeconds(seconds)).toThrow(errorMessage);
         },
     );
 
@@ -722,7 +722,7 @@ describe('A value object representing a local date time', () => {
         (seconds: number, errorMessage: string) => {
             const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
-            expect(() => localDateTime.minusSeconds(seconds)).toThrowError(errorMessage);
+            expect(() => localDateTime.minusSeconds(seconds)).toThrow(errorMessage);
         },
     );
 

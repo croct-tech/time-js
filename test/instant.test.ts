@@ -26,7 +26,7 @@ describe('A value object representing an instant in time', () => {
         'non-numeric seconds timestamp': NaN,
         'infinity seconds timestamp': Infinity,
     }))('should reject %s', (_, seconds) => {
-        expect(() => Instant.ofEpochSecond(seconds)).toThrowError('The timestamp must be a safe integer.');
+        expect(() => Instant.ofEpochSecond(seconds)).toThrow('The timestamp must be a safe integer.');
     });
 
     it.each(Object.entries({
@@ -35,18 +35,18 @@ describe('A value object representing an instant in time', () => {
         'non-numeric nanosecond adjustment': NaN,
         'infinity nanosecond adjustment': Infinity,
     }))('should reject %s', (_, nanoseconds) => {
-        expect(() => Instant.ofEpochSecond(0, nanoseconds)).toThrowError('The timestamp must be a safe integer.');
+        expect(() => Instant.ofEpochSecond(0, nanoseconds)).toThrow('The timestamp must be a safe integer.');
     });
 
     it('should reject seconds timestamp out of accuracy range', () => {
-        expect(() => Instant.ofEpochSecond(2 ** 52)).toThrowError(
+        expect(() => Instant.ofEpochSecond(2 ** 52)).toThrow(
             'The value 4503599627370496 is out of the range [-31619087596800 - 31494784780799] of instant.',
         );
     });
 
     it('should reject unsafe milliseconds timestamp', () => {
         expect(() => Instant.ofEpochMilli(Number.MAX_VALUE))
-            .toThrowError('The timestamp must be a safe integer.');
+            .toThrow('The timestamp must be a safe integer.');
     });
 
     it('can be created from a native Date object', () => {
@@ -146,7 +146,7 @@ describe('A value object representing an instant in time', () => {
     ])('cannot calculate the days addition because the result exceeds the supported range', (days: number) => {
         const instant = Instant.ofEpochSecond(1440979200);
 
-        expect(() => instant.plusDays(days)).toThrowError('The result overflows the range of safe integers.');
+        expect(() => instant.plusDays(days)).toThrow('The result overflows the range of safe integers.');
     });
 
     it.each([
@@ -169,7 +169,7 @@ describe('A value object representing an instant in time', () => {
     ])('cannot calculate the days subtraction because the result exceeds the supported range', (days: number) => {
         const instant = Instant.ofEpochSecond(1440979200);
 
-        expect(() => instant.minusDays(days)).toThrowError('The result overflows the range of safe integers.');
+        expect(() => instant.minusDays(days)).toThrow('The result overflows the range of safe integers.');
     });
 
     it.each([
@@ -192,7 +192,7 @@ describe('A value object representing an instant in time', () => {
     ])('cannot calculate the hours addition because the result exceeds the supported range', (hours: number) => {
         const instant = Instant.ofEpochSecond(1440979200);
 
-        expect(() => instant.plusHours(hours)).toThrowError('The result overflows the range of safe integers.');
+        expect(() => instant.plusHours(hours)).toThrow('The result overflows the range of safe integers.');
     });
 
     it.each([
@@ -215,7 +215,7 @@ describe('A value object representing an instant in time', () => {
     ])('cannot calculate the hours subtraction because the result exceeds the supported range', (hours: number) => {
         const instant = Instant.ofEpochSecond(1440979200);
 
-        expect(() => instant.minusHours(hours)).toThrowError('The result overflows the range of safe integers.');
+        expect(() => instant.minusHours(hours)).toThrow('The result overflows the range of safe integers.');
     });
 
     it.each([
@@ -238,7 +238,7 @@ describe('A value object representing an instant in time', () => {
     ])('cannot calculate the minutes addition because the result exceeds the supported range', (minutes: number) => {
         const instant = Instant.ofEpochSecond(1440979200);
 
-        expect(() => instant.plusMinutes(minutes)).toThrowError('The result overflows the range of safe integers.');
+        expect(() => instant.plusMinutes(minutes)).toThrow('The result overflows the range of safe integers.');
     });
 
     it.each([
@@ -261,7 +261,7 @@ describe('A value object representing an instant in time', () => {
     ])('cannot calculate the minutes subtraction because the result exceeds the supported range', (minutes: number) => {
         const instant = Instant.ofEpochSecond(1440979200);
 
-        expect(() => instant.minusMinutes(minutes)).toThrowError('The result overflows the range of safe integers.');
+        expect(() => instant.minusMinutes(minutes)).toThrow('The result overflows the range of safe integers.');
     });
 
     it.each([
@@ -292,7 +292,7 @@ describe('A value object representing an instant in time', () => {
         (seconds: number, errorMessage: string) => {
             const instant = Instant.ofEpochSecond(1440979200);
 
-            expect(() => instant.plusSeconds(seconds)).toThrowError(errorMessage);
+            expect(() => instant.plusSeconds(seconds)).toThrow(errorMessage);
         },
     );
 
@@ -324,7 +324,7 @@ describe('A value object representing an instant in time', () => {
         (seconds: number, errorMessage: string) => {
             const instant = Instant.ofEpochSecond(1440979200);
 
-            expect(() => instant.minusSeconds(seconds)).toThrowError(errorMessage);
+            expect(() => instant.minusSeconds(seconds)).toThrow(errorMessage);
         },
     );
 
