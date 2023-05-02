@@ -301,6 +301,74 @@ export class LocalTime {
     }
 
     /**
+     * Adds a duration in hours to this local time.
+     *
+     * @param hours The number of hours to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public plusHours(hours: number): LocalTime {
+        if (hours === 0) {
+            return this;
+        }
+
+        const amount = hours % LocalTime.HOURS_PER_DAY;
+
+        const newHour = (amount + this.hour + LocalTime.HOURS_PER_DAY) % LocalTime.HOURS_PER_DAY;
+
+        return new LocalTime(newHour, this.minute, this.second, this.nanos);
+    }
+
+    /**
+     * Subtracts a duration in hours from local time.
+     *
+     * @param hours The number of hours to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public minusHours(hours: number): LocalTime {
+        return this.plusHours(-hours);
+    }
+
+    /**
+     * Adds a duration in minutes to this local time.
+     *
+     * @param minutes The number of minutes to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public plusMinutes(minutes: number): LocalTime {
+        if (minutes === 0) {
+            return this;
+        }
+
+        const amount = minutes % LocalTime.MINUTES_PER_DAY;
+
+        const minuteOfDay = this.toMinuteOfDay();
+        const newMinuteOfDay = (amount + minuteOfDay + LocalTime.MINUTES_PER_DAY) % LocalTime.MINUTES_PER_DAY;
+
+        if (minuteOfDay === newMinuteOfDay) {
+            return this;
+        }
+
+        const newHour = intDiv(newMinuteOfDay, LocalTime.MINUTES_PER_HOUR);
+        const newMinute = newMinuteOfDay % LocalTime.MINUTES_PER_HOUR;
+
+        return new LocalTime(newHour, newMinute, this.second, this.nanos);
+    }
+
+    /**
+     * Subtracts a duration in minutes from local time.
+     *
+     * @param minutes The number of minutes to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public minusMinutes(minutes: number): LocalTime {
+        return this.plusMinutes(-minutes);
+    }
+
+    /**
      * Adds a duration in seconds to this local time.
      *
      * @param seconds The number of seconds to add.
@@ -326,6 +394,109 @@ export class LocalTime {
         const newSecond = newSecondOfDay % LocalTime.SECONDS_PER_MINUTE;
 
         return LocalTime.of(newHour, newMinute, newSecond, this.nanos);
+    }
+
+    /**
+     * Subtracts a duration in seconds from local time.
+     *
+     * @param seconds The number of seconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public minusSeconds(seconds: number): LocalTime {
+        return this.plusSeconds(-seconds);
+    }
+
+    /**
+     * Adds a duration in milliseconds to this local time.
+     *
+     * @param millis The number of milliseconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public plusMillis(millis: number): LocalTime {
+        if (millis === 0) {
+            return this;
+        }
+
+        return this.plusNanos((millis % LocalTime.MILLIS_PER_DAY) * LocalTime.NANOS_PER_MILLI);
+    }
+
+    /**
+     * Subtracts a duration in milliseconds from local time.
+     *
+     * @param millis The number of milliseconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public minusMillis(millis: number): LocalTime {
+        return this.plusMillis(-millis);
+    }
+
+    /**
+     * Adds a duration in microseconds to this local time.
+     *
+     * @param micros The number of microseconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public plusMicros(micros: number): LocalTime {
+        if (micros === 0) {
+            return this;
+        }
+
+        return this.plusNanos((micros % LocalTime.MICROS_PER_DAY) * LocalTime.NANOS_PER_MICRO);
+    }
+
+    /**
+     * Subtracts a duration in microseconds from local time.
+     *
+     * @param micros The number of microseconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public minusMicros(micros: number): LocalTime {
+        return this.plusMicros(-micros);
+    }
+
+    /**
+     * Adds a duration in nanoseconds to this local time.
+     *
+     * @param nanos The number of nanoseconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public plusNanos(nanos: number): LocalTime {
+        if (nanos === 0) {
+            return this;
+        }
+
+        const amount = nanos % LocalTime.NANOS_PER_DAY;
+
+        const nanoOfDay = this.toNanoOfDay();
+        const newNanoOfDay = (amount + nanoOfDay + LocalTime.NANOS_PER_DAY) % LocalTime.NANOS_PER_DAY;
+
+        if (nanoOfDay === newNanoOfDay) {
+            return this;
+        }
+
+        const newHour = intDiv(newNanoOfDay, LocalTime.NANOS_PER_HOUR);
+        const newMinute = intDiv(newNanoOfDay, LocalTime.NANOS_PER_MINUTE) % LocalTime.MINUTES_PER_HOUR;
+        const newSecond = intDiv(newNanoOfDay, LocalTime.NANOS_PER_SECOND) % LocalTime.SECONDS_PER_MINUTE;
+        const newNano = newNanoOfDay % LocalTime.NANOS_PER_SECOND;
+
+        return LocalTime.of(newHour, newMinute, newSecond, newNano);
+    }
+
+    /**
+     * Subtracts a duration in nanoseconds from local time.
+     *
+     * @param nanos The number of nanoseconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local times.
+     */
+    public minusNanos(nanos: number): LocalTime {
+        return this.plusNanos(-nanos);
     }
 
     /**

@@ -201,6 +201,98 @@ describe('A value object representing a local time', () => {
     });
 
     it.each([
+        [-24, LocalTime.of(1, 2, 3)],
+        [-5, LocalTime.of(20, 2, 3)],
+        [-4, LocalTime.of(21, 2, 3)],
+        [-3, LocalTime.of(22, 2, 3)],
+        [-2, LocalTime.of(23, 2, 3)],
+        [-1, LocalTime.of(0, 2, 3)],
+        [0, LocalTime.of(1, 2, 3)],
+        [1, LocalTime.of(2, 2, 3)],
+        [2, LocalTime.of(3, 2, 3)],
+        [3, LocalTime.of(4, 2, 3)],
+        [4, LocalTime.of(5, 2, 3)],
+        [5, LocalTime.of(6, 2, 3)],
+        [24, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(8, 2, 3)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(18, 2, 3)],
+    ])('can create a copy with an amount of hours added', (hours: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.plusHours(hours)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [24, LocalTime.of(1, 2, 3)],
+        [5, LocalTime.of(20, 2, 3)],
+        [4, LocalTime.of(21, 2, 3)],
+        [3, LocalTime.of(22, 2, 3)],
+        [2, LocalTime.of(23, 2, 3)],
+        [1, LocalTime.of(0, 2, 3)],
+        [-0, LocalTime.of(1, 2, 3)],
+        [-1, LocalTime.of(2, 2, 3)],
+        [-2, LocalTime.of(3, 2, 3)],
+        [-3, LocalTime.of(4, 2, 3)],
+        [-4, LocalTime.of(5, 2, 3)],
+        [-5, LocalTime.of(6, 2, 3)],
+        [-24, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(18, 2, 3)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(8, 2, 3)],
+    ])('can create a copy with an amount of hours subtracted', (hours: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.minusHours(hours)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [-1440, LocalTime.of(1, 2, 3)],
+        [-5, LocalTime.of(0, 57, 3)],
+        [-4, LocalTime.of(0, 58, 3)],
+        [-3, LocalTime.of(0, 59, 3)],
+        [-2, LocalTime.of(1, 0, 3)],
+        [-1, LocalTime.of(1, 1, 3)],
+        [0, LocalTime.of(1, 2, 3)],
+        [1, LocalTime.of(1, 3, 3)],
+        [2, LocalTime.of(1, 4, 3)],
+        [3, LocalTime.of(1, 5, 3)],
+        [4, LocalTime.of(1, 6, 3)],
+        [5, LocalTime.of(1, 7, 3)],
+        [1440, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(1, 33, 3)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(0, 31, 3)],
+    ])('can create a copy with an amount of minutes added', (minutes: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.plusMinutes(minutes)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [1440, LocalTime.of(1, 2, 3)],
+        [5, LocalTime.of(0, 57, 3)],
+        [4, LocalTime.of(0, 58, 3)],
+        [3, LocalTime.of(0, 59, 3)],
+        [2, LocalTime.of(1, 0, 3)],
+        [1, LocalTime.of(1, 1, 3)],
+        [0, LocalTime.of(1, 2, 3)],
+        [-1, LocalTime.of(1, 3, 3)],
+        [-2, LocalTime.of(1, 4, 3)],
+        [-3, LocalTime.of(1, 5, 3)],
+        [-4, LocalTime.of(1, 6, 3)],
+        [-5, LocalTime.of(1, 7, 3)],
+        [-1440, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(0, 31, 3)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(1, 33, 3)],
+    ])('can create a copy with an amount of minutes subtracted', (minutes: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.minusMinutes(minutes)).toStrictEqual(expected);
+    });
+
+    it.each([
         [-86400, LocalTime.of(1, 2, 3)],
         [-5, LocalTime.of(1, 1, 58)],
         [-4, LocalTime.of(1, 1, 59)],
@@ -214,10 +306,186 @@ describe('A value object representing a local time', () => {
         [4, LocalTime.of(1, 2, 7)],
         [5, LocalTime.of(1, 2, 8)],
         [86400, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(8, 38, 34)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(17, 25, 32)],
     ])('can create a copy with an amount of seconds added', (seconds: number, expected: LocalTime) => {
         const localTime = LocalTime.of(1, 2, 3);
 
         expect(localTime.plusSeconds(seconds)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [86400, LocalTime.of(1, 2, 3)],
+        [5, LocalTime.of(1, 1, 58)],
+        [4, LocalTime.of(1, 1, 59)],
+        [3, LocalTime.of(1, 2, 0)],
+        [2, LocalTime.of(1, 2, 1)],
+        [1, LocalTime.of(1, 2, 2)],
+        [0, LocalTime.of(1, 2, 3)],
+        [-1, LocalTime.of(1, 2, 4)],
+        [-2, LocalTime.of(1, 2, 5)],
+        [-3, LocalTime.of(1, 2, 6)],
+        [-4, LocalTime.of(1, 2, 7)],
+        [-5, LocalTime.of(1, 2, 8)],
+        [-86400, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(17, 25, 32)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(8, 38, 34)],
+    ])('can create a copy with an amount of seconds subtracted', (seconds: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.minusSeconds(seconds)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [-86400000, LocalTime.of(1, 2, 3)],
+        [-1000, LocalTime.of(1, 2, 2)],
+        [-5, LocalTime.of(1, 2, 2, 995000000)],
+        [-4, LocalTime.of(1, 2, 2, 996000000)],
+        [-3, LocalTime.of(1, 2, 2, 997000000)],
+        [-2, LocalTime.of(1, 2, 2, 998000000)],
+        [-1, LocalTime.of(1, 2, 2, 999000000)],
+        [0, LocalTime.of(1, 2, 3)],
+        [1, LocalTime.of(1, 2, 3, 1000000)],
+        [2, LocalTime.of(1, 2, 3, 2000000)],
+        [3, LocalTime.of(1, 2, 3, 3000000)],
+        [4, LocalTime.of(1, 2, 3, 4000000)],
+        [5, LocalTime.of(1, 2, 3, 5000000)],
+        [1000, LocalTime.of(1, 2, 4)],
+        [86400000, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(10, 1, 3, 991000000)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(16, 3, 2, 9000000)],
+    ])('can create a copy with an amount of milliseconds added', (millis: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.plusMillis(millis)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [86400000, LocalTime.of(1, 2, 3)],
+        [1000, LocalTime.of(1, 2, 2)],
+        [5, LocalTime.of(1, 2, 2, 995000000)],
+        [4, LocalTime.of(1, 2, 2, 996000000)],
+        [3, LocalTime.of(1, 2, 2, 997000000)],
+        [2, LocalTime.of(1, 2, 2, 998000000)],
+        [1, LocalTime.of(1, 2, 2, 999000000)],
+        [0, LocalTime.of(1, 2, 3)],
+        [-1, LocalTime.of(1, 2, 3, 1000000)],
+        [-2, LocalTime.of(1, 2, 3, 2000000)],
+        [-3, LocalTime.of(1, 2, 3, 3000000)],
+        [-4, LocalTime.of(1, 2, 3, 4000000)],
+        [-5, LocalTime.of(1, 2, 3, 5000000)],
+        [-1000, LocalTime.of(1, 2, 4)],
+        [-86400000, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(16, 3, 2, 9000000)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(10, 1, 3, 991000000)],
+    ])('can create a copy with an amount of milliseconds subtracted', (millis: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.minusMillis(millis)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [-86400000000, LocalTime.of(1, 2, 3)],
+        [-1000000, LocalTime.of(1, 2, 2)],
+        [-5, LocalTime.of(1, 2, 2, 999995000)],
+        [-4, LocalTime.of(1, 2, 2, 999996000)],
+        [-3, LocalTime.of(1, 2, 2, 999997000)],
+        [-2, LocalTime.of(1, 2, 2, 999998000)],
+        [-1, LocalTime.of(1, 2, 2, 999999000)],
+        [0, LocalTime.of(1, 2, 3)],
+        [1, LocalTime.of(1, 2, 3, 1000)],
+        [2, LocalTime.of(1, 2, 3, 2000)],
+        [3, LocalTime.of(1, 2, 3, 3000)],
+        [4, LocalTime.of(1, 2, 3, 4000)],
+        [5, LocalTime.of(1, 2, 3, 5000)],
+        [1000000, LocalTime.of(1, 2, 4)],
+        [86400000000, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(0, 49, 37, 740991000)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(1, 14, 28, 259009000)],
+    ])('can create a copy with an amount of microseconds added', (micros: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.plusMicros(micros)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [86400000000, LocalTime.of(1, 2, 3)],
+        [1000000, LocalTime.of(1, 2, 2)],
+        [5, LocalTime.of(1, 2, 2, 999995000)],
+        [4, LocalTime.of(1, 2, 2, 999996000)],
+        [3, LocalTime.of(1, 2, 2, 999997000)],
+        [2, LocalTime.of(1, 2, 2, 999998000)],
+        [1, LocalTime.of(1, 2, 2, 999999000)],
+        [0, LocalTime.of(1, 2, 3)],
+        [-1, LocalTime.of(1, 2, 3, 1000)],
+        [-2, LocalTime.of(1, 2, 3, 2000)],
+        [-3, LocalTime.of(1, 2, 3, 3000)],
+        [-4, LocalTime.of(1, 2, 3, 4000)],
+        [-5, LocalTime.of(1, 2, 3, 5000)],
+        [-1000000, LocalTime.of(1, 2, 4)],
+        [-86400000000, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(1, 14, 28, 259009000)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(0, 49, 37, 740991000)],
+    ])('can create a copy with an amount of microseconds subtracted', (micros: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.minusMicros(micros)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [-86400000000000, LocalTime.of(1, 2, 3)],
+        [-1000000000, LocalTime.of(1, 2, 2)],
+        [-5, LocalTime.of(1, 2, 2, 999999995)],
+        [-4, LocalTime.of(1, 2, 2, 999999996)],
+        [-3, LocalTime.of(1, 2, 2, 999999997)],
+        [-2, LocalTime.of(1, 2, 2, 999999998)],
+        [-1, LocalTime.of(1, 2, 2, 999999999)],
+        [0, LocalTime.of(1, 2, 3)],
+        [1, LocalTime.of(1, 2, 3, 1)],
+        [2, LocalTime.of(1, 2, 3, 2)],
+        [3, LocalTime.of(1, 2, 3, 3)],
+        [4, LocalTime.of(1, 2, 3, 4)],
+        [5, LocalTime.of(1, 2, 3, 5)],
+        [1000000000, LocalTime.of(1, 2, 4)],
+        [86400000000000, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(7, 2, 2, 254740991)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(19, 2, 3, 745259009)],
+    ])('can create a copy with an amount of nanoseconds added', (nanos: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.plusNanos(nanos)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [86400000000000, LocalTime.of(1, 2, 3)],
+        [1000000000, LocalTime.of(1, 2, 2)],
+        [5, LocalTime.of(1, 2, 2, 999999995)],
+        [4, LocalTime.of(1, 2, 2, 999999996)],
+        [3, LocalTime.of(1, 2, 2, 999999997)],
+        [2, LocalTime.of(1, 2, 2, 999999998)],
+        [1, LocalTime.of(1, 2, 2, 999999999)],
+        [0, LocalTime.of(1, 2, 3)],
+        [-1, LocalTime.of(1, 2, 3, 1)],
+        [-2, LocalTime.of(1, 2, 3, 2)],
+        [-3, LocalTime.of(1, 2, 3, 3)],
+        [-4, LocalTime.of(1, 2, 3, 4)],
+        [-5, LocalTime.of(1, 2, 3, 5)],
+        [-1000000000, LocalTime.of(1, 2, 4)],
+        [-86400000000000, LocalTime.of(1, 2, 3)],
+
+        [Number.MAX_SAFE_INTEGER, LocalTime.of(19, 2, 3, 745259009)],
+        [Number.MIN_SAFE_INTEGER, LocalTime.of(7, 2, 2, 254740991)],
+    ])('can create a copy with an amount of nanoseconds subtracted', (nanos: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(1, 2, 3);
+
+        expect(localTime.minusNanos(nanos)).toStrictEqual(expected);
     });
 
     it('should be comparable', () => {
