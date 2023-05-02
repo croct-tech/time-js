@@ -12,7 +12,7 @@ describe('A value object representing a timezone', () => {
     });
 
     it('should reject invalid timezone IDs', () => {
-        expect(() => TimeZone.of('America')).toThrowError('The timezone America is not supported.');
+        expect(() => TimeZone.of('America')).toThrow('The timezone America is not supported.');
     });
 
     it('can be converted to a string representation of the timezone', () => {

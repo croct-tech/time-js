@@ -24,7 +24,7 @@ describe('A addExact function', () => {
     });
 
     it('should reject if the sum overflows', () => {
-        expect(() => addExact(Number.MAX_SAFE_INTEGER, 1)).toThrowError(
+        expect(() => addExact(Number.MAX_SAFE_INTEGER, 1)).toThrow(
             'The result overflows the range of safe integers.',
         );
     });
@@ -36,7 +36,7 @@ describe('A subtractExact function', () => {
     });
 
     it('should reject if the difference overflows', () => {
-        expect(() => subtractExact(Number.MAX_VALUE, 1)).toThrowError(
+        expect(() => subtractExact(Number.MAX_VALUE, 1)).toThrow(
             'The result overflows the range of safe integers.',
         );
     });
@@ -48,7 +48,7 @@ describe('A multiplyExact function', () => {
     });
 
     it('should reject if the product overflows', () => {
-        expect(() => multiplyExact(Number.MAX_VALUE, 2)).toThrowError(
+        expect(() => multiplyExact(Number.MAX_VALUE, 2)).toThrow(
             'The result overflows the range of safe integers.',
         );
     });
@@ -60,6 +60,6 @@ describe('A intDiv function', () => {
     });
 
     it('should reject if the quotient overflows', () => {
-        expect(() => intDiv(Number.MAX_VALUE, 2)).toThrowError('The result overflows the range of safe integers.');
+        expect(() => intDiv(Number.MAX_VALUE, 2)).toThrow('The result overflows the range of safe integers.');
     });
 });

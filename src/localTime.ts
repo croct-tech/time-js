@@ -15,7 +15,7 @@ export class LocalTime {
     /**
      * A regular expression that matches ISO-8601 time strings without a time zone.
      */
-    // eslint-disable-next-line max-len -- Regex literals can't be split
+
     private static PATTERN = /^(?<hour>\d{2}):(?<minute>\d{2})(?::(?<second>\d{2})(?:.(?<fraction>\d{1,9}))?)?$/;
 
     /**

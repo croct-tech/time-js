@@ -26,7 +26,7 @@ describe('A value object representing a local time', () => {
         'hours number less than 0': -1,
         'hours number greater than 23': 24,
     }))('should reject %s', (_, hour) => {
-        expect(() => LocalTime.of(hour)).toThrowError('Hour must be an integer between 0 and 23.');
+        expect(() => LocalTime.of(hour)).toThrow('Hour must be an integer between 0 and 23.');
     });
 
     it.each(Object.entries({
@@ -34,7 +34,7 @@ describe('A value object representing a local time', () => {
         'minutes number less than 0': -1,
         'minutes number greater than 59': 60,
     }))('should reject %s', (_, minute) => {
-        expect(() => LocalTime.of(0, minute)).toThrowError('Minute must be an integer between 0 and 59.');
+        expect(() => LocalTime.of(0, minute)).toThrow('Minute must be an integer between 0 and 59.');
     });
 
     it.each(Object.entries({
@@ -42,7 +42,7 @@ describe('A value object representing a local time', () => {
         'seconds number less than 0': -1,
         'seconds number greater than 59': 60,
     }))('should reject %s', (_, second) => {
-        expect(() => LocalTime.of(0, 0, second)).toThrowError('Second must be an integer between 0 and 59.');
+        expect(() => LocalTime.of(0, 0, second)).toThrow('Second must be an integer between 0 and 59.');
     });
 
     it.each(Object.entries({
@@ -50,7 +50,7 @@ describe('A value object representing a local time', () => {
         'nanoseconds number less than 0': -1,
         'nanoseconds number greater than 999999999': 1_000_000_000,
     }))('should reject %s', (_, nanosecond) => {
-        expect(() => LocalTime.of(0, 0, 0, nanosecond)).toThrowError(
+        expect(() => LocalTime.of(0, 0, 0, nanosecond)).toThrow(
             'Nanosecond of second must be an integer between 0 and 999999999.',
         );
     });
@@ -93,7 +93,7 @@ describe('A value object representing a local time', () => {
         '12:34:566',
         '12:34:56:0000000056',
     ])('should fail to parse %s', value => {
-        expect(() => LocalTime.parse(value)).toThrowError(`Invalid ISO-8601 time string: ${value}`);
+        expect(() => LocalTime.parse(value)).toThrow(`Invalid ISO-8601 time string: ${value}`);
     });
 
     it.each([
@@ -134,7 +134,7 @@ describe('A value object representing a local time', () => {
         -1,
         LocalTime.SECONDS_PER_DAY,
     ])('should fail to create from a second-of-day out of range', (secondOfDay: number) => {
-        expect(() => LocalTime.ofSecondOfDay(secondOfDay, 0)).toThrowError(
+        expect(() => LocalTime.ofSecondOfDay(secondOfDay, 0)).toThrow(
             `The second value ${secondOfDay} is out of the range `
                 + `[0 - ${LocalTime.SECONDS_PER_DAY - 1}] of local time.`,
         );
@@ -144,7 +144,7 @@ describe('A value object representing a local time', () => {
         -1,
         LocalTime.NANOS_PER_SECOND,
     ])('should fail to create from a second-of-day with nanoseconds out of range', (nanoOfSecond: number) => {
-        expect(() => LocalTime.ofSecondOfDay(0, nanoOfSecond)).toThrowError(
+        expect(() => LocalTime.ofSecondOfDay(0, nanoOfSecond)).toThrow(
             `The nanosecond value ${nanoOfSecond} is out of the range `
                 + `[0 - ${LocalTime.NANOS_PER_SECOND - 1}] of local time.`,
         );
