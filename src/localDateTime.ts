@@ -202,6 +202,156 @@ export class LocalDateTime {
     }
 
     /**
+     * Adds a duration in years to this local date-time.
+     *
+     * @param years The number of years to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public plusYears(years: number): LocalDateTime {
+        return LocalDateTime.of(this.date.plusYears(years), this.time);
+    }
+
+    /**
+     * Subtracts a duration in years from local date-time.
+     *
+     * @param years The number of years to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public minusYears(years: number): LocalDateTime {
+        return this.plusYears(-years);
+    }
+
+    /**
+     * Adds a duration in months to this local date-time.
+     *
+     * @param months The number of months to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public plusMonths(months: number): LocalDateTime {
+        return LocalDateTime.of(this.date.plusMonths(months), this.time);
+    }
+
+    /**
+     * Subtracts a duration in months from local date-time.
+     *
+     * @param months The number of months to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public minusMonths(months: number): LocalDateTime {
+        return this.plusMonths(-months);
+    }
+
+    /**
+     * Adds a duration in weeks to this local date-time.
+     *
+     * @param weeks The number of weeks to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public plusWeeks(weeks: number): LocalDateTime {
+        return LocalDateTime.of(this.date.plusWeeks(weeks), this.time);
+    }
+
+    /**
+     * Subtracts a duration in weeks from local date-time.
+     *
+     * @param weeks The number of weeks to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public minusWeeks(weeks: number): LocalDateTime {
+        return this.plusWeeks(-weeks);
+    }
+
+    /**
+     * Adds a duration in days to this local date-time.
+     *
+     * @param days The number of days to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public plusDays(days: number): LocalDateTime {
+        return LocalDateTime.of(this.date.plusDays(days), this.time);
+    }
+
+    /**
+     * Subtracts a duration in days from local date-time.
+     *
+     * @param days The number of days to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public minusDays(days: number): LocalDateTime {
+        return this.plusDays(-days);
+    }
+
+    /**
+     * Adds a duration in hours to this local date-time.
+     *
+     * @param hours The number of hours to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public plusHours(hours: number): LocalDateTime {
+        if (hours === 0) {
+            return this;
+        }
+
+        const extraDays = intDiv(hours, LocalTime.HOURS_PER_DAY);
+        const remainder = hours % LocalTime.HOURS_PER_DAY;
+        const total = (remainder * LocalTime.NANOS_PER_HOUR) + this.time.toNanoOfDay();
+        const days = extraDays + floorDiv(total, LocalTime.NANOS_PER_DAY);
+
+        return LocalDateTime.of(this.date.plusDays(days), this.time.plusHours(remainder));
+    }
+
+    /**
+     * Subtracts a duration in hours from local date-time.
+     *
+     * @param hours The number of hours to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public minusHours(hours: number): LocalDateTime {
+        return this.plusHours(-hours);
+    }
+
+    /**
+     * Adds a duration in minutes to this local date-time.
+     *
+     * @param minutes The number of minutes to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public plusMinutes(minutes: number): LocalDateTime {
+        if (minutes === 0) {
+            return this;
+        }
+
+        const extraDays = intDiv(minutes, LocalTime.MINUTES_PER_DAY);
+        const remainder = minutes % LocalTime.MINUTES_PER_DAY;
+        const total = (remainder * LocalTime.NANOS_PER_MINUTE) + this.time.toNanoOfDay();
+        const days = extraDays + floorDiv(total, LocalTime.NANOS_PER_DAY);
+
+        return LocalDateTime.of(this.date.plusDays(days), this.time.plusMinutes(remainder));
+    }
+
+    /**
+     * Subtracts a duration in minutes from local date-time.
+     *
+     * @param minutes The number of minutes to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public minusMinutes(minutes: number): LocalDateTime {
+        return this.plusMinutes(-minutes);
+    }
+
+    /**
      * Adds a duration in seconds to this local date-time.
      *
      * @param seconds The number of seconds to add.
@@ -213,19 +363,116 @@ export class LocalDateTime {
             return this;
         }
 
-        let days = intDiv(seconds, LocalTime.SECONDS_PER_DAY);
+        const extraDays = intDiv(seconds, LocalTime.SECONDS_PER_DAY);
         const remainder = seconds % LocalTime.SECONDS_PER_DAY;
-        const total = remainder * LocalTime.NANOS_PER_SECOND + this.time.toNanoOfDay();
+        const total = (remainder * LocalTime.NANOS_PER_SECOND) + this.time.toNanoOfDay();
+        const days = extraDays + floorDiv(total, LocalTime.NANOS_PER_DAY);
 
-        days += floorDiv(total, LocalTime.NANOS_PER_DAY);
+        return LocalDateTime.of(this.date.plusDays(days), this.time.plusSeconds(remainder));
+    }
 
-        const time = this.time.plusSeconds(remainder);
+    /**
+     * Subtracts a duration in seconds from local date-time.
+     *
+     * @param seconds The number of seconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public minusSeconds(seconds: number): LocalDateTime {
+        return this.plusSeconds(-seconds);
+    }
 
-        if (days !== 0) {
-            return LocalDateTime.of(this.date.plusDays(days), time);
+    /**
+     * Adds a duration in milliseconds to this local date-time.
+     *
+     * @param millis The number of milliseconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public plusMillis(millis: number): LocalDateTime {
+        if (millis === 0) {
+            return this;
         }
 
-        return LocalDateTime.of(this.date, time);
+        const extraDays = intDiv(millis, LocalTime.MILLIS_PER_DAY);
+        const remainder = millis % LocalTime.MILLIS_PER_DAY;
+        const total = (remainder * LocalTime.NANOS_PER_MILLI) + this.time.toNanoOfDay();
+        const days = extraDays + floorDiv(total, LocalTime.NANOS_PER_DAY);
+
+        return LocalDateTime.of(this.date.plusDays(days), this.time.plusMillis(remainder));
+    }
+
+    /**
+     * Subtracts a duration in milliseconds from local date-time.
+     *
+     * @param millis The number of milliseconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public minusMillis(millis: number): LocalDateTime {
+        return this.plusMillis(-millis);
+    }
+
+    /**
+     * Adds a duration in microseconds to this local date-time.
+     *
+     * @param micros The number of microseconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public plusMicros(micros: number): LocalDateTime {
+        if (micros === 0) {
+            return this;
+        }
+
+        const extraDays = intDiv(micros, LocalTime.MICROS_PER_DAY);
+        const remainder = micros % LocalTime.MICROS_PER_DAY;
+        const total = (remainder * LocalTime.NANOS_PER_MICRO) + this.time.toNanoOfDay();
+        const days = extraDays + floorDiv(total, LocalTime.NANOS_PER_DAY);
+
+        return LocalDateTime.of(this.date.plusDays(days), this.time.plusMicros(remainder));
+    }
+
+    /**
+     * Subtracts a duration in microseconds from local date-time.
+     *
+     * @param micros The number of microseconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public minusMicros(micros: number): LocalDateTime {
+        return this.plusMicros(-micros);
+    }
+
+    /**
+     * Adds a duration in nanoseconds to this local date-time.
+     *
+     * @param nanos The number of nanoseconds to add.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public plusNanos(nanos: number): LocalDateTime {
+        if (nanos === 0) {
+            return this;
+        }
+
+        const extraDays = intDiv(nanos, LocalTime.NANOS_PER_DAY);
+        const remainder = nanos % LocalTime.NANOS_PER_DAY;
+        const total = remainder + this.time.toNanoOfDay();
+        const days = extraDays + floorDiv(total, LocalTime.NANOS_PER_DAY);
+
+        return LocalDateTime.of(this.date.plusDays(days), this.time.plusNanos(remainder));
+    }
+
+    /**
+     * Subtracts a duration in nanoseconds from local date-time.
+     *
+     * @param nanos The number of nanoseconds to subtract.
+     *
+     * @throws {Error} If the result is out of the range of supported local date-times.
+     */
+    public minusNanos(nanos: number): LocalDateTime {
+        return this.plusNanos(-nanos);
     }
 
     /**

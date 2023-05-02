@@ -100,19 +100,410 @@ describe('A value object representing a local date', () => {
     });
 
     it.each([
-        [LocalDate.of(2015, 8, 31), -365, LocalDate.of(2014, 8, 31)],
-        [LocalDate.of(2015, 8, 31), -2, LocalDate.of(2015, 8, 29)],
-        [LocalDate.of(2015, 8, 31), -1, LocalDate.of(2015, 8, 30)],
-        [LocalDate.of(2015, 8, 31), 0, LocalDate.of(2015, 8, 31)],
-        [LocalDate.of(2015, 8, 31), 1, LocalDate.of(2015, 9, 1)],
-        [LocalDate.of(2015, 8, 31), 2, LocalDate.of(2015, 9, 2)],
-        [LocalDate.of(2015, 8, 31), 366, LocalDate.of(2016, 8, 31)],
-        [LocalDate.of(2015, 12, 10), 5, LocalDate.of(2015, 12, 15)],
-        [LocalDate.of(2015, 12, 10), 40, LocalDate.of(2016, 1, 19)],
+        [-5, LocalDate.of(2011, 2, 28)],
+        [-4, LocalDate.of(2012, 2, 29)],
+        [-3, LocalDate.of(2013, 2, 28)],
+        [-2, LocalDate.of(2014, 2, 28)],
+        [-1, LocalDate.of(2015, 2, 28)],
+        [0, LocalDate.of(2016, 2, 29)],
+        [1, LocalDate.of(2017, 2, 28)],
+        [2, LocalDate.of(2018, 2, 28)],
+        [3, LocalDate.of(2019, 2, 28)],
+        [4, LocalDate.of(2020, 2, 29)],
+        [5, LocalDate.of(2021, 2, 28)],
+    ])('can create a copy with an amount of years added', (years: number, expected: LocalDate) => {
+        const localDate = LocalDate.of(2016, 2, 29);
+
+        expect(localDate.plusYears(years)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [Number.MAX_SAFE_INTEGER, 'The result overflows the range of safe integers.'],
+        [Number.MIN_SAFE_INTEGER, 'Year must be a safe integer between -999999 and 999999.'],
+    ])(
+        'cannot calculate the years addition because the result exceeds the supported date-time range',
+        (years: number, errorMessage: string) => {
+            const localDate = LocalDate.of(2015, 8, 31);
+
+            expect(() => localDate.plusYears(years)).toThrowError(errorMessage);
+        },
+    );
+
+    it.each([
+        [5, LocalDate.of(2011, 2, 28)],
+        [4, LocalDate.of(2012, 2, 29)],
+        [3, LocalDate.of(2013, 2, 28)],
+        [2, LocalDate.of(2014, 2, 28)],
+        [1, LocalDate.of(2015, 2, 28)],
+        [0, LocalDate.of(2016, 2, 29)],
+        [-1, LocalDate.of(2017, 2, 28)],
+        [-2, LocalDate.of(2018, 2, 28)],
+        [-3, LocalDate.of(2019, 2, 28)],
+        [-4, LocalDate.of(2020, 2, 29)],
+        [-5, LocalDate.of(2021, 2, 28)],
+    ])('can create a copy with an amount of years subtracted', (years: number, expected: LocalDate) => {
+        const localDate = LocalDate.of(2016, 2, 29);
+
+        expect(localDate.minusYears(years)).toStrictEqual(expected);
+    });
+
+    it.each([
+        [Number.MAX_SAFE_INTEGER, 'Year must be a safe integer between -999999 and 999999.'],
+        [Number.MIN_SAFE_INTEGER, 'The result overflows the range of safe integers.'],
+    ])(
+        'cannot calculate the years subtraction because the result exceeds the supported date-time range',
+        (years: number, errorMessage: string) => {
+            const localDate = LocalDate.of(2015, 8, 31);
+
+            expect(() => localDate.minusYears(years)).toThrowError(errorMessage);
+        },
+    );
+
+    it.each([
+        // February 29th cases.
+        [
+            -48,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2012, 2, 29),
+        ],
+        [
+            -12,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2015, 2, 28),
+        ],
+        [
+            -1,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2016, 1, 29),
+        ],
+        [
+            0,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2016, 2, 29),
+        ],
+        [
+            1,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2016, 3, 29),
+        ],
+        [
+            12,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2017, 2, 28),
+        ],
+        [
+            48,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2020, 2, 29),
+        ],
+
+        // Regular cases.
+        [
+            -2,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 6, 30),
+        ],
+        [
+            -1,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 7, 31),
+        ],
+        [
+            0,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 8, 31),
+        ],
+        [
+            1,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 9, 30),
+        ],
+        [
+            2,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 10, 31),
+        ],
+    ])(
+        'can create a copy with an amount of months added',
+        (months: number, localDate: LocalDate, expected: LocalDate) => {
+            expect(localDate.plusMonths(months)).toStrictEqual(expected);
+        },
+    );
+
+    it.each([
+        Number.MAX_SAFE_INTEGER,
+        Number.MIN_SAFE_INTEGER,
+    ])(
+        'cannot calculate the months addition because the result exceeds the supported date-time range',
+        (months: number) => {
+            const localDate = LocalDate.of(2015, 8, 31);
+
+            expect(() => localDate.plusMonths(months)).toThrowError(
+                'Year must be a safe integer between -999999 and 999999.',
+            );
+        },
+    );
+
+    it.each([
+        // February 29th cases.
+        [
+            48,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2012, 2, 29),
+        ],
+        [
+            12,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2015, 2, 28),
+        ],
+        [
+            1,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2016, 1, 29),
+        ],
+        [
+            0,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2016, 2, 29),
+        ],
+        [
+            -1,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2016, 3, 29),
+        ],
+        [
+            -12,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2017, 2, 28),
+        ],
+        [
+            -48,
+            LocalDate.of(2016, 2, 29),
+            LocalDate.of(2020, 2, 29),
+        ],
+
+        // Regular cases.
+        [
+            2,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 6, 30),
+        ],
+        [
+            1,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 7, 31),
+        ],
+        [
+            0,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 8, 31),
+        ],
+        [
+            -1,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 9, 30),
+        ],
+        [
+            -2,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 10, 31),
+        ],
+    ])(
+        'can create a copy with an amount of months subtracted',
+        (months: number, localDate: LocalDate, expected: LocalDate) => {
+            expect(localDate.minusMonths(months)).toStrictEqual(expected);
+        },
+    );
+
+    it.each([
+        Number.MAX_SAFE_INTEGER,
+        Number.MIN_SAFE_INTEGER,
+    ])(
+        'cannot calculate the months subtraction because the result exceeds the supported date-time range',
+        (months: number) => {
+            const localDate = LocalDate.of(2015, 8, 31);
+
+            expect(() => localDate.minusMonths(months)).toThrowError(
+                'Year must be a safe integer between -999999 and 999999.',
+            );
+        },
+    );
+
+    it.each([
+        [-2, LocalDate.of(2015, 8, 17)],
+        [-1, LocalDate.of(2015, 8, 24)],
+        [0, LocalDate.of(2015, 8, 31)],
+        [1, LocalDate.of(2015, 9, 7)],
+        [2, LocalDate.of(2015, 9, 14)],
+    ])('can create a copy with an amount of weeks added', (weeks: number, expected: LocalDate) => {
+        const localDate = LocalDate.of(2015, 8, 31);
+
+        expect(localDate.plusWeeks(weeks)).toStrictEqual(expected);
+    });
+
+    it.each([
+        Number.MAX_SAFE_INTEGER,
+        Number.MIN_SAFE_INTEGER,
+    ])(
+        'cannot calculate the weeks addition because the result exceeds the supported date-time range',
+        (weeks: number) => {
+            const localDate = LocalDate.of(2015, 8, 31);
+
+            expect(() => localDate.plusWeeks(weeks)).toThrowError('The result overflows the range of safe integers.');
+        },
+    );
+
+    it.each([
+        [2, LocalDate.of(2015, 8, 17)],
+        [1, LocalDate.of(2015, 8, 24)],
+        [0, LocalDate.of(2015, 8, 31)],
+        [-1, LocalDate.of(2015, 9, 7)],
+        [-2, LocalDate.of(2015, 9, 14)],
+    ])('can create a copy with an amount of weeks subtracted', (weeks: number, expected: LocalDate) => {
+        const localDate = LocalDate.of(2015, 8, 31);
+
+        expect(localDate.minusWeeks(weeks)).toStrictEqual(expected);
+    });
+
+    it.each([
+        Number.MAX_SAFE_INTEGER,
+        Number.MIN_SAFE_INTEGER,
+    ])(
+        'cannot calculate the weeks subtraction because the result exceeds the supported date-time range',
+        (weeks: number) => {
+            const localDate = LocalDate.of(2015, 8, 31);
+
+            expect(() => localDate.minusWeeks(weeks)).toThrowError('The result overflows the range of safe integers.');
+        },
+    );
+
+    it.each([
+        [
+            -365,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2014, 8, 31),
+        ],
+        [
+            -2,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 8, 29),
+        ],
+        [
+            -1,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 8, 30),
+        ],
+        [
+            0,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 8, 31),
+        ],
+        [
+            1,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 9, 1),
+        ],
+        [
+            2,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 9, 2),
+        ],
+        [
+            366,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2016, 8, 31),
+        ],
+        [
+            5,
+            LocalDate.of(2015, 12, 10),
+            LocalDate.of(2015, 12, 15),
+        ],
+        [
+            40,
+            LocalDate.of(2015, 12, 10),
+            LocalDate.of(2016, 1, 19),
+        ],
     ])(
         'can create a copy with an amount of days added',
-        (localDate: LocalDate, days: number, expected: LocalDate) => {
+        (days: number, localDate: LocalDate, expected: LocalDate) => {
             expect(localDate.plusDays(days)).toStrictEqual(expected);
+        },
+    );
+
+    it.each([
+        [Number.MAX_SAFE_INTEGER, 'The result overflows the range of safe integers.'],
+        [Number.MIN_SAFE_INTEGER, 'The day -9007199254724313 is out of the range [-365961662 - 364522971].'],
+    ])(
+        'cannot calculate the days addition because the result exceeds the supported date-time range',
+        (days: number, errorMessage: string) => {
+            const localDate = LocalDate.of(2015, 8, 31);
+
+            expect(() => localDate.plusDays(days)).toThrowError(errorMessage);
+        },
+    );
+
+    it.each([
+        [
+            365,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2014, 8, 31),
+        ],
+        [
+            2,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 8, 29),
+        ],
+        [
+            1,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 8, 30),
+        ],
+        [
+            0,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 8, 31),
+        ],
+        [
+            -1,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 9, 1),
+        ],
+        [
+            -2,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2015, 9, 2),
+        ],
+        [
+            -366,
+            LocalDate.of(2015, 8, 31),
+            LocalDate.of(2016, 8, 31),
+        ],
+        [
+            -5,
+            LocalDate.of(2015, 12, 10),
+            LocalDate.of(2015, 12, 15),
+        ],
+        [
+            -40,
+            LocalDate.of(2015, 12, 10),
+            LocalDate.of(2016, 1, 19),
+        ],
+    ])(
+        'can create a copy with an amount of days subtracted',
+        (days: number, localDate: LocalDate, expected: LocalDate) => {
+            expect(localDate.minusDays(days)).toStrictEqual(expected);
+        },
+    );
+
+    it.each([
+        [Number.MAX_SAFE_INTEGER, 'The day -9007199254724313 is out of the range [-365961662 - 364522971].'],
+        [Number.MIN_SAFE_INTEGER, 'The result overflows the range of safe integers.'],
+    ])(
+        'cannot calculate the days subtraction because the result exceeds the supported date-time range',
+        (days: number, errorMessage: string) => {
+            const localDate = LocalDate.of(2015, 8, 31);
+
+            expect(() => localDate.minusDays(days)).toThrowError(errorMessage);
         },
     );
 

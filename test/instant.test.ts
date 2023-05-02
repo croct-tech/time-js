@@ -57,17 +57,19 @@ describe('A value object representing an instant in time', () => {
     });
 
     it.each([
-        ['-22015-08-30T12:34:56.155155155Z'],
-        ['+22015-08-30T12:34:56.155155155Z'],
-        ['-2015-08-30T12:34:56.155155155Z'],
-        ['2015-08-30T12:34:56.155155155Z'],
-        ['2015-08-30T12:34:56.155155Z'],
-        ['2015-08-30T12:34:56.155Z'],
-        ['2015-08-30T12:34:56Z'],
-        ['2015-08-30T12:00:00Z'],
-        ['-0001-08-30T12:00:00Z'],
-    ])('can parse a ISO-8601 UTC date-time string', dateTime => {
-        expect(Instant.parse(dateTime).toString()).toBe(dateTime);
+        ['-22015-08-30T12:34:56.155155155Z', '-22015-08-30T12:34:56.155155155Z'],
+        ['+22015-08-30T12:34:56.155155155Z', '+22015-08-30T12:34:56.155155155Z'],
+        ['-2015-08-30T12:34:56.155155155Z', '-2015-08-30T12:34:56.155155155Z'],
+        ['2015-08-30T12:34:56.155155155Z', '2015-08-30T12:34:56.155155155Z'],
+        ['2015-08-30T12:34:56.155155Z', '2015-08-30T12:34:56.155155Z'],
+        ['2015-08-30T12:34:56.155Z', '2015-08-30T12:34:56.155Z'],
+        ['2015-08-30T12:34:56Z', '2015-08-30T12:34:56Z'],
+        ['2015-08-30T12:00:00Z', '2015-08-30T12:00:00Z'],
+        ['2015-08-30T12:00Z', '2015-08-30T12:00:00Z'],
+        ['2015-08-30T12Z', '2015-08-30T12:00:00Z'],
+        ['-0001-08-30T12:00:00Z', '-0001-08-30T12:00:00Z'],
+    ])('can parse a ISO-8601 UTC date-time string', (dateTime, expected) => {
+        expect(Instant.parse(dateTime).toString()).toBe(expected);
     });
 
     it.each([
@@ -122,6 +124,322 @@ describe('A value object representing an instant in time', () => {
         const instant = Instant.ofEpochMilli(123456789);
 
         expect(instant.toString()).toBe('1970-01-02T10:17:36.789Z');
+    });
+
+    it.each([
+        [-365, Instant.ofEpochSecond(1440979200 - 365 * 24 * 3600)],
+        [-2, Instant.ofEpochSecond(1440979200 - 2 * 24 * 3600)],
+        [-1, Instant.ofEpochSecond(1440979200 - 24 * 3600)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [1, Instant.ofEpochSecond(1440979200 + 24 * 3600)],
+        [2, Instant.ofEpochSecond(1440979200 + 2 * 24 * 3600)],
+        [366, Instant.ofEpochSecond(1440979200 + 366 * 24 * 3600)],
+    ])('can create a copy with a period in days added', (days: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.plusDays(days)).toEqual(expected);
+    });
+
+    it.each([
+        [Number.MAX_SAFE_INTEGER],
+        [Number.MIN_SAFE_INTEGER],
+    ])('cannot calculate the days addition because the result exceeds the supported range', (days: number) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(() => instant.plusDays(days)).toThrowError('The result overflows the range of safe integers.');
+    });
+
+    it.each([
+        [365, Instant.ofEpochSecond(1440979200 - 365 * 24 * 3600)],
+        [2, Instant.ofEpochSecond(1440979200 - 2 * 24 * 3600)],
+        [1, Instant.ofEpochSecond(1440979200 - 24 * 3600)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [-1, Instant.ofEpochSecond(1440979200 + 24 * 3600)],
+        [-2, Instant.ofEpochSecond(1440979200 + 2 * 24 * 3600)],
+        [-366, Instant.ofEpochSecond(1440979200 + 366 * 24 * 3600)],
+    ])('can create a copy with a period in days subtracted', (days: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.minusDays(days)).toEqual(expected);
+    });
+
+    it.each([
+        [Number.MAX_SAFE_INTEGER],
+        [Number.MIN_SAFE_INTEGER],
+    ])('cannot calculate the days subtraction because the result exceeds the supported range', (days: number) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(() => instant.minusDays(days)).toThrowError('The result overflows the range of safe integers.');
+    });
+
+    it.each([
+        [-24, Instant.ofEpochSecond(1440979200 - 24 * 3600)],
+        [-2, Instant.ofEpochSecond(1440979200 - 2 * 3600)],
+        [-1, Instant.ofEpochSecond(1440979200 - 3600)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [1, Instant.ofEpochSecond(1440979200 + 3600)],
+        [2, Instant.ofEpochSecond(1440979200 + 2 * 3600)],
+        [24, Instant.ofEpochSecond(1440979200 + 24 * 3600)],
+    ])('can create a copy with a period in hours added', (hours: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.plusHours(hours)).toEqual(expected);
+    });
+
+    it.each([
+        [Number.MAX_SAFE_INTEGER],
+        [Number.MIN_SAFE_INTEGER],
+    ])('cannot calculate the hours addition because the result exceeds the supported range', (hours: number) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(() => instant.plusHours(hours)).toThrowError('The result overflows the range of safe integers.');
+    });
+
+    it.each([
+        [24, Instant.ofEpochSecond(1440979200 - 24 * 3600)],
+        [2, Instant.ofEpochSecond(1440979200 - 2 * 3600)],
+        [1, Instant.ofEpochSecond(1440979200 - 3600)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [-1, Instant.ofEpochSecond(1440979200 + 3600)],
+        [-2, Instant.ofEpochSecond(1440979200 + 2 * 3600)],
+        [-24, Instant.ofEpochSecond(1440979200 + 24 * 3600)],
+    ])('can create a copy with a period in hours subtracted', (hours: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.minusHours(hours)).toEqual(expected);
+    });
+
+    it.each([
+        [Number.MAX_SAFE_INTEGER],
+        [Number.MIN_SAFE_INTEGER],
+    ])('cannot calculate the hours subtraction because the result exceeds the supported range', (hours: number) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(() => instant.minusHours(hours)).toThrowError('The result overflows the range of safe integers.');
+    });
+
+    it.each([
+        [-1440, Instant.ofEpochSecond(1440979200 - 1440 * 60)],
+        [-2, Instant.ofEpochSecond(1440979200 - 2 * 60)],
+        [-1, Instant.ofEpochSecond(1440979200 - 60)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [1, Instant.ofEpochSecond(1440979200 + 60)],
+        [2, Instant.ofEpochSecond(1440979200 + 2 * 60)],
+        [1440, Instant.ofEpochSecond(1440979200 + 1440 * 60)],
+    ])('can create a copy with a period in minutes added', (minutes: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.plusMinutes(minutes)).toEqual(expected);
+    });
+
+    it.each([
+        [Number.MAX_SAFE_INTEGER],
+        [Number.MIN_SAFE_INTEGER],
+    ])('cannot calculate the minutes addition because the result exceeds the supported range', (minutes: number) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(() => instant.plusMinutes(minutes)).toThrowError('The result overflows the range of safe integers.');
+    });
+
+    it.each([
+        [1440, Instant.ofEpochSecond(1440979200 - 1440 * 60)],
+        [2, Instant.ofEpochSecond(1440979200 - 2 * 60)],
+        [1, Instant.ofEpochSecond(1440979200 - 60)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [-1, Instant.ofEpochSecond(1440979200 + 60)],
+        [-2, Instant.ofEpochSecond(1440979200 + 2 * 60)],
+        [-1440, Instant.ofEpochSecond(1440979200 + 1440 * 60)],
+    ])('can create a copy with a period in minutes subtracted', (minutes: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.minusMinutes(minutes)).toEqual(expected);
+    });
+
+    it.each([
+        [Number.MAX_SAFE_INTEGER],
+        [Number.MIN_SAFE_INTEGER],
+    ])('cannot calculate the minutes subtraction because the result exceeds the supported range', (minutes: number) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(() => instant.minusMinutes(minutes)).toThrowError('The result overflows the range of safe integers.');
+    });
+
+    it.each([
+        [-86400, Instant.ofEpochSecond(1440979200 - 86400)],
+        [-2, Instant.ofEpochSecond(1440979200 - 2)],
+        [-1, Instant.ofEpochSecond(1440979200 - 1)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [1, Instant.ofEpochSecond(1440979200 + 1)],
+        [2, Instant.ofEpochSecond(1440979200 + 2)],
+        [86400, Instant.ofEpochSecond(1440979200 + 86400)],
+    ])('can create a copy with a period in seconds added', (seconds: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.plusSeconds(seconds)).toEqual(expected);
+    });
+
+    it.each([
+        [
+            Number.MAX_SAFE_INTEGER,
+            'The result overflows the range of safe integers.',
+        ],
+        [
+            Number.MIN_SAFE_INTEGER,
+            'The value -9007197813761791 is out of the range [-31619087596800 - 31494784780799] of instant.',
+        ],
+    ])(
+        'cannot calculate the seconds addition because the result exceeds the supported range',
+        (seconds: number, errorMessage: string) => {
+            const instant = Instant.ofEpochSecond(1440979200);
+
+            expect(() => instant.plusSeconds(seconds)).toThrowError(errorMessage);
+        },
+    );
+
+    it.each([
+        [86400, Instant.ofEpochSecond(1440979200 - 86400)],
+        [2, Instant.ofEpochSecond(1440979200 - 2)],
+        [1, Instant.ofEpochSecond(1440979200 - 1)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [-1, Instant.ofEpochSecond(1440979200 + 1)],
+        [-2, Instant.ofEpochSecond(1440979200 + 2)],
+        [-86400, Instant.ofEpochSecond(1440979200 + 86400)],
+    ])('can create a copy with a period in seconds subtracted', (seconds: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.minusSeconds(seconds)).toEqual(expected);
+    });
+
+    it.each([
+        [
+            Number.MAX_SAFE_INTEGER,
+            'The value -9007197813761791 is out of the range [-31619087596800 - 31494784780799] of instant.',
+        ],
+        [
+            Number.MIN_SAFE_INTEGER,
+            'The result overflows the range of safe integers.',
+        ],
+    ])(
+        'cannot calculate the seconds subtraction because the result exceeds the supported range',
+        (seconds: number, errorMessage: string) => {
+            const instant = Instant.ofEpochSecond(1440979200);
+
+            expect(() => instant.minusSeconds(seconds)).toThrowError(errorMessage);
+        },
+    );
+
+    it.each([
+        [-86400000, Instant.ofEpochSecond(1440979200 - 86400)],
+        [-1000, Instant.ofEpochSecond(1440979200 - 1)],
+        [-2, Instant.ofEpochSecond(1440979200, -2000000)],
+        [-1, Instant.ofEpochSecond(1440979200, -1000000)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [1, Instant.ofEpochSecond(1440979200, 1000000)],
+        [2, Instant.ofEpochSecond(1440979200, 2000000)],
+        [1000, Instant.ofEpochSecond(1440979200 + 1)],
+        [86400000, Instant.ofEpochSecond(1440979200 + 86400)],
+
+        [Number.MAX_SAFE_INTEGER, Instant.ofEpochSecond(9007199254740 + 1440979200, 991000000)],
+        [Number.MIN_SAFE_INTEGER, Instant.ofEpochSecond(-9007199254740 + 1440979200, -991000000)],
+    ])('can create a copy with a period in milliseconds added', (millis: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.plusMillis(millis)).toEqual(expected);
+    });
+
+    it.each([
+        [86400000, Instant.ofEpochSecond(1440979200 - 86400)],
+        [1000, Instant.ofEpochSecond(1440979200 - 1)],
+        [2, Instant.ofEpochSecond(1440979200, -2000000)],
+        [1, Instant.ofEpochSecond(1440979200, -1000000)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [-1, Instant.ofEpochSecond(1440979200, 1000000)],
+        [-2, Instant.ofEpochSecond(1440979200, 2000000)],
+        [-1000, Instant.ofEpochSecond(1440979200 + 1)],
+        [-86400000, Instant.ofEpochSecond(1440979200 + 86400)],
+
+        [Number.MAX_SAFE_INTEGER, Instant.ofEpochSecond(-9007199254740 + 1440979200, -991000000)],
+        [Number.MIN_SAFE_INTEGER, Instant.ofEpochSecond(9007199254740 + 1440979200, 991000000)],
+    ])('can create a copy with a period in milliseconds subtracted', (millis: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.minusMillis(millis)).toEqual(expected);
+    });
+
+    it.each([
+        [-86400000000, Instant.ofEpochSecond(1440979200 - 86400)],
+        [-1000000, Instant.ofEpochSecond(1440979200 - 1)],
+        [-2, Instant.ofEpochSecond(1440979200, -2000)],
+        [-1, Instant.ofEpochSecond(1440979200, -1000)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [1, Instant.ofEpochSecond(1440979200, 1000)],
+        [2, Instant.ofEpochSecond(1440979200, 2000)],
+        [1000000, Instant.ofEpochSecond(1440979200 + 1)],
+        [86400000000, Instant.ofEpochSecond(1440979200 + 86400)],
+
+        [Number.MAX_SAFE_INTEGER, Instant.ofEpochSecond(9007199254 + 1440979200, 740991000)],
+        [Number.MIN_SAFE_INTEGER, Instant.ofEpochSecond(-9007199254 + 1440979200, -740991000)],
+    ])('can create a copy with a period in microseconds added', (micros: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.plusMicros(micros)).toEqual(expected);
+    });
+
+    it.each([
+        [86400000000, Instant.ofEpochSecond(1440979200 - 86400)],
+        [1000000, Instant.ofEpochSecond(1440979200 - 1)],
+        [2, Instant.ofEpochSecond(1440979200, -2000)],
+        [1, Instant.ofEpochSecond(1440979200, -1000)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [-1, Instant.ofEpochSecond(1440979200, 1000)],
+        [-2, Instant.ofEpochSecond(1440979200, 2000)],
+        [-1000000, Instant.ofEpochSecond(1440979200 + 1)],
+        [-86400000000, Instant.ofEpochSecond(1440979200 + 86400)],
+
+        [Number.MAX_SAFE_INTEGER, Instant.ofEpochSecond(-9007199254 + 1440979200, -740991000)],
+        [Number.MIN_SAFE_INTEGER, Instant.ofEpochSecond(9007199254 + 1440979200, 740991000)],
+    ])('can create a copy with a period in microseconds subtracted', (micros: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.minusMicros(micros)).toEqual(expected);
+    });
+
+    it.each([
+        [-86400000000000, Instant.ofEpochSecond(1440979200 - 86400)],
+        [-1000000000, Instant.ofEpochSecond(1440979200 - 1)],
+        [-2, Instant.ofEpochSecond(1440979200, -2)],
+        [-1, Instant.ofEpochSecond(1440979200, -1)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [1, Instant.ofEpochSecond(1440979200, 1)],
+        [2, Instant.ofEpochSecond(1440979200, 2)],
+        [1000000000, Instant.ofEpochSecond(1440979200 + 1)],
+        [86400000000000, Instant.ofEpochSecond(1440979200 + 86400)],
+
+        [Number.MAX_SAFE_INTEGER, Instant.ofEpochSecond(9007199 + 1440979200, 254740991)],
+        [Number.MIN_SAFE_INTEGER, Instant.ofEpochSecond(-9007199 + 1440979200, -254740991)],
+    ])('can create a copy with a period in nanoseconds added', (nanos: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.plusNanos(nanos)).toEqual(expected);
+    });
+
+    it.each([
+        [86400000000000, Instant.ofEpochSecond(1440979200 - 86400)],
+        [1000000000, Instant.ofEpochSecond(1440979200 - 1)],
+        [2, Instant.ofEpochSecond(1440979200, -2)],
+        [1, Instant.ofEpochSecond(1440979200, -1)],
+        [0, Instant.ofEpochSecond(1440979200)],
+        [-1, Instant.ofEpochSecond(1440979200, 1)],
+        [-2, Instant.ofEpochSecond(1440979200, 2)],
+        [-1000000000, Instant.ofEpochSecond(1440979200 + 1)],
+        [-86400000000000, Instant.ofEpochSecond(1440979200 + 86400)],
+
+        [Number.MAX_SAFE_INTEGER, Instant.ofEpochSecond(-9007199 + 1440979200, -254740991)],
+        [Number.MIN_SAFE_INTEGER, Instant.ofEpochSecond(9007199 + 1440979200, 254740991)],
+    ])('can create a copy with a period in nanoseconds subtracted', (nanos: number, expected: Instant) => {
+        const instant = Instant.ofEpochSecond(1440979200);
+
+        expect(instant.minusNanos(nanos)).toEqual(expected);
     });
 
     it('should create a copy with an amount of time added', () => {
