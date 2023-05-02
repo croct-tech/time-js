@@ -474,7 +474,10 @@ export class LocalDate {
     }
 
     /**
-     * Resolves a new date to a valid day of month.
+     * Resolves and returns the previous valid local date based on the given year, month, and day.
+     *
+     * This method adjusts the input day value if it exceeds the maximum day value for the given
+     * month and year.
      *
      * @param year The year in the ISO-8601 calendar system.
      * @param month The month of the year.

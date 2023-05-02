@@ -282,7 +282,10 @@ export class Instant {
     }
 
     /**
-     * Adds a duration in days to this instant.
+     * Adds a duration in days to this instant, considering a day as a fixed number of seconds.
+     *
+     * This method does not account for timezone or calendar adjustments,
+     * as it considers a day always to have the same number of seconds.
      *
      * @param days The number of days to add.
      *
@@ -299,7 +302,10 @@ export class Instant {
     }
 
     /**
-     * Subtracts a duration in days from this instant.
+     * Subtracts a duration in days from this instant, considering a day as a fixed number of seconds.
+     *
+     * This method does not account for timezone or calendar adjustments,
+     * as it considers a day always to have the same number of seconds.
      *
      * @param days The number of days to subtract.
      *
