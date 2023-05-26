@@ -60,7 +60,7 @@ describe('A value object representing a local date time', () => {
             jest.useFakeTimers()
                 .setSystemTime(new Date(currentTime).getTime());
 
-            const now = LocalDateTime.now(timeZone);
+            const now = LocalDateTime.nowIn(timeZone);
 
             expect(now.toString()).toBe(localDateTime);
         },
