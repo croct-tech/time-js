@@ -1,7 +1,9 @@
-import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
-import {LocalTime} from './localTime';
+import {Clock} from './clock';
+import {DefaultClockProvider} from './defaultClockProvider';
 import {LocalDate} from './localDate';
 import {LocalDateTime} from './localDateTime';
+import {LocalTime} from './localTime';
+import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
 
 /**
  * An instantaneous point on the time-line.
@@ -19,6 +21,11 @@ import {LocalDateTime} from './localDateTime';
  */
 export class Instant {
     /**
+     * The instant representing the epoch of 1970-01-01T00:00:00Z.
+     */
+    public static EPOCH = new Instant(0, 0);
+
+    /**
      * The minimum supported epoch second.
      *
      * The minimum is defined as the instant `-999999-01-01T00:00:00Z`.
@@ -26,23 +33,18 @@ export class Instant {
     private static MIN_SECOND = -31619087596800;
 
     /**
-     * The maximum supported epoch second.
-     *
-     * The maximum is defined as the instant `+999999-12-31T23:59:59Z`.
-     */
-    private static MAX_SECOND = 31494784780799;
-
-    /**
-     * The instant representing the epoch of 1970-01-01T00:00:00Z.
-     */
-    public static EPOCH = new Instant(0, 0);
-
-    /**
      * The minimum supported instant.
      *
      * The minimum is defined as the instant `-999999-01-01T00:00:00Z`.
      */
     public static MIN = new Instant(Instant.MIN_SECOND, 0);
+
+    /**
+     * The maximum supported epoch second.
+     *
+     * The maximum is defined as the instant `+999999-12-31T23:59:59Z`.
+     */
+    private static MAX_SECOND = 31494784780799;
 
     /**
      * The maximum supported instant.
@@ -77,9 +79,11 @@ export class Instant {
 
     /**
      * Obtains the current instant from the system clock.
+     *
+     * @param clock The clock to use.
      */
-    public static now(): Instant {
-        return Instant.ofEpochMilli(Date.now());
+    public static now(clock: Clock = DefaultClockProvider.getClock()): Instant {
+        return clock.getInstant();
     }
 
     /**
