@@ -1,4 +1,5 @@
-import {LocalDate, LocalDateTime, LocalTime, TimeZone} from '../src';
+import {Instant, LocalDate, LocalDateTime, LocalTime, TimeZone} from '../src';
+import {FixedClock} from '../src/clock/fixedClock';
 
 describe('A value object representing a local date time', () => {
     it('can be created from its components', () => {
@@ -50,6 +51,20 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.getSecond()).toBe(0);
         expect(localDateTime.getNano()).toBe(0);
     });
+
+    it.each([
+        ['2015-08-31T12:11:59.123456789Z', TimeZone.of('America/Sao_Paulo'), '2015-08-31T09:11:59.123'],
+        ['2015-08-31T00:00:00.123456789Z', TimeZone.of('UTC'), '2015-08-31T00:00:00.123'],
+    ])(
+        'can provide the current local date time from the given clock',
+        (currentTime: string, timeZone: TimeZone, localDateTime: string) => {
+            const clock = FixedClock.of(Instant.parse(currentTime), timeZone);
+
+            const now = LocalDateTime.now(clock);
+
+            expect(now.toString()).toBe(localDateTime);
+        },
+    );
 
     it.each([
         ['2015-08-31T12:11:59.123456789Z', TimeZone.of('America/Sao_Paulo'), '2015-08-31T09:11:59.123'],
