@@ -25,11 +25,11 @@ export class OffsetClock implements Clock {
     }
 
     public static jump(baseClock: Clock, instant: Instant): OffsetClock {
-        const baseInsatant = baseClock.getInstant();
+        const baseInstant = baseClock.getInstant();
 
         return this.of(baseClock, {
-            seconds: instant.getSeconds() - baseInsatant.getSeconds(),
-            nanos: instant.getNano() - baseInsatant.getNano(),
+            seconds: instant.getSeconds() - baseInstant.getSeconds(),
+            nanos: instant.getNano() - baseInstant.getNano(),
         });
     }
 
