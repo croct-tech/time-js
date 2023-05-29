@@ -1,6 +1,6 @@
+import {Instant, TimeZone} from '../../src';
 import {FixedClock} from '../../src/clock/fixedClock';
 import {TickClock} from '../../src/clock/tickClock';
-import {Instant, TimeZone} from '../../src';
 
 describe('A clock with adjustable tick duration', () => {
     it('can be created with a tick duration in milliseconds', () => {

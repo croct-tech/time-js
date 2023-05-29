@@ -1,5 +1,5 @@
-import {SystemClock} from '../../src/clock/systemClock';
 import {TimeZone} from '../../src';
+import {SystemClock} from '../../src/clock/systemClock';
 
 describe('A system clock', () => {
     it('can be created in a given time-zone', () => {
