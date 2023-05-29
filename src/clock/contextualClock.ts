@@ -10,7 +10,7 @@ import {TimeZone} from '../timeZone';
 export class ContextualClock implements Clock {
     private readonly clockStore = new AsyncLocalStorage<Clock>();
 
-    public get clock(): Clock {
+    private get clock(): Clock {
         return this.clockStore.getStore() ?? DefaultClockProvider.getClock();
     }
 
