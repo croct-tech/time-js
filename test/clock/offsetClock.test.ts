@@ -48,7 +48,6 @@ describe('An offset clock', () => {
 
         expect(clock.equals(OffsetClock.of(otherBaseClock, {seconds: 9, nanos: 0}))).toBe(false);
 
-
         // OffsetClock logically equal
         expect(clock.equals(OffsetClock.of(baseClock, {seconds: 9, nanos: 0}))).toBe(true);
     });
