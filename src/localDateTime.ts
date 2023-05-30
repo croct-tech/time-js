@@ -1,3 +1,5 @@
+import {Clock} from './clock';
+import {DefaultClockProvider} from './defaultClockProvider';
 import {Instant} from './instant';
 import {LocalDate} from './localDate';
 import {LocalTime} from './localTime';
@@ -37,15 +39,32 @@ export class LocalDateTime {
     }
 
     /**
-     * Returns the current date-time from the system clock in the specified time-zone.
+     * Returns the current date-time from the default or given clock in the given time-zone.
      *
      * Fractional seconds have three digits of precision due to the JavaScript date-time
      * limitations.
      *
      * @param zone The time-zone to use.
+     * @param clock The clock to use. The default clock is used if one is not give.
      */
-    public static now(zone: TimeZone): LocalDateTime {
-        return LocalDateTime.fromZonedDate(new Date(), zone);
+    public static nowIn(zone: TimeZone, clock: Clock = DefaultClockProvider.getClock()): LocalDateTime {
+        return LocalDateTime.ofInstant(clock.getInstant(), zone);
+    }
+
+    /**
+     * Returns the current date-time from the given clock in the clock's time-zone.
+     *
+     * Fractional seconds have three digits of precision due to the JavaScript date-time
+     * limitations.
+     *
+     * @param clock The clock to use.
+     */
+    public static now(clock: Clock = DefaultClockProvider.getClock()): LocalDateTime {
+        return LocalDateTime.ofInstant(clock.getInstant(), clock.getZone());
+    }
+
+    public static ofInstant(instant: Instant, zone: TimeZone): LocalDateTime {
+        return LocalDateTime.fromZonedDate(instant.toDate(), zone);
     }
 
     private static fromZonedDate(date: Date, zone: TimeZone): LocalDateTime {

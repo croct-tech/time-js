@@ -910,7 +910,7 @@ describe('A value object representing a time interval', () => {
         expect(interval.equals(TimeInterval.between(start, Instant.ofEpochSecond(3)))).toBe(false);
 
         // Other object class
-        expect(interval.equals(new Object())).toBe(false);
+        expect(interval.equals({})).toBe(false);
 
         // TimeInterval logically equal
         expect(interval.equals(TimeInterval.between(Instant.ofEpochSecond(1), Instant.ofEpochSecond(2)))).toBe(true);
