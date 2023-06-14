@@ -200,6 +200,16 @@ export class TimeInterval {
         return this.end.isBeforeOrEqual(other.start) && !this.equals(other);
     }
 
+    public static isValid(value: string): boolean {
+        try {
+            TimeInterval.parse(value);
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     /**
      * Checks if this interval starts on or before a given instant.
      */
