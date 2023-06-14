@@ -546,6 +546,16 @@ export class Instant {
         return this.compare(instant) < 0;
     }
 
+    public static isValid(value: string): boolean {
+        try {
+            Instant.parse(value);
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     /**
      * Checks whether this instant is before or equal to another.
      *

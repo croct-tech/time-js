@@ -505,6 +505,20 @@ describe('A value object representing an instant in time', () => {
         expect(one.equals(three)).toBe(true);
     });
 
+    it.each([
+        ['2015-08-3012:00:00Z', false],
+        ['invalid year-08-30T12:00:00Z', false],
+        ['2015-invalid month-30T12:00:00Z', false],
+        ['2015-08-invalid dayT12:00:00Z', false],
+        ['2015-08-30Tinvalid hour:00:00Z', false],
+        ['2015-08-30T12:invalid minute:00Z', false],
+        ['2015-08-30T12:00:invalid secondZ', false],
+        ['2015-08-30T12:00:00', false],
+        ['2015-08-30T12:00:00Z', true],
+    ])('can determine if a value is a valid instant', (value: string, expected: boolean) => {
+        expect(Instant.isValid(value)).toBe(expected);
+    });
+
     it('should be sortable in ascending order', () => {
         const values = [
             Instant.ofEpochMilli(100001),
