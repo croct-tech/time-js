@@ -398,6 +398,16 @@ export class LocalDate {
         return this.compare(date) <= 0;
     }
 
+    public static isValid(value: string): boolean {
+        try {
+            LocalDate.parse(value);
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     /**
      * Compares this date to another for order.
      *
