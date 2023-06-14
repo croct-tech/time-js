@@ -543,6 +543,16 @@ export class LocalDateTime {
         return this.compare(date) <= 0;
     }
 
+    public static isValid(value: string): boolean {
+        try {
+            LocalDateTime.parse(value);
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     /**
      * Compares this date time to another for order.
      *
