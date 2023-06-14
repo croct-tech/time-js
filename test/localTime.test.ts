@@ -488,6 +488,16 @@ describe('A value object representing a local time', () => {
         expect(localTime.minusNanos(nanos)).toStrictEqual(expected);
     });
 
+    it.each([
+        ['invalid hour:01:01.1001001', false],
+        ['12:invalid minute:01.1001001', false],
+        ['12:01:invalid seconds.1001001', false],
+        ['12:01:01.invalid nanos', false],
+        ['12:01:01.1001001', true],
+    ])('can determine if a value is a valid local time', (value: string, expected: boolean) => {
+        expect(LocalTime.isValid(value)).toBe(expected);
+    });
+
     it('should be comparable', () => {
         const one = LocalTime.of(10, 20, 30);
         const two = LocalTime.of(20, 10, 10);

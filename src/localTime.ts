@@ -551,6 +551,16 @@ export class LocalTime {
         return this.compare(time) <= 0;
     }
 
+    public static isValid(value: string): boolean {
+        try {
+            LocalTime.parse(value);
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     /**
      * Compares this time to another for order.
      *
