@@ -921,7 +921,7 @@ describe('A value object representing a time interval', () => {
         ['invalid date time/1970-01-01T00:00:01Z', false],
         ['1970-01-01T00:00:00Z/invalid date time', false],
         ['1970-01-01T00:00:00Z/1970-01-01T00:00:01Z', true],
-    ])('can determine if a value is a valid time interval', (value: string, expected: boolean) => {
+    ])('can determine whether a value is a valid time interval', (value: string, expected: boolean) => {
         expect(TimeInterval.isValid(value)).toBe(expected);
     });
 

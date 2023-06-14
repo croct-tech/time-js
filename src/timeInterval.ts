@@ -200,6 +200,11 @@ export class TimeInterval {
         return this.end.isBeforeOrEqual(other.start) && !this.equals(other);
     }
 
+    /**
+     * Checks whether a given value is a valid time interval.
+     *
+     * @param value The value to validate
+     */
     public static isValid(value: string): boolean {
         try {
             TimeInterval.parse(value);

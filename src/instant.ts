@@ -546,6 +546,11 @@ export class Instant {
         return this.compare(instant) < 0;
     }
 
+    /**
+     * Checks whether a given value is a valid instant.
+     *
+     * @param value The value to validate
+     */
     public static isValid(value: string): boolean {
         try {
             Instant.parse(value);

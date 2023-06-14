@@ -551,6 +551,11 @@ export class LocalTime {
         return this.compare(time) <= 0;
     }
 
+    /**
+     * Checks whether a given value is a valid local time.
+     *
+     * @param value The value to validate
+     */
     public static isValid(value: string): boolean {
         try {
             LocalTime.parse(value);

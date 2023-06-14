@@ -398,6 +398,11 @@ export class LocalDate {
         return this.compare(date) <= 0;
     }
 
+    /**
+     * Checks whether a given value is a valid local date.
+     *
+     * @param value The value to validate
+     */
     public static isValid(value: string): boolean {
         try {
             LocalDate.parse(value);

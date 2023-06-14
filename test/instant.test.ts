@@ -515,7 +515,7 @@ describe('A value object representing an instant in time', () => {
         ['2015-08-30T12:00:invalid secondZ', false],
         ['2015-08-30T12:00:00', false],
         ['2015-08-30T12:00:00Z', true],
-    ])('can determine if a value is a valid instant', (value: string, expected: boolean) => {
+    ])('can determine whether a value is a valid instant', (value: string, expected: boolean) => {
         expect(Instant.isValid(value)).toBe(expected);
     });
 

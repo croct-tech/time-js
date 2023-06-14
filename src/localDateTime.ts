@@ -543,6 +543,11 @@ export class LocalDateTime {
         return this.compare(date) <= 0;
     }
 
+    /**
+     * Checks whether a given value is a valid local date time.
+     *
+     * @param value The value to validate
+     */
     public static isValid(value: string): boolean {
         try {
             LocalDateTime.parse(value);

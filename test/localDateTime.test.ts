@@ -927,7 +927,7 @@ describe('A value object representing a local date time', () => {
         ['invalid dateT14:20:05.123', false],
         ['2015-08-30Tinvalid time', false],
         ['2015-08-30T14:20:05.123', true],
-    ])('can determine if a value is a valid local date time', (value: string, expected: boolean) => {
+    ])('can determine whether a value is a valid local date time', (value: string, expected: boolean) => {
         expect(LocalDateTime.isValid(value)).toBe(expected);
     });
 
