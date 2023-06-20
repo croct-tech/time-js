@@ -208,11 +208,11 @@ export class TimeInterval {
     public static isValid(value: string): boolean {
         try {
             TimeInterval.parse(value);
-
-            return true;
         } catch {
             return false;
         }
+
+        return true;
     }
 
     /**

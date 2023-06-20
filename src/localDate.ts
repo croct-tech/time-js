@@ -406,11 +406,11 @@ export class LocalDate {
     public static isValid(value: string): boolean {
         try {
             LocalDate.parse(value);
-
-            return true;
         } catch {
             return false;
         }
+
+        return true;
     }
 
     /**

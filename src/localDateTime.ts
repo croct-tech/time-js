@@ -551,11 +551,11 @@ export class LocalDateTime {
     public static isValid(value: string): boolean {
         try {
             LocalDateTime.parse(value);
-
-            return true;
         } catch {
             return false;
         }
+
+        return true;
     }
 
     /**

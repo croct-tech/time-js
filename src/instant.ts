@@ -554,11 +554,11 @@ export class Instant {
     public static isValid(value: string): boolean {
         try {
             Instant.parse(value);
-
-            return true;
         } catch {
             return false;
         }
+
+        return true;
     }
 
     /**
