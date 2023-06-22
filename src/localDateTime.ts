@@ -544,9 +544,18 @@ export class LocalDateTime {
     }
 
     /**
-     * Checks whether a given value is a valid local date time.
+     * Checks whether the given string is a valid ISO-8601 date-time without a timezone.
      *
-     * @param value The value to validate
+     * In addition to checking that the string is well-formed,
+     * this method also validates that the date-time is valid.
+     *
+     * For example, this method returns false for date-time such as
+     * February 29 in a non-leap year.
+     *
+     * See the {@link LocalDateTime#parse|parse} method for more information about the expected format.
+     *
+     * @param value The date-time string to validate.
+     * @return `true` if the date-time is well-formed and valid, `false` otherwise.
      */
     public static isValid(value: string): boolean {
         try {
