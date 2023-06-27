@@ -547,6 +547,9 @@ describe('A value object representing a local date', () => {
         ['2015-invalid month-30', false],
         ['2015-08-invalid day', false],
         ['2015-02-29', false],
+        ['10000-13-30', false],
+        ['2015-13-30', false],
+        ['2015-09-32', false],
         ['2015-08-30', true],
     ])('can determine whether a value is a valid local date', (value: string, expected: boolean) => {
         expect(LocalDate.isValid(value)).toBe(expected);

@@ -924,10 +924,17 @@ describe('A value object representing a local date time', () => {
 
     it.each([
         ['invalid local date time', false],
-        ['invalid dateT14:20:05.123', false],
+        ['invalid dateT00:00:00.000', false],
         ['2015-08-30Tinvalid time', false],
-        ['2015-02-29T12:00:00.000', false],
-        ['2015-08-30T14:20:05.123', true],
+        ['2015-02-29T00:00:00.000', false],
+        ['10000-08-32T00:00:00.000', false],
+        ['2015-13-30T00:00:00.000', false],
+        ['2015-08-32T00:00:00.000', false],
+        ['2015-08-30T25:00:00.000', false],
+        ['2015-08-30T00:61:00.000', false],
+        ['2015-08-30T00:00:61.000', false],
+        ['2015-08-30T00:00:00.1000000000', false],
+        ['2015-08-30T00:00:00.000', true],
     ])('can determine whether a value is a valid local date time', (value: string, expected: boolean) => {
         expect(LocalDateTime.isValid(value)).toBe(expected);
     });

@@ -549,11 +549,9 @@ export class Instant {
     /**
      * Checks whether the given string is a valid ISO-8601 instant.
      *
-     * In addition to checking that the string is well-formed,
-     * this method also validates that the instant is valid.
+     * In addition to checking that the string is well-formed, this method also validates that the instant is valid.
      *
-     * For example, this method returns false for points on the time-line such as
-     * February 29 in a non-leap year.
+     * For example, this method returns false for points on the time-line such as February 29 in a non-leap year.
      *
      * See the {@link Instant#parse|parse} method for more information about the expected format.
      *

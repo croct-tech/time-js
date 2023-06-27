@@ -489,12 +489,16 @@ describe('A value object representing a local time', () => {
     });
 
     it.each([
-        ['invalid hour:01:01.1001001', false],
-        ['12:invalid minute:01.1001001', false],
-        ['12:01:invalid seconds.1001001', false],
-        ['12:01:01.invalid nanos', false],
-        ['100:01:01.1001001', false],
-        ['12:01:01.1001001', true],
+        ['invalid hour:00:00.0000000', false],
+        ['00:invalid minute:00.0000000', false],
+        ['00:00:invalid seconds.0000000', false],
+        ['00:00:00.invalid nanos', false],
+        ['100:00:00.0000000', false],
+        ['25:00:00.0000000', false],
+        ['00:61:00.0000000', false],
+        ['00:00:61.0000000', false],
+        ['00:00:00.1000000000', false],
+        ['00:00:00.0000000', true],
     ])('can determine whether a value is a valid local time', (value: string, expected: boolean) => {
         expect(LocalTime.isValid(value)).toBe(expected);
     });
