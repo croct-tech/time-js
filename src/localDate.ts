@@ -404,9 +404,11 @@ export class LocalDate {
      * In addition to checking that the string is well-formed,
      * this method also validates that the date is valid.
      *
-     * For example, this method returns false for dates such as February 29 in a non-leap year.
+     * For example, this method returns false for dates
+     * such as February 29 in a non-leap year.
      *
-     * See the {@link LocalDate#parse|parse} method for more information about the expected format.
+     * See the {@link LocalDate#parse|parse} method for more information
+     * about the expected format.
      *
      * @param value The date string to validate.
      * @return `true` if the date is well-formed and valid, `false` otherwise.

@@ -552,13 +552,17 @@ export class LocalTime {
     }
 
     /**
-     * Checks whether the given string is a valid ISO-8601 time presented as hour-minute-second without a timezone.
+     * Checks whether the given string is a valid ISO-8601 time
+     * presented as hour-minute-second without a timezone.
      *
-     * In addition to checking that the string is well-formed, this method also validates that the time is valid.
+     * In addition to checking that the string is well-formed,
+     * this method also validates that the time is valid.
      *
-     * For example, this method returns false for invalid times, such as 25h or 61 minutes.
+     * For example, this method returns false for invalid times,
+     * such as 25h or 61 minutes.
      *
-     * See the {@link LocalTime#parse|parse} method for more information about the expected format.
+     * See the {@link LocalTime#parse|parse} method for more information
+     * about the expected format.
      *
      * @param value The time string to validate.
      * @return `true` if the time string is well-formed and valid, `false` otherwise.

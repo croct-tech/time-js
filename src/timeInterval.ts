@@ -203,13 +203,14 @@ export class TimeInterval {
     /**
      * Checks whether the given string is a valid interval between two ISO-8601 instants.
      *
-     * In addition to checking that the string is well-formed, this method
-     * also validates that the interval is valid.
+     * In addition to checking that the string is well-formed,
+     * this method also validates that the interval is valid.
      *
      * For example, this method returns false for invalid intervals, such as a
      * time span between a future date and a past date.
      *
-     * See the {@link TimeInterval#parse|parse} method for more information about the expected format.
+     * See the {@link TimeInterval#parse|parse} method for more information
+     * about the expected format.
      *
      * @param value The time interval string to validate.
      * @return `true` if the time interval is well-formed and valid, `false` otherwise.
