@@ -916,6 +916,24 @@ describe('A value object representing a time interval', () => {
         expect(interval.equals(TimeInterval.between(Instant.ofEpochSecond(1), Instant.ofEpochSecond(2)))).toBe(true);
     });
 
+    it.each([
+        ['1970-01-01T00:00:00Z1970-01-01T00:00:01Z', false],
+        ['invalid date time/1970-01-01T00:00:01Z', false],
+        ['1970-01-01T00:00:00Z/invalid date time', false],
+        ['1970-01-01T00:00:00Z/1950-01-01T00:00:00Z', false],
+        ['1970-13-01T00:00:00Z/1970-01-01T00:00:01Z', false],
+        ['1970-01-32T00:00:00Z/1970-01-01T00:00:01Z', false],
+        ['1970-01-01T25:00:00Z/1970-01-01T00:00:01Z', false],
+        ['1970-01-01T00:61:00Z/1970-01-01T00:00:01Z', false],
+        ['1970-01-01T00:00:00Z/1970-13-01T00:00:01Z', false],
+        ['1970-01-01T00:00:00Z/1970-01-32T00:00:01Z', false],
+        ['1970-01-01T00:00:00Z/1970-01-01T25:00:01Z', false],
+        ['1970-01-01T00:00:00Z/1970-01-01T00:61:01Z', false],
+        ['1970-01-01T00:00:00Z/1970-01-01T00:00:01Z', true],
+    ])('can determine whether a value is a valid time interval', (value: string, expected: boolean) => {
+        expect(TimeInterval.isValid(value)).toBe(expected);
+    });
+
     it('can be converted to a string in the ISO-8601 format', () => {
         const start = Instant.ofEpochSecond(0);
         const end = Instant.ofEpochSecond(1);

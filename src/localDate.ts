@@ -399,6 +399,31 @@ export class LocalDate {
     }
 
     /**
+     * Checks whether the given string is a valid ISO-8601 date without a timezone.
+     *
+     * In addition to checking that the string is well-formed,
+     * this method also validates that the date is valid.
+     *
+     * For example, this method returns false for dates
+     * such as February 29 in a non-leap year.
+     *
+     * See the {@link LocalDate#parse|parse} method for more information
+     * about the expected format.
+     *
+     * @param value The date string to validate.
+     * @return `true` if the date is well-formed and valid, `false` otherwise.
+     */
+    public static isValid(value: string): boolean {
+        try {
+            LocalDate.parse(value);
+        } catch {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Compares this date to another for order.
      *
      * @param date The date to compare.

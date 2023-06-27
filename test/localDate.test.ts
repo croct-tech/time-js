@@ -543,6 +543,19 @@ describe('A value object representing a local date', () => {
     });
 
     it.each([
+        ['invalid year-08-30', false],
+        ['2015-invalid month-30', false],
+        ['2015-08-invalid day', false],
+        ['2015-02-29', false],
+        ['10000-13-30', false],
+        ['2015-13-30', false],
+        ['2015-09-32', false],
+        ['2015-08-30', true],
+    ])('can determine whether a value is a valid local date', (value: string, expected: boolean) => {
+        expect(LocalDate.isValid(value)).toBe(expected);
+    });
+
+    it.each([
         [LocalDate.of(2015, 8, 31), 16678],
         [LocalDate.of(2015, 2, 27), 16493],
         [LocalDate.of(2016, 2, 27), 16858],

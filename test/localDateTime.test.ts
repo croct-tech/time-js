@@ -922,6 +922,23 @@ describe('A value object representing a local date time', () => {
         expect(one.equals(three)).toBe(true);
     });
 
+    it.each([
+        ['invalid local date time', false],
+        ['invalid dateT00:00:00.000', false],
+        ['2015-08-30Tinvalid time', false],
+        ['2015-02-29T00:00:00.000', false],
+        ['10000-08-32T00:00:00.000', false],
+        ['2015-13-30T00:00:00.000', false],
+        ['2015-08-32T00:00:00.000', false],
+        ['2015-08-30T25:00:00.000', false],
+        ['2015-08-30T00:61:00.000', false],
+        ['2015-08-30T00:00:61.000', false],
+        ['2015-08-30T00:00:00.1000000000', false],
+        ['2015-08-30T00:00:00.000', true],
+    ])('can determine whether a value is a valid local date time', (value: string, expected: boolean) => {
+        expect(LocalDateTime.isValid(value)).toBe(expected);
+    });
+
     it('should serialize to JSON in the ISO-8601 format', () => {
         const localDate = LocalDate.of(2020, 4, 10);
         const localTime = LocalTime.of(15, 2, 1, 2222);

@@ -234,7 +234,7 @@ export class LocalTime {
         const second = Number.parseInt(groups.second ?? '0', 10);
         const nanos = Number.parseInt(groups.fraction?.padEnd(9, '0') ?? '0', 10);
 
-        return new LocalTime(hour, minute, second, nanos);
+        return LocalTime.of(hour, minute, second, nanos);
     }
 
     /**
@@ -549,6 +549,32 @@ export class LocalTime {
      */
     public isBeforeOrEqual(time: LocalTime): boolean {
         return this.compare(time) <= 0;
+    }
+
+    /**
+     * Checks whether the given string is a valid ISO-8601 time
+     * presented as hour-minute-second without a timezone.
+     *
+     * In addition to checking that the string is well-formed,
+     * this method also validates that the time is valid.
+     *
+     * For example, this method returns false for invalid times,
+     * such as 25h or 61 minutes.
+     *
+     * See the {@link LocalTime#parse|parse} method for more information
+     * about the expected format.
+     *
+     * @param value The time string to validate.
+     * @return `true` if the time string is well-formed and valid, `false` otherwise.
+     */
+    public static isValid(value: string): boolean {
+        try {
+            LocalTime.parse(value);
+        } catch {
+            return false;
+        }
+
+        return true;
     }
 
     /**
