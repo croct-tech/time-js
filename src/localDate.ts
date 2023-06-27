@@ -401,7 +401,8 @@ export class LocalDate {
     /**
      * Checks whether the given string is a valid ISO-8601 date without a timezone.
      *
-     * In addition to checking that the string is well-formed, this method also validates that the date is valid.
+     * In addition to checking that the string is well-formed,
+     * this method also validates that the date is valid.
      *
      * For example, this method returns false for dates such as February 29 in a non-leap year.
      *

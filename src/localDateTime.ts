@@ -553,7 +553,7 @@ export class LocalDateTime {
      * See the {@link LocalDateTime#parse|parse} method for more information about the expected format.
      *
      * @param value The date time string to validate.
-     * @return `true` if the date time is well-formed and valid, `false` otherwise.
+     * @return `true` if the date-time is well-formed and valid, `false` otherwise.
      */
     public static isValid(value: string): boolean {
         try {
