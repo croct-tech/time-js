@@ -596,7 +596,7 @@ export class LocalDateTime {
     public toInstant(zone: TimeZone): Instant {
         // Since JavaScript doesn't expose an API to get the time-zone offset
         // for a given local date-time. The workaround is to convert the local
-        // date-time to a point in the UTC time-line and iteravely add/subtract
+        // date-time to a point in the UTC time-line and iteratively add/subtract
         // the time-zone offset until finding the correct offset.
         //
         // This is not the most efficient way to do this, but it's
