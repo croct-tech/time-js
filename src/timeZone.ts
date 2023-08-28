@@ -28,7 +28,7 @@ export class TimeZone {
         if (TimeZone.SUPPORTED_TIMEZONE_IDS === undefined) {
             TimeZone.SUPPORTED_TIMEZONE_IDS = new Set([
                 'UTC',
-                // Non-standard time zones.
+                // Non-continental time zones.
                 // See https://github.com/tc39/ecma402/issues/778
                 'CET',
                 'CST6CDT',

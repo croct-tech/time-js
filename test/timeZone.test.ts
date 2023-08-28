@@ -74,7 +74,7 @@ describe('A value object representing a timezone', () => {
         'MST7MDT',
         'PST8PDT',
         'WET',
-    ])('supports non-standard "%s" timezone', timeZone => {
+    ])('supports non-continental "%s" timezone', timeZone => {
         expect(TimeZone.of(timeZone).toString()).toBe(timeZone);
     });
 });
