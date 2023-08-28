@@ -35,4 +35,46 @@ describe('A value object representing a timezone', () => {
 
         expect(localDate.toJSON()).toBe('Europe/London');
     });
+
+    it.each([
+        'CET',
+        'CST6CDT',
+        'EET',
+        'EST',
+        'EST5EDT',
+        'Etc/GMT+1',
+        'Etc/GMT+10',
+        'Etc/GMT+11',
+        'Etc/GMT+12',
+        'Etc/GMT+2',
+        'Etc/GMT+3',
+        'Etc/GMT+4',
+        'Etc/GMT+5',
+        'Etc/GMT+6',
+        'Etc/GMT+7',
+        'Etc/GMT+8',
+        'Etc/GMT+9',
+        'Etc/GMT-1',
+        'Etc/GMT-10',
+        'Etc/GMT-11',
+        'Etc/GMT-12',
+        'Etc/GMT-13',
+        'Etc/GMT-14',
+        'Etc/GMT-2',
+        'Etc/GMT-3',
+        'Etc/GMT-4',
+        'Etc/GMT-5',
+        'Etc/GMT-6',
+        'Etc/GMT-7',
+        'Etc/GMT-8',
+        'Etc/GMT-9',
+        'HST',
+        'MET',
+        'MST',
+        'MST7MDT',
+        'PST8PDT',
+        'WET',
+    ])('supports non-continental "%s" timezone', timeZone => {
+        expect(TimeZone.of(timeZone).toString()).toBe(timeZone);
+    });
 });
