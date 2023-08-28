@@ -70,7 +70,12 @@ export class LocalDateTime {
     private static fromZonedDate(date: Date, zone: TimeZone): LocalDateTime {
         const localDateTime = date.toLocaleString('en-US', {
             timeZone: zone.getId(),
-            calendar: 'iso8601',
+            // Handle a bug on recent versions of Node and browsers where dates up to the year 200
+            // are correct only for the gregory calendar and not the iso8601 calendar
+            // as defined by the ECMAScript specification.
+            // Tracking issue:
+            // https://github.com/nodejs/node/issues/49157
+            calendar: date.getUTCFullYear() < 200 ? 'gregory' : 'iso8601',
             hourCycle: 'h23',
             year: 'numeric',
             month: '2-digit',
