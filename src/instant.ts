@@ -97,6 +97,10 @@ export class Instant {
      * Create an Instant object from milliseconds since epoch. (integer)
      */
     public static ofEpochMilli(epochMilli: number): Instant {
+        if (!Number.isSafeInteger(epochMilli)) {
+            throw new Error('The timestamp must be a safe integer.');
+        }
+
         const epochSecond = floorDiv(epochMilli, LocalTime.MILLIS_PER_SECOND);
         const milliAdjustment = floorMod(epochMilli, LocalTime.MILLIS_PER_SECOND);
         const nanos = milliAdjustment * LocalTime.NANOS_PER_MILLI;

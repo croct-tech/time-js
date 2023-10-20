@@ -114,7 +114,11 @@ export class LocalDateTime {
      * @param {number} epochSecond The number of seconds from the epoch of 1970-01-01T00:00:00Z
      * @param {number} nanoOfSecond The nanoseconds of the second, in the range 0 to 999,999,999.
      */
-    public static ofEpochSecond(epochSecond: number, nanoOfSecond: number): LocalDateTime {
+    public static ofEpochSecond(epochSecond: number, nanoOfSecond = 0): LocalDateTime {
+        if (!Number.isSafeInteger(epochSecond) || !Number.isSafeInteger(nanoOfSecond)) {
+            throw new Error('The timestamp must be a safe integer.');
+        }
+
         const epochDay = floorDiv(epochSecond, LocalTime.SECONDS_PER_DAY);
         const secondOfDay = floorMod(epochSecond, LocalTime.SECONDS_PER_DAY);
         const date = LocalDate.ofEpochDay(epochDay);

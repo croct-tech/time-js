@@ -142,10 +142,25 @@ describe('A value object representing a local date time', () => {
         expect(input.toInstant(timeZone).toString()).toBe(expected);
     });
 
-    it('can be created from the number of seconds since the UNIX epoch', () => {
-        const localDateTime = LocalDateTime.ofEpochSecond(1440979200, 0);
+    it.each([
+        [123, undefined, '1970-01-01T00:02:03'],
+        [0, undefined, '1970-01-01T00:00'],
+        [123, 100_000_000, '1970-01-01T00:02:03.100'],
+        [-123, 100_000_000, '1969-12-31T23:57:57.100'],
+        [1440979200, 0, '2015-08-31T00:00'],
+    ])('can be created from the number of seconds since the UNIX epoch', (seconds, nanos, result) => {
+        const localDateTime = LocalDateTime.ofEpochSecond(seconds, nanos);
 
-        expect(localDateTime.toString()).toBe('2015-08-31T00:00');
+        expect(localDateTime.toString()).toBe(result);
+    });
+
+    it.each(Object.entries({
+        'fractional seconds timestamp': 1.5,
+        'unsafe seconds timestamp': Number.MAX_VALUE,
+        'non-numeric seconds timestamp': NaN,
+        'infinity seconds timestamp': Infinity,
+    }))('should reject %s', (_, seconds) => {
+        expect(() => LocalDateTime.ofEpochSecond(seconds)).toThrow('The timestamp must be a safe integer.');
     });
 
     it('can be converted to a string in the ISO-8601 format', () => {

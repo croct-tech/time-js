@@ -8,6 +8,16 @@ describe('A value object representing an instant in time', () => {
         expect(instant.toEpochMillis()).toBe(123456);
     });
 
+    it.each(Object.entries({
+        'fractional milliseconds timestamp': 1.5,
+        'unsafe milliseconds timestamp': Number.MAX_VALUE,
+        'barely unsafe milliseconds timestamp': Number.MAX_SAFE_INTEGER * 2,
+        'non-numeric milliseconds timestamp': NaN,
+        'infinity milliseconds timestamp': Infinity,
+    }))('should reject %s', (_, seconds) => {
+        expect(() => Instant.ofEpochMilli(seconds)).toThrow('The timestamp must be a safe integer.');
+    });
+
     it.each([
         [123, undefined, 123000],
         [0, undefined, 0],
