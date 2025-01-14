@@ -125,13 +125,13 @@ describe('A value object representing a local date time', () => {
             // In September 25th 2022 at 02:45:00, the time zone offset changed from +12:45 to +13:45.
             // 2022-09-25T03:45:00 - 13:45 = 2022-09-24T14:00:00
             timeZone: TimeZone.of('Pacific/Chatham'),
-            expected: '2022-09-24T14:45:00Z',
+            expected: '2022-09-24T14:00:00Z',
         },
         {
             input: LocalDateTime.of(LocalDate.of(2022, 10, 2), LocalTime.of(2, 0, 0)),
             // In October 2nd 2022 at 02:00:00, the time zone offset changed from +11:00 to +10:30
             timeZone: TimeZone.of('Australia/Lord_Howe'),
-            expected: '2022-10-01T16:00:00Z',
+            expected: '2022-10-01T15:30:00Z',
         },
         {
             input: LocalDateTime.of(LocalDate.of(1, 10, 2)),
