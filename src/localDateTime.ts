@@ -68,7 +68,7 @@ export class LocalDateTime {
     }
 
     private static fromZonedDate(date: Date, zone: TimeZone): LocalDateTime {
-        const localDateTime = date.toLocaleString('en-US', {
+        const localDateTime = date.toLocaleString('sv-SE', {
             timeZone: zone.getId(),
             // Handle a bug on recent versions of Node and browsers where dates up to the year 200
             // are correct only for the gregory calendar and not the iso8601 calendar
@@ -89,7 +89,7 @@ export class LocalDateTime {
         });
 
         // eslint-disable-next-line max-len -- Regex literal cannot be split.
-        const matches = localDateTime.match(/(?<month>\d{2})\/(?<day>\d{2})\/(?<year>\d{1,4}), (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2})\.(?<fraction>\d{3})/);
+        const matches = localDateTime.match(/(?<year>\d{1,4}-(?<month>\d{2})-(?<day>\d{2})) (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2}),(?<fraction>\d{3})/);
         // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain -- Safe assertion.
         const groups = matches?.groups!;
 
