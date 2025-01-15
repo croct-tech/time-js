@@ -2,6 +2,7 @@
   "name": "@croct/time",
   "version": "0.0.0-dev",
   "description": "Additional date-time classes that complement the standard library.",
+  "license": "MIT",
   "author": {
     "name": "Croct",
     "email": "lib+time-js@croct.com",
