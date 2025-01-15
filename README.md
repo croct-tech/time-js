@@ -8,8 +8,7 @@
     Additional date-time classes that complement the standard library.
 </p>
 <p align="center">
-    <img alt="Language" src="https://img.shields.io/badge/language-TypeScript-blue" />
-    <img alt="Build" src="https://github.com/croct-tech/time-js/actions/workflows/branch-validations.yaml/badge.svg" />
+    <img alt="Build" src="https://github.com/croct-tech/time-js/actions/workflows/validate-branch.yaml/badge.svg" />
     <a href="https://codeclimate.com/repos/6075b20f54dcd20f24000396/maintainability"><img src="https://api.codeclimate.com/v1/badges/ff00fd9545c98420a6be/maintainability" /></a>
     <a href="https://codeclimate.com/repos/6075b20f54dcd20f24000396/test_coverage"><img src="https://api.codeclimate.com/v1/badges/ff00fd9545c98420a6be/test_coverage" /></a>
     <br />
@@ -31,7 +30,7 @@ npm install @croct/time
 
 ## Contributing
 
-Contributions to the package are always welcome! 
+Contributions to the package are always welcome!
 
 - Report any bugs or issues on the [issue tracker](https://github.com/croct-tech/time-js/issues).
 - For major changes, please [open an issue](https://github.com/croct-tech/time-js/issues) first to discuss what you would like to change.
