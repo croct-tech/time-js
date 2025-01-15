@@ -26,7 +26,7 @@
 Use the package manage [NPM](https://getcomposer.org) to install the package:
 
 ```sh
-npm install @croct-tech/time
+npm install @croct/time
 ```
 
 ## Contributing
@@ -79,7 +79,7 @@ npm link
 Then on any other project that uses the library:
 
 ```sh
-npm link @croct-tech/time
+npm link @croct/time
 ```
 
 ## License
