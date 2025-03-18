@@ -68,7 +68,7 @@ export class LocalDateTime {
     }
 
     private static fromZonedDate(date: Date, zone: TimeZone): LocalDateTime {
-        const localDate = date.toLocaleString('en-US', {
+        const localDateTime = new Date(date.toLocaleString('en-US', {
             timeZone: zone.getId(),
             // Handle a bug on recent versions of Node and browsers where dates up to the year 200
             // are correct only for the gregory calendar and not the iso8601 calendar
@@ -86,31 +86,22 @@ export class LocalDateTime {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Missing type definition.
             // @ts-ignore
             fractionalSecondDigits: 3,
-        });
+        }));
 
-        const localDateTime = new Date(localDate);
-
+        // Handles pre-100 years. Dates at year "1" are interpreted as "2001".
         localDateTime.setUTCFullYear(date.getUTCFullYear());
-
-        const year = localDateTime.getFullYear();
-        const month = localDateTime.getMonth() + 1;
-        const day = localDateTime.getDate();
-        const hour = localDateTime.getHours();
-        const minute = localDateTime.getMinutes();
-        const second = localDateTime.getSeconds();
-        const milli = localDateTime.getMilliseconds() * LocalTime.NANOS_PER_MILLI;
 
         return LocalDateTime.of(
             LocalDate.of(
-                year,
-                month,
-                day,
+                localDateTime.getFullYear(),
+                localDateTime.getMonth() + 1,
+                localDateTime.getDate(),
             ),
             LocalTime.of(
-                hour,
-                minute,
-                second,
-                milli,
+                localDateTime.getHours(),
+                localDateTime.getMinutes(),
+                localDateTime.getSeconds(),
+                localDateTime.getMilliseconds() * LocalTime.NANOS_PER_MILLI,
             ),
         );
     }
