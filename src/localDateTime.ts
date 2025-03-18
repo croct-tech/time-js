@@ -722,9 +722,11 @@ export class LocalDateTime {
      * @returns The time-zone offset in seconds.
      */
     private static getTimeZoneOffset(date: Date, timezone: string): number {
+        const utc = TimeZone.UTC.getId();
+        const utcDate = new Date(date.toLocaleString('en-US', {timeZone: utc}));
         const localDate = new Date(date.toLocaleString('en-US', {timeZone: timezone}));
 
-        return (localDate.getTime() - date.getTime()) / LocalTime.MILLIS_PER_SECOND;
+        return -(localDate.getTime() - utcDate.getTime()) / LocalTime.MILLIS_PER_SECOND;
     }
 
     /**
