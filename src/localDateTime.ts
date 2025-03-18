@@ -722,18 +722,9 @@ export class LocalDateTime {
      * @returns The time-zone offset in seconds.
      */
     private static getTimeZoneOffset(date: Date, timezone: string): number {
-        const timeZoneName = new Intl.DateTimeFormat('en-US', {
-            timeZone: timezone,
-            calendar: 'iso8601',
-            timeZoneName: 'short',
-        }).format(date);
+        const localDate = new Date(date.toLocaleString('en-US', {timeZone: timezone}));
 
-        const matches = timeZoneName.match(/([+-]\d+)(?::(\d+))?/);
-        const hours = Number.parseInt(matches?.[1] ?? '0', 10);
-        const minutes = Number.parseInt(matches?.[2] ?? '0', 10);
-
-        return hours * LocalTime.SECONDS_PER_HOUR
-            + minutes * LocalTime.SECONDS_PER_MINUTE;
+        return (localDate.getTime() - date.getTime()) / LocalTime.MILLIS_PER_SECOND;
     }
 
     /**
