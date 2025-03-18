@@ -68,7 +68,7 @@ export class LocalDateTime {
     }
 
     private static fromZonedDate(date: Date, zone: TimeZone): LocalDateTime {
-        const localDateTime = date.toLocaleString('sv-SE', {
+        const localDate = date.toLocaleString('en-US', {
             timeZone: zone.getId(),
             // Handle a bug on recent versions of Node and browsers where dates up to the year 200
             // are correct only for the gregory calendar and not the iso8601 calendar
@@ -88,22 +88,27 @@ export class LocalDateTime {
             fractionalSecondDigits: 3,
         });
 
-        // eslint-disable-next-line max-len -- Regex literal cannot be split.
-        const matches = localDateTime.match(/(?<year>\d{1,4}-(?<month>\d{2})-(?<day>\d{2})) (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2}),(?<fraction>\d{3})/);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain -- Safe assertion.
-        const groups = matches?.groups!;
+        const localDateTime = new Date(localDate);
+
+        const year = localDateTime.getFullYear();
+        const month = localDateTime.getMonth() + 1;
+        const day = localDateTime.getDate();
+        const hour = localDateTime.getHours();
+        const minute = localDateTime.getMinutes();
+        const second = localDateTime.getSeconds();
+        const milli = localDateTime.getMilliseconds() * LocalTime.NANOS_PER_MILLI;
 
         return LocalDateTime.of(
             LocalDate.of(
-                Number.parseInt(groups.year, 10),
-                Number.parseInt(groups.month, 10),
-                Number.parseInt(groups.day, 10),
+                year,
+                month,
+                day,
             ),
             LocalTime.of(
-                Number.parseInt(groups.hour, 10),
-                Number.parseInt(groups.minute, 10),
-                Number.parseInt(groups.second, 10),
-                Number.parseInt(groups.fraction.padEnd(9, '0'), 10),
+                hour,
+                minute,
+                second,
+                milli,
             ),
         );
     }
