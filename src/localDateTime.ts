@@ -68,37 +68,37 @@ export class LocalDateTime {
     }
 
     private static fromZonedDate(date: Date, zone: TimeZone): LocalDateTime {
-        const formatter = new Intl.DateTimeFormat('en-US', {
+        const localDate = date.toLocaleString('en-US', {
             timeZone: zone.getId(),
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric',
+            // Handle a bug on recent versions of Node and browsers where dates up to the year 200
+            // are correct only for the gregory calendar and not the iso8601 calendar
+            // as defined by the ECMAScript specification.
+            // Tracking issue:
+            // https://github.com/nodejs/node/issues/49157
+            calendar: date.getUTCFullYear() < 200 ? 'gregory' : 'iso8601',
+            hourCycle: 'h23',
             year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour12: false,
-            timeZoneName: 'short',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Missing type definition.
+            // @ts-ignore
+            fractionalSecondDigits: 3,
         });
 
-        const parts = formatter.formatToParts(date);
+        const localDateTime = new Date(localDate);
 
-        const mapped: any = parts.reduce(
-            (acc: any, part) => {
-                acc[part.type] = part.value;
+        localDateTime.setUTCFullYear(date.getUTCFullYear());
 
-                return acc;
-            },
-            {},
-        );
-
-        const year = parseInt(mapped.year, 10);
-        const month = parseInt(mapped.month, 10);
-        const day = parseInt(mapped.day, 10);
-        const hour = parseInt(mapped.hour, 10);
-        const minute = parseInt(mapped.minute, 10);
-        const second = parseInt(mapped.second, 10);
-
-        const milli = date.getUTCMilliseconds() * LocalTime.NANOS_PER_MILLI;
+        const year = localDateTime.getFullYear();
+        const month = localDateTime.getMonth() + 1;
+        const day = localDateTime.getDate();
+        const hour = localDateTime.getHours();
+        const minute = localDateTime.getMinutes();
+        const second = localDateTime.getSeconds();
+        const milli = localDateTime.getMilliseconds() * LocalTime.NANOS_PER_MILLI;
 
         return LocalDateTime.of(
             LocalDate.of(
@@ -107,7 +107,7 @@ export class LocalDateTime {
                 day,
             ),
             LocalTime.of(
-                hour >= 24 ? 0 : hour,
+                hour,
                 minute,
                 second,
                 milli,
