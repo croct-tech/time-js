@@ -68,7 +68,7 @@ export class LocalDateTime {
     }
 
     private static fromZonedDate(date: Date, zone: TimeZone): LocalDateTime {
-        const localDateTime = new Date(date.toLocaleString('en-US', {
+        const localDateTime = date.toLocaleString('sv-SE', {
             timeZone: zone.getId(),
             // Handle a bug on recent versions of Node and browsers where dates up to the year 200
             // are correct only for the gregory calendar and not the iso8601 calendar
@@ -86,22 +86,24 @@ export class LocalDateTime {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Missing type definition.
             // @ts-ignore
             fractionalSecondDigits: 3,
-        }));
+        });
 
-        // Handles pre-100 years. Dates at year "1" are interpreted as "2001".
-        localDateTime.setUTCFullYear(date.getUTCFullYear());
+        // eslint-disable-next-line max-len -- Regex literal cannot be split.
+        const matches = localDateTime.match(/(?<year>\d{1,4}-(?<month>\d{2})-(?<day>\d{2})) (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2}),(?<fraction>\d{3})/);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain -- Safe assertion.
+        const groups = matches?.groups!;
 
         return LocalDateTime.of(
             LocalDate.of(
-                localDateTime.getFullYear(),
-                localDateTime.getMonth() + 1,
-                localDateTime.getDate(),
+                Number.parseInt(groups.year, 10),
+                Number.parseInt(groups.month, 10),
+                Number.parseInt(groups.day, 10),
             ),
             LocalTime.of(
-                localDateTime.getHours(),
-                localDateTime.getMinutes(),
-                localDateTime.getSeconds(),
-                localDateTime.getMilliseconds() * LocalTime.NANOS_PER_MILLI,
+                Number.parseInt(groups.hour, 10),
+                Number.parseInt(groups.minute, 10),
+                Number.parseInt(groups.second, 10),
+                Number.parseInt(groups.fraction.padEnd(9, '0'), 10),
             ),
         );
     }
@@ -720,11 +722,18 @@ export class LocalDateTime {
      * @returns The time-zone offset in seconds.
      */
     private static getTimeZoneOffset(date: Date, timezone: string): number {
-        const utc = TimeZone.UTC.getId();
-        const utcDate = new Date(date.toLocaleString('en-US', {timeZone: utc}));
-        const localDate = new Date(date.toLocaleString('en-US', {timeZone: timezone}));
+        const timeZoneName = new Intl.DateTimeFormat('sv-SE', {
+            timeZone: timezone,
+            calendar: 'iso8601',
+            timeZoneName: 'short',
+        }).format(date);
 
-        return -(localDate.getTime() - utcDate.getTime()) / LocalTime.MILLIS_PER_SECOND;
+        const matches = timeZoneName.match(/GMT([+-]\d+)(?::(\d+))?/);
+        const hours = Number.parseInt(matches?.[1] ?? '0', 10);
+        const minutes = Number.parseInt(matches?.[2] ?? '0', 10);
+
+        return hours * LocalTime.SECONDS_PER_HOUR
+            + minutes * LocalTime.SECONDS_PER_MINUTE;
     }
 
     /**
