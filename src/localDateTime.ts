@@ -89,7 +89,7 @@ export class LocalDateTime {
         });
 
         // eslint-disable-next-line max-len -- Regex literal cannot be split.
-        const matches = localDateTime.match(/(?<year>\d{1,4}-(?<month>\d{2})-(?<day>\d{2})) (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2}),(?<fraction>\d{3})/);
+        const matches = localDateTime.match(/(?<year>\d{1,4})-(?<month>\d{2})-(?<day>\d{2}) (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2}),(?<fraction>\d{3})/);
         // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain -- Safe assertion.
         const groups = matches?.groups!;
 
@@ -722,13 +722,13 @@ export class LocalDateTime {
      * @returns The time-zone offset in seconds.
      */
     private static getTimeZoneOffset(date: Date, timezone: string): number {
-        const timeZoneName = new Intl.DateTimeFormat('en-US', {
+        const timeZoneName = new Intl.DateTimeFormat('sv-SE', {
             timeZone: timezone,
             calendar: 'iso8601',
             timeZoneName: 'short',
         }).format(date);
 
-        const matches = timeZoneName.match(/([+-]\d+)(?::(\d+))?/);
+        const matches = timeZoneName.match(/GMT([+-]\d+)(?::(\d+))?/);
         const hours = Number.parseInt(matches?.[1] ?? '0', 10);
         const minutes = Number.parseInt(matches?.[2] ?? '0', 10);
 
