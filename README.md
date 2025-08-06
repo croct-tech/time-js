@@ -9,9 +9,9 @@
 </p>
 <p align="center">
     <img alt="Build" src="https://github.com/croct-tech/time-js/actions/workflows/validate-branch.yaml/badge.svg" />
-    <a href="https://codeclimate.com/repos/6075b20f54dcd20f24000396/maintainability"><img src="https://api.codeclimate.com/v1/badges/ff00fd9545c98420a6be/maintainability" /></a>
-    <a href="https://codeclimate.com/repos/6075b20f54dcd20f24000396/test_coverage"><img src="https://api.codeclimate.com/v1/badges/ff00fd9545c98420a6be/test_coverage" /></a>
-    <br />
+    <a href="https://qlty.sh/gh/croct-tech/projects/time-js"><img src="https://qlty.sh/badges/546edc69-4d40-458a-ad8e-43c968038ee0/coverage.svg" alt="Code Coverage" /></a>
+<a href="https://qlty.sh/gh/croct-tech/projects/time-js"><img src="https://qlty.sh/badges/546edc69-4d40-458a-ad8e-43c968038ee0/maintainability.svg" alt="Maintainability" /></a>
+<br />
     <br />
     <a href="https://github.com/croct-tech/value-object-js/releases">📦Releases</a>
         ·
