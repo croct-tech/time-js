@@ -7,9 +7,43 @@ export class Duration {
 
     private readonly nanos: number;
 
+    // eslint-disable-next-line max-len -- Regex literal cannot be split.
+    private static PATTERN = /(?<sign>[-+]?)P(?:(?<day>[-+]?[0-9]+)D)?(?<time>T(?:(?<hour>[-+]?[0-9]+)H)?(?:(?<minute>[-+]?[0-9]+)M)?(?:(?<second>[-+]?[0-9]+)(?:[.,](?<fraction>[0-9]{0,9}))?S)?)?/i;
+
     private constructor(seconds: number, nanos = 0) {
         this.seconds = seconds;
         this.nanos = nanos;
+    }
+
+    public static parse(value: string): Duration {
+        const {groups} = value.match(Duration.PATTERN) ?? {};
+
+        if (groups === undefined) {
+            throw new Error(`Unrecognized UTC ISO-8601 duration string "${value}".`);
+        }
+
+        const isDayUndefined = groups.day === undefined;
+        const isTimeUndefined = groups.hour === undefined && groups.minute === undefined && groups.second === undefined;
+        const isTimeSpecified = groups.time?.[0] === 'T';
+
+        if (isDayUndefined && isTimeUndefined) {
+            throw new Error(`Unrecognized UTC ISO-8601 duration string "${value}".`);
+        }
+
+        if (isTimeSpecified && isTimeUndefined) {
+            throw new Error(`Unrecognized UTC ISO-8601 duration string "${value}".`);
+        }
+
+        const daysAsSeconds = Number.parseInt(groups.day ?? '0', 10) * LocalTime.SECONDS_PER_DAY;
+        const hoursAsSeconds = Number.parseInt(groups.hour ?? '0', 10) * LocalTime.SECONDS_PER_HOUR;
+        const minutesAsSeconds = Number.parseInt(groups.minute ?? '0', 10) * LocalTime.SECONDS_PER_MINUTE;
+        const seconds = Number.parseInt(groups.second ?? '0', 10);
+        const fraction = Number.parseInt(groups.fraction?.padEnd(9, '0') ?? '0', 10);
+
+        const totalSeconds = Duration.safeMultiAdd(daysAsSeconds, hoursAsSeconds, minutesAsSeconds, seconds);
+        const nanos = groups.second?.[0] === '-' && fraction > 0 ? (fraction * -1) : fraction;
+
+        return Duration.ofSeconds(totalSeconds, nanos);
     }
 
     public static zero(): Duration {
@@ -398,5 +432,15 @@ export class Duration {
         output += 'S';
 
         return output;
+    }
+
+    private static safeMultiAdd(...elements: number[]): number {
+        let result = 0;
+
+        for (const element of elements) {
+            result = addExact(result, element);
+        }
+
+        return result;
     }
 }

@@ -105,6 +105,126 @@ describe('A value object representing a time duration', () => {
         expect(secondsDuration.getNanos()).toStrictEqual(0);
     });
 
+    it.each([
+        // Zero
+        ['PT0S', 0, 0],
+
+        // Unsigned seconds
+        ['PT1S', 1, 0],
+        ['PT12S', 12, 0],
+        ['PT123456789S', 123456789, 0],
+        [`PT${Number.MAX_SAFE_INTEGER}S`, Number.MAX_SAFE_INTEGER, 0],
+
+        // Signed seconds
+        ['PT+1S', 1, 0],
+        ['PT+12S', 12, 0],
+        ['PT-1S', -1, 0],
+        ['PT-12S', -12, 0],
+        ['PT-123456789S', -123456789, 0],
+        [`PT${Number.MIN_SAFE_INTEGER}S`, Number.MIN_SAFE_INTEGER, 0],
+
+        // Unsigned fractions
+        ['PT0.1S', 0, 100000000],
+        ['PT1.1S', 1, 100000000],
+        ['PT1.12S', 1, 120000000],
+        ['PT1.123S', 1, 123000000],
+        ['PT1.1234S', 1, 123400000],
+        ['PT1.12345S', 1, 123450000],
+        ['PT1.123456S', 1, 123456000],
+        ['PT1.1234567S', 1, 123456700],
+        ['PT1.12345678S', 1, 123456780],
+        ['PT1.123456789S', 1, 123456789],
+        [`PT${Number.MAX_SAFE_INTEGER}.123456789S`, Number.MAX_SAFE_INTEGER, 123456789],
+
+        // Signed fractions
+        ['PT+0.1S', 0, 100000000],
+        ['PT+1.1S', 1, 100000000],
+        ['PT+1.12S', 1, 120000000],
+        ['PT+1.123S', 1, 123000000],
+        ['PT+1.1234S', 1, 123400000],
+        ['PT+1.12345S', 1, 123450000],
+        ['PT+1.123456S', 1, 123456000],
+        ['PT+1.1234567S', 1, 123456700],
+        ['PT+1.12345678S', 1, 123456780],
+        ['PT+1.123456789S', 1, 123456789],
+        [`PT+${Number.MAX_SAFE_INTEGER}.123456789S`, Number.MAX_SAFE_INTEGER, 123456789],
+        ['PT-0.1S', -1, 1000000000 - 100000000],
+        ['PT-1.1S', -2, 1000000000 - 100000000],
+        ['PT-1.12S', -2, 1000000000 - 120000000],
+        ['PT-1.123S', -2, 1000000000 - 123000000],
+        ['PT-1.1234S', -2, 1000000000 - 123400000],
+        ['PT-1.12345S', -2, 1000000000 - 123450000],
+        ['PT-1.123456S', -2, 1000000000 - 123456000],
+        ['PT-1.1234567S', -2, 1000000000 - 123456700],
+        ['PT-1.12345678S', -2, 1000000000 - 123456780],
+        ['PT-1.123456789S', -2, 1000000000 - 123456789],
+        [`PT${Number.MIN_SAFE_INTEGER}.000000000S`, Number.MIN_SAFE_INTEGER, 0],
+
+        // Minutes
+        ['PT12M', 12 * 60, 0],
+        ['PT12M0.35S', 12 * 60, 350000000],
+        ['PT12M1.35S', 12 * 60 + 1, 350000000],
+        ['PT12M-0.35S', 12 * 60 - 1, 1000000000 - 350000000],
+        ['PT12M-1.35S', 12 * 60 - 2, 1000000000 - 350000000],
+
+        // Hours
+        ['PT12H', 12 * 3600, 0],
+        ['PT12H0.35S', 12 * 3600, 350000000],
+        ['PT12H1.35S', 12 * 3600 + 1, 350000000],
+        ['PT12H-0.35S', 12 * 3600 - 1, 1000000000 - 350000000],
+        ['PT12H-1.35S', 12 * 3600 - 2, 1000000000 - 350000000],
+
+        // Days
+        ['P12D', 12 * 24 * 3600, 0],
+        ['P12DT0.35S', 12 * 24 * 3600, 350000000],
+        ['P12DT1.35S', 12 * 24 * 3600 + 1, 350000000],
+        ['P12DT-0.35S', 12 * 24 * 3600 - 1, 1000000000 - 350000000],
+        ['P12DT-1.35S', 12 * 24 * 3600 - 2, 1000000000 - 350000000],
+    ])('can parse a ISO-8601 duration string', (value, seconds, nanos) => {
+        const duration = Duration.parse(value);
+        const lowercaseDuration = Duration.parse(value.toLowerCase());
+        const commaDuration = Duration.parse(value.replace('.', ','));
+
+        expect(duration.getSeconds()).toBe(seconds);
+        expect(duration.getNanos()).toBe(nanos);
+
+        expect(lowercaseDuration.getSeconds()).toBe(seconds);
+        expect(lowercaseDuration.getNanos()).toBe(nanos);
+
+        expect(commaDuration.getSeconds()).toBe(seconds);
+        expect(commaDuration.getNanos()).toBe(nanos);
+    });
+
+    it.each([
+        [''],
+        ['P1DT'],
+        ['PTS'],
+        ['AT0S'],
+        ['PA0S'],
+        ['PT0A'],
+        ['PT+S'],
+        ['PT-S'],
+        ['PT.S'],
+        ['PTAS'],
+        ['PT-.S'],
+        ['PT+.S'],
+        ['PT1ABC2S'],
+        ['PT1.1ABC2S'],
+        ['PT0.1234567891S'],
+        ['PT.1S'],
+        ['PT2.-3'],
+        ['PT-2.-3'],
+        ['PT2.+3'],
+        ['PT-2.+3'],
+    ])('cannot parse a malformed duration string', value => {
+        expect(() => Duration.parse(value)).toThrow(`Unrecognized UTC ISO-8601 duration string "${value}".`);
+    });
+
+    it('cannot parse a duration that overflows integer limits', () => {
+        expect(() => Duration.parse('PT123456789123456789123456789S'))
+            .toThrow('The result overflows the range of safe integers.');
+    });
+
     type BetweenScenario = {
         start: Instant,
         end: Instant,
