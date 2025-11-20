@@ -372,6 +372,42 @@ describe('A value object representing a time duration', () => {
         expect(Duration.between(scenario.start, scenario.end)).toStrictEqual(scenario.duration);
     });
 
+    type LocalTimeBetweenScenario = {
+        start: LocalTime,
+        end: LocalTime,
+        duration: Duration,
+    };
+
+    it.each<LocalTimeBetweenScenario>([
+        {
+            start: LocalTime.of(0),
+            end: LocalTime.of(0),
+            duration: Duration.zero(),
+        },
+        {
+            start: LocalTime.of(0),
+            end: LocalTime.of(1, 2, 3, 4),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+        },
+        {
+            start: LocalTime.of(1, 2, 3, 4),
+            end: LocalTime.of(0),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+        },
+        {
+            start: LocalTime.of(0, 0, 2, 5),
+            end: LocalTime.of(0, 0, 1, 9),
+            duration: Duration.ofSeconds(-1, 4),
+        },
+        {
+            start: LocalTime.of(0, 0, 2, 5),
+            end: LocalTime.of(0, 0, 3, 1),
+            duration: Duration.ofSeconds(1, -4),
+        },
+    ])('should calculate the duration between two local times', scenario => {
+        expect(Duration.betweenLocalTime(scenario.start, scenario.end)).toStrictEqual(scenario.duration);
+    });
+
     it(('can determine whether the duration is zero'), () => {
         expect(Duration.zero().isZero()).toStrictEqual(true);
         expect(Duration.ofSeconds(0, 1).isZero()).toStrictEqual(false);

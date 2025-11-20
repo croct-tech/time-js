@@ -117,6 +117,21 @@ export class Duration {
         return Duration.ofSeconds(seconds, nanos);
     }
 
+    public static betweenLocalTime(start: LocalTime, end: LocalTime): Duration {
+        const endSeconds = end.getHour() * LocalTime.SECONDS_PER_HOUR
+            + end.getMinute() * LocalTime.SECONDS_PER_MINUTE
+            + end.getSecond();
+
+        const startSeconds = start.getHour() * LocalTime.SECONDS_PER_HOUR
+            + start.getMinute() * LocalTime.SECONDS_PER_MINUTE
+            + start.getSecond();
+
+        const seconds = subtractExact(endSeconds, startSeconds);
+        const nanos = subtractExact(end.getNano(), start.getNano());
+
+        return Duration.ofSeconds(seconds, nanos);
+    }
+
     public isZero(): boolean {
         return this.seconds === 0 && this.nanos === 0;
     }
@@ -159,6 +174,28 @@ export class Duration {
         }
 
         return Duration.ofSeconds(this.seconds, nanos);
+    }
+
+    public plusDuration(duration: Duration): Duration {
+        if (duration.isZero()) {
+            return this;
+        }
+
+        const totalSeconds = addExact(this.seconds, duration.getSeconds());
+        const totalNanos = addExact(this.nanos, duration.getNanos());
+
+        return Duration.ofSeconds(totalSeconds, totalNanos);
+    }
+
+    public minusDuration(duration: Duration): Duration {
+        if (duration.isZero()) {
+            return this;
+        }
+
+        const totalSeconds = subtractExact(this.seconds, duration.getSeconds());
+        const totalNanos = subtractExact(this.nanos, duration.getNanos());
+
+        return Duration.ofSeconds(totalSeconds, totalNanos);
     }
 
     public plusDays(days: number): Duration {
@@ -276,6 +313,21 @@ export class Duration {
 
     public equals(other: Duration): boolean {
         return this.seconds === other.seconds && this.nanos === other.nanos;
+    }
+
+    public multipliedBy(multiplier: number): Duration {
+        if (multiplier === 0) {
+            return Duration.zero();
+        }
+
+        if (multiplier === 1) {
+            return this;
+        }
+
+        const seconds = multiplyExact(this.seconds, multiplier);
+        const nanos = multiplyExact(this.nanos, multiplier);
+
+        return Duration.ofSeconds(seconds, nanos);
     }
 
     public addTo(instant: Instant): Instant {
