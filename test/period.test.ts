@@ -1,4 +1,4 @@
-import {LocalDate, Period} from '../src';
+import {Instant, LocalDate, Period} from '../src';
 
 describe('A ISO date-based amount of time', () => {
     it('can be created from a number of years, months and days', () => {
@@ -478,6 +478,54 @@ describe('A ISO date-based amount of time', () => {
         const period = Period.of(11, 22, 33);
 
         expect(period.toDaysPart()).toStrictEqual(33);
+    });
+
+    it('can be added to an instant', () => {
+        const instant = Instant.parse('2015-08-31T00:00:00Z');
+
+        expect(Instant.parse('2016-08-31T00:00:00Z')).toStrictEqual(Period.of(1, 0, 0).addTo(instant));
+        expect(Instant.parse('2015-09-30T00:00:00Z')).toStrictEqual(Period.of(0, 1, 0).addTo(instant));
+        expect(Instant.parse('2015-09-01T00:00:00Z')).toStrictEqual(Period.of(0, 0, 1).addTo(instant));
+
+        const period = Period.of(1, 2, 3);
+
+        // 2015-08-31 + 1 year => 2016-08-31
+        // 2016-08-31 + 2 months => 2016-10-31
+        // 2016-10-31 + 3 days => 2016-11-03
+
+        expect(Instant.parse('2016-11-03T00:00:00Z')).toStrictEqual(period.addTo(instant));
+
+        const nonNormalizedPeriod = Period.of(11, 22, 33);
+
+        // 2015-08-31 + 11 years => 2026-08-31
+        // 2026-08-31 + 22 months => 2028-06-30
+        // 2027-06-30 + 33 days => 2028-08-02
+
+        expect(Instant.parse('2028-08-02T00:00:00Z')).toStrictEqual(nonNormalizedPeriod.addTo(instant));
+    });
+
+    it('can be subtracted from an instant', () => {
+        const instant = Instant.parse('2015-08-31T00:00:00Z');
+
+        expect(Instant.parse('2014-08-31T00:00:00Z')).toStrictEqual(Period.of(1, 0, 0).subtractFrom(instant));
+        expect(Instant.parse('2015-07-31T00:00:00Z')).toStrictEqual(Period.of(0, 1, 0).subtractFrom(instant));
+        expect(Instant.parse('2015-08-30T00:00:00Z')).toStrictEqual(Period.of(0, 0, 1).subtractFrom(instant));
+
+        const period = Period.of(1, 2, 3);
+
+        // 2015-08-31 - 1 year => 2014-08-31
+        // 2014-08-31 - 2 months => 2014-06-30
+        // 2014-06-30 + 3 days => 2014-06-27
+
+        expect(Instant.parse('2014-06-27T00:00:00Z')).toStrictEqual(period.subtractFrom(instant));
+
+        const nonNormalizedPeriod = Period.of(11, 22, 33);
+
+        // 2015-08-31 - 11 years => 2004-08-31
+        // 2004-08-31 - 22 months => 2002-10-31
+        // 2002-10-31 - 33 days => 2002-09-28
+
+        expect(Instant.parse('2002-09-28T00:00:00Z')).toStrictEqual(nonNormalizedPeriod.subtractFrom(instant));
     });
 
     it('can be added to an ISO local date', () => {

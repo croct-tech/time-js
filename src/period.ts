@@ -1,5 +1,8 @@
 import {addExact, intDiv, multiplyExact, subtractExact} from './math';
 import {LocalDate} from './localDate';
+import {Instant} from './instant';
+import {LocalDateTime} from './localDateTime';
+import {TimeZone} from './timeZone';
 
 /**
  * A date-based amount of time in the ISO-8601 calendar system,
@@ -444,6 +447,30 @@ export class Period {
      */
     public toYearsPart(): number {
         return this.toYears();
+    }
+
+    /**
+     * Adds this period to the specified instant.
+     */
+    public addTo(instant: Instant): Instant {
+        const localDateTime = LocalDateTime.ofInstant(instant, TimeZone.UTC)
+            .plusYears(this.years)
+            .plusMonths(this.months)
+            .plusDays(this.days);
+
+        return localDateTime.toInstant(TimeZone.UTC);
+    }
+
+    /**
+     * Subtracts this period to the specified instant.
+     */
+    public subtractFrom(instant: Instant): Instant {
+        const localDateTime = LocalDateTime.ofInstant(instant, TimeZone.UTC)
+            .minusYears(this.years)
+            .minusMonths(this.months)
+            .minusDays(this.days);
+
+        return localDateTime.toInstant(TimeZone.UTC);
     }
 
     /**
