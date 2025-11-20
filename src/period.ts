@@ -105,6 +105,11 @@ export class Period {
         return start.periodUntil(end);
     }
 
+    /**
+     * Parses a period from an ISO-8601 based string. Such as 'P1Y2M3W4D'.
+     *
+     * @param value The string to parse.
+     */
     public static parse(value: string): Period {
         const {groups} = value.match(Period.PATTERN) ?? {};
 
