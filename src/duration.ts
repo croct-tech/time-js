@@ -8,7 +8,7 @@ export class Duration {
     private readonly nanos: number;
 
     // eslint-disable-next-line max-len -- Regex literal cannot be split.
-    private static PATTERN = /(?<sign>[-+]?)P(?:(?<day>[-+]?[0-9]+)D)?(?<time>T(?:(?<hour>[-+]?[0-9]+)H)?(?:(?<minute>[-+]?[0-9]+)M)?(?:(?<second>[-+]?[0-9]+)(?:[.,](?<fraction>[0-9]{0,9}))?S)?)?/i;
+    private static PATTERN = /^(?<sign>[-+]?)P(?:(?<day>[-+]?[0-9]+)D)?(?<time>T(?:(?<hour>[-+]?[0-9]+)H)?(?:(?<minute>[-+]?[0-9]+)M)?(?:(?<second>[-+]?[0-9]+)(?:[.,](?<fraction>[0-9]{0,9}))?S)?)?$/i;
 
     private constructor(seconds: number, nanos = 0) {
         this.seconds = seconds;
@@ -19,7 +19,7 @@ export class Duration {
         const {groups} = value.match(Duration.PATTERN) ?? {};
 
         if (groups === undefined) {
-            throw new Error(`Unrecognized UTC ISO-8601 duration string "${value}".`);
+            throw new Error(`Unrecognized ISO-8601 duration string "${value}".`);
         }
 
         const isDayUndefined = groups.day === undefined;
@@ -27,11 +27,11 @@ export class Duration {
         const isTimeSpecified = groups.time?.[0] === 'T';
 
         if (isDayUndefined && isTimeUndefined) {
-            throw new Error(`Unrecognized UTC ISO-8601 duration string "${value}".`);
+            throw new Error(`Unrecognized ISO-8601 duration string "${value}".`);
         }
 
         if (isTimeSpecified && isTimeUndefined) {
-            throw new Error(`Unrecognized UTC ISO-8601 duration string "${value}".`);
+            throw new Error(`Unrecognized ISO-8601 duration string "${value}".`);
         }
 
         const daysAsSeconds = Number.parseInt(groups.day ?? '0', 10) * LocalTime.SECONDS_PER_DAY;
@@ -43,7 +43,11 @@ export class Duration {
         const totalSeconds = Duration.safeMultiAdd(daysAsSeconds, hoursAsSeconds, minutesAsSeconds, seconds);
         const nanos = groups.second?.[0] === '-' && fraction > 0 ? (fraction * -1) : fraction;
 
-        return Duration.ofSeconds(totalSeconds, nanos);
+        const negate = groups.sign === '-';
+        const finalSeconds = totalSeconds !== 0 && negate ? -totalSeconds : totalSeconds;
+        const finalNanos = nanos !== 0 && negate ? -nanos : nanos;
+
+        return Duration.ofSeconds(finalSeconds, finalNanos);
     }
 
     public static zero(): Duration {
