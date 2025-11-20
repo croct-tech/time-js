@@ -1,4 +1,4 @@
-import {LocalDate} from '../src';
+import {LocalDate, Period} from '../src';
 
 describe('A value object representing a local date', () => {
     it('can be created from its components', () => {
@@ -565,6 +565,68 @@ describe('A value object representing a local date', () => {
         [LocalDate.MAX, LocalDate.MAX_EPOCH_DAY],
     ])('can be converted to an epoch day', (localDate: LocalDate, expected: number) => {
         expect(localDate.toEpochDay()).toStrictEqual(expected);
+    });
+
+    it.each(Object.entries({
+        '2015-08-31 / 2015-08-31': {
+            start: LocalDate.of(2015, 8, 31),
+            end: LocalDate.of(2015, 8, 31),
+            expected: Period.zero(),
+        },
+        '2015-08-31 / 2015-09-01': {
+            start: LocalDate.of(2015, 8, 31),
+            end: LocalDate.of(2015, 9, 1),
+            expected: Period.ofDays(1),
+        },
+        '2015-08-31 / 2015-09-02': {
+            start: LocalDate.of(2015, 8, 31),
+            end: LocalDate.of(2015, 9, 2),
+            expected: Period.ofDays(2),
+        },
+        '2015-08-31 / 2015-09-07': {
+            start: LocalDate.of(2015, 8, 31),
+            end: LocalDate.of(2015, 9, 7),
+            expected: Period.ofWeeks(1),
+        },
+        '2015-08-31 / 2015-09-14': {
+            start: LocalDate.of(2015, 8, 31),
+            end: LocalDate.of(2015, 9, 14),
+            expected: Period.ofWeeks(2),
+        },
+        '2015-08-31 / 2015-10-01': {
+            start: LocalDate.of(2015, 8, 31),
+            end: LocalDate.of(2015, 10, 1),
+            expected: Period.of(0, 1, 1),
+        },
+        '2015-08-31 / 2015-10-31': {
+            start: LocalDate.of(2015, 8, 31),
+            end: LocalDate.of(2015, 10, 31),
+            expected: Period.ofMonths(2),
+        },
+        '2015-08-31 / 2016-08-31': {
+            start: LocalDate.of(2015, 8, 31),
+            end: LocalDate.of(2016, 8, 31),
+            expected: Period.ofYears(1),
+        },
+        '2015-08-31 / 2017-08-31': {
+            start: LocalDate.of(2015, 8, 31),
+            end: LocalDate.of(2017, 8, 31),
+            expected: Period.ofYears(2),
+        },
+        '2015-08-31 / 2016-11-04': {
+            start: LocalDate.of(2015, 8, 31),
+            end: LocalDate.of(2016, 11, 3),
+            expected: Period.of(1, 2, 3),
+        },
+        '2016-11-04 / 2015-08-31': {
+            start: LocalDate.of(2016, 11, 3),
+            end: LocalDate.of(2015, 8, 31),
+            expected: Period.of(-1, -2, -3),
+        },
+    }))('should calculate the period between interval %s', (_, {start, end, expected}) => {
+        const period = start.periodUntil(end);
+
+        expect(period).toStrictEqual(expected);
     });
 
     it('should serialize to JSON in the ISO-8601 format', () => {

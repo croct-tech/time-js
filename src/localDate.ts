@@ -1,4 +1,5 @@
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact} from './math';
+import {Period} from './period';
 
 /**
  * A date without a time-zone in the ISO-8601 calendar system, such as 2007-12-03.
@@ -489,6 +490,39 @@ export class LocalDate {
     }
 
     /**
+     * Returns the period between this date and the given date.
+     *
+     * @param date The date to compare.
+     */
+    public periodUntil(date: LocalDate): Period {
+        if (this.equals(date)) {
+            return Period.zero();
+        }
+
+        let totalMonths = LocalDate.getProlepticMonth(date.year, date.month)
+            - LocalDate.getProlepticMonth(this.year, this.month);
+
+        let days = date.day - this.day;
+
+        if (totalMonths > 0 && days < 0) {
+            totalMonths--;
+            const previousMonth = this.plusMonths(totalMonths);
+
+            days = date.toEpochDay() - previousMonth.toEpochDay();
+        } else if (totalMonths < 0 && days > 0) {
+            totalMonths++;
+            const monthLen = LocalDate.getMonthLength(date.month, LocalDate.isLeapYear(date.year));
+
+            days -= monthLen;
+        }
+
+        const years = intDiv(totalMonths, 12);
+        const months = totalMonths % 12;
+
+        return Period.of(years, months, days);
+    }
+
+    /**
      * Returns the ISO-8601 string representation of this date.
      */
     public toString(): string {
@@ -496,6 +530,16 @@ export class LocalDate {
         const day = `${this.day}`.padStart(2, '0');
 
         return `${this.year}-${month}-${day}`;
+    }
+
+    /**
+     * Returns the proleptic month of the given year and month.
+     *
+     * @param year The year in the ISO-8601 calendar system.
+     * @param month The month of the year.
+     */
+    private static getProlepticMonth(year: number, month: number): number {
+        return year * 12 + month - 1;
     }
 
     /**
