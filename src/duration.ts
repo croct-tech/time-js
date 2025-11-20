@@ -184,6 +184,27 @@ export class Duration {
     }
 
     /**
+     * Obtains a Duration between two local times.
+     *
+     * @param start - The start local time
+     * @param end - The end local time
+     */
+    public static betweenLocalTime(start: LocalTime, end: LocalTime): Duration {
+        const endSeconds = end.getHour() * LocalTime.SECONDS_PER_HOUR
+            + end.getMinute() * LocalTime.SECONDS_PER_MINUTE
+            + end.getSecond();
+
+        const startSeconds = start.getHour() * LocalTime.SECONDS_PER_HOUR
+            + start.getMinute() * LocalTime.SECONDS_PER_MINUTE
+            + start.getSecond();
+
+        const seconds = subtractExact(endSeconds, startSeconds);
+        const nanos = subtractExact(end.getNano(), start.getNano());
+
+        return Duration.ofSeconds(seconds, nanos);
+    }
+
+    /**
      * Checks if this duration is zero length.
      */
     public isZero(): boolean {
@@ -256,6 +277,38 @@ export class Duration {
         }
 
         return Duration.ofSeconds(this.seconds, nanos);
+    }
+
+    /**
+     * Returns a copy of this duration with the specified duration added.
+     *
+     * @param duration - The duration to add
+     */
+    public plusDuration(duration: Duration): Duration {
+        if (duration.isZero()) {
+            return this;
+        }
+
+        const totalSeconds = addExact(this.seconds, duration.getSeconds());
+        const totalNanos = addExact(this.nanos, duration.getNanos());
+
+        return Duration.ofSeconds(totalSeconds, totalNanos);
+    }
+
+    /**
+     * Returns a copy of this duration with the specified duration subtracted.
+     *
+     * @param duration - The duration to subtract
+     */
+    public minusDuration(duration: Duration): Duration {
+        if (duration.isZero()) {
+            return this;
+        }
+
+        const totalSeconds = subtractExact(this.seconds, duration.getSeconds());
+        const totalNanos = subtractExact(this.nanos, duration.getNanos());
+
+        return Duration.ofSeconds(totalSeconds, totalNanos);
     }
 
     /**
@@ -462,6 +515,26 @@ export class Duration {
      */
     public equals(other: Duration): boolean {
         return this.seconds === other.seconds && this.nanos === other.nanos;
+    }
+
+    /**
+     * Returns a copy of this duration multiplied by the specified multiplier.
+     *
+     * @param multiplier - The multiplier
+     */
+    public multipliedBy(multiplier: number): Duration {
+        if (multiplier === 0) {
+            return Duration.zero();
+        }
+
+        if (multiplier === 1) {
+            return this;
+        }
+
+        const seconds = multiplyExact(this.seconds, multiplier);
+        const nanos = multiplyExact(this.nanos, multiplier);
+
+        return Duration.ofSeconds(seconds, nanos);
     }
 
     /**

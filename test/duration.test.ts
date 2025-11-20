@@ -372,6 +372,42 @@ describe('A value object representing a time duration', () => {
         expect(Duration.between(scenario.start, scenario.end)).toStrictEqual(scenario.duration);
     });
 
+    type LocalTimeBetweenScenario = {
+        start: LocalTime,
+        end: LocalTime,
+        duration: Duration,
+    };
+
+    it.each<LocalTimeBetweenScenario>([
+        {
+            start: LocalTime.of(0),
+            end: LocalTime.of(0),
+            duration: Duration.zero(),
+        },
+        {
+            start: LocalTime.of(0),
+            end: LocalTime.of(1, 2, 3, 4),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+        },
+        {
+            start: LocalTime.of(1, 2, 3, 4),
+            end: LocalTime.of(0),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+        },
+        {
+            start: LocalTime.of(0, 0, 2, 5),
+            end: LocalTime.of(0, 0, 1, 9),
+            duration: Duration.ofSeconds(-1, 4),
+        },
+        {
+            start: LocalTime.of(0, 0, 2, 5),
+            end: LocalTime.of(0, 0, 3, 1),
+            duration: Duration.ofSeconds(1, -4),
+        },
+    ])('should calculate the duration between two local times', scenario => {
+        expect(Duration.betweenLocalTime(scenario.start, scenario.end)).toStrictEqual(scenario.duration);
+    });
+
     it(('can determine whether the duration is zero'), () => {
         expect(Duration.zero().isZero()).toStrictEqual(true);
         expect(Duration.ofSeconds(0, 1).isZero()).toStrictEqual(false);
@@ -451,6 +487,28 @@ describe('A value object representing a time duration', () => {
 
         expect(newDuration).toStrictEqual(Duration.ofSeconds(1, 765432110));
         expect(newDuration).not.toStrictEqual(duration);
+    });
+
+    it('can create a copy with an duration added', () => {
+        const duration = Duration.ofSeconds(1, 234567890);
+
+        // Zero amount
+        expect(duration).toStrictEqual(duration.plusDuration(Duration.zero()));
+
+        const otherDuration = Duration.ofSeconds(8, 9);
+
+        expect(Duration.ofSeconds(9, 234567899)).toStrictEqual(duration.plusDuration(otherDuration));
+    });
+
+    it('can create a copy with an duration subtracted', () => {
+        const duration = Duration.ofSeconds(1, 234567890);
+
+        // Zero amount
+        expect(duration).toStrictEqual(duration.minusDuration(Duration.zero()));
+
+        const otherDuration = Duration.ofSeconds(1, 9);
+
+        expect(Duration.ofSeconds(0, 234567881)).toStrictEqual(duration.minusDuration(otherDuration));
     });
 
     it('can create a copy with a duration in standard 24 hours days added', () => {
@@ -748,6 +806,36 @@ describe('A value object representing a time duration', () => {
         expect(duration.equals(Duration.ofSeconds(1, 234567890))).toStrictEqual(true);
         expect(duration.equals(Duration.ofSeconds(1, 9))).toStrictEqual(false);
         expect(duration.equals(Duration.ofSeconds(9, 234567890))).toStrictEqual(false);
+    });
+
+    it('can create a copy with each unit multiplied by a given scalar', () => {
+        // Zero duration
+        const zeroDuration = Duration.zero();
+
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(-2));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(-1));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(0));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(1));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(2));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(3));
+
+        // Non-zero duration multiplied by 0
+        expect(Duration.zero()).toStrictEqual(Duration.ofSeconds(1, 234567890).multipliedBy(0));
+
+        // Non-zero duration multiplied by 1
+        const duration = Duration.ofSeconds(1, 234567890);
+
+        expect(duration).toStrictEqual(duration.multipliedBy(1));
+
+        // Non-zero duration multiplied by scalar different than 1
+        const newDuration = duration.multipliedBy(3);
+
+        expect(Duration.ofSeconds(3, 703703670)).toStrictEqual(newDuration);
+    });
+
+    it('should fail to be multiplied by a scalar which exceeds the range of valid integers', () => {
+        expect(() => Duration.ofSeconds(1, 2).multipliedBy(Number.MAX_SAFE_INTEGER))
+            .toThrow('The result overflows the range of safe integers.');
     });
 
     it('can be added to an instant', () => {
