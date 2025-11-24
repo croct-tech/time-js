@@ -1392,7 +1392,7 @@ describe('A value object representing a time duration', () => {
             duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -456789123),
             expected: 'PT-1H-2M-3.456789123S',
         },
-    }))('should convert the duration to the ISO 8601 string %s', (_, scenario) => {
+    }))('should convert %s to string', (_, scenario) => {
         expect(scenario.duration.toString()).toStrictEqual(scenario.expected);
     });
 });
