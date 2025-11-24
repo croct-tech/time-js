@@ -1,4 +1,4 @@
-import {LocalTime} from '../src';
+import {Duration, LocalTime} from '../src';
 
 describe('A value object representing a local time', () => {
     it('can be created from its components', () => {
@@ -486,6 +486,311 @@ describe('A value object representing a local time', () => {
         const localTime = LocalTime.of(1, 2, 3);
 
         expect(localTime.minusNanos(nanos)).toStrictEqual(expected);
+    });
+
+    type AddDurationScenario = {
+        localTime: LocalTime,
+        duration: Duration,
+        expected: LocalTime,
+    };
+
+    it.each(Object.entries<AddDurationScenario>({
+        '00:00 + PT0S': {
+            localTime: LocalTime.of(0),
+            duration: Duration.zero(),
+            expected: LocalTime.of(0),
+        },
+        '00:00 + PT1H2M3.000000004S': {
+            localTime: LocalTime.of(0),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+            expected: LocalTime.of(1, 2, 3, 4),
+        },
+        '01:02:03.000000004 + PT-1H-2M-3.000000004S': {
+            localTime: LocalTime.of(1, 2, 3, 4),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+            expected: LocalTime.of(0),
+        },
+        '00:00:02.000000005 + PT-0S.999999996S': {
+            localTime: LocalTime.of(0, 0, 2, 5),
+            duration: Duration.ofSeconds(-1, 4),
+            expected: LocalTime.of(0, 0, 1, 9),
+        },
+        '00:00:02.000000005 + PT0.999999996S': {
+            localTime: LocalTime.of(0, 0, 2, 5),
+            duration: Duration.ofSeconds(1, -4),
+            expected: LocalTime.of(0, 0, 3, 1),
+        },
+        '01:02:03 + PT0S': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.zero(),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 + PT1H': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofHours(1),
+            expected: LocalTime.of(2, 2, 3),
+        },
+        '01:02:03 + PT2H': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofHours(2),
+            expected: LocalTime.of(3, 2, 3),
+        },
+        '01:02:03 + PT1M': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofMinutes(1),
+            expected: LocalTime.of(1, 3, 3),
+        },
+        '01:02:03 + PT2M': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofMinutes(2),
+            expected: LocalTime.of(1, 4, 3),
+        },
+        '01:02:03 + PT1S': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofSeconds(1),
+            expected: LocalTime.of(1, 2, 4),
+        },
+        '01:02:03 + PT2S': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofSeconds(2),
+            expected: LocalTime.of(1, 2, 5),
+        },
+        '01:02:03 + PT0.001S': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofMillis(1),
+            expected: LocalTime.of(1, 2, 3, 1000000),
+        },
+        '01:02:03 + PT0.002S': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofMillis(2),
+            expected: LocalTime.of(1, 2, 3, 2000000),
+        },
+        '01:02:03 + PT0.000001S': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofMicros(1),
+            expected: LocalTime.of(1, 2, 3, 1000),
+        },
+        '01:02:03 + PT0.000002S': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofMicros(2),
+            expected: LocalTime.of(1, 2, 3, 2000),
+        },
+        '01:02:03 + PT0.000000001S': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofNanos(1),
+            expected: LocalTime.of(1, 2, 3, 1),
+        },
+        '01:02:03 + PT0.000000002S': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.ofNanos(2),
+            expected: LocalTime.of(1, 2, 3, 2),
+        },
+    }))('can create a copy with an added duration %s', (_, scenario) => {
+        const result = scenario.localTime.plus(scenario.duration);
+
+        expect(result.toString()).toStrictEqual(scenario.expected.toString());
+    });
+
+    type SubtractDurationScenario = AddDurationScenario;
+
+    it.each(Object.entries<SubtractDurationScenario>({
+        '00:00 - PT0S': {
+            localTime: LocalTime.of(0),
+            duration: Duration.zero(),
+            expected: LocalTime.of(0),
+        },
+        '00:00 - PT1H2M3.000000004S': {
+            localTime: LocalTime.of(1, 2, 3, 4),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+            expected: LocalTime.of(0),
+        },
+        '01:02:03.000000004 - PT-1H-2M-3.000000004S': {
+            localTime: LocalTime.of(0),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+            expected: LocalTime.of(1, 2, 3, 4),
+        },
+        '00:00:02.000000005 - PT-0S.999999996S': {
+            localTime: LocalTime.of(0, 0, 1, 9),
+            duration: Duration.ofSeconds(-1, 4),
+            expected: LocalTime.of(0, 0, 2, 5),
+        },
+        '00:00:02.000000005 - PT0.999999996S': {
+            localTime: LocalTime.of(0, 0, 3, 1),
+            duration: Duration.ofSeconds(1, -4),
+            expected: LocalTime.of(0, 0, 2, 5),
+        },
+        '01:02:03 - PT0S': {
+            localTime: LocalTime.of(1, 2, 3),
+            duration: Duration.zero(),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT1H': {
+            localTime: LocalTime.of(2, 2, 3),
+            duration: Duration.ofHours(1),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT2H': {
+            localTime: LocalTime.of(3, 2, 3),
+            duration: Duration.ofHours(2),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT1M': {
+            localTime: LocalTime.of(1, 3, 3),
+            duration: Duration.ofMinutes(1),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT2M': {
+            localTime: LocalTime.of(1, 4, 3),
+            duration: Duration.ofMinutes(2),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT1S': {
+            localTime: LocalTime.of(1, 2, 4),
+            duration: Duration.ofSeconds(1),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT2S': {
+            localTime: LocalTime.of(1, 2, 5),
+            duration: Duration.ofSeconds(2),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT0.001S': {
+            localTime: LocalTime.of(1, 2, 3, 1000000),
+            duration: Duration.ofMillis(1),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT0.002S': {
+            localTime: LocalTime.of(1, 2, 3, 2000000),
+            duration: Duration.ofMillis(2),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT0.000001S': {
+            localTime: LocalTime.of(1, 2, 3, 1000),
+            duration: Duration.ofMicros(1),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT0.000002S': {
+            localTime: LocalTime.of(1, 2, 3, 2000),
+            duration: Duration.ofMicros(2),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT0.000000001S': {
+            localTime: LocalTime.of(1, 2, 3, 1),
+            duration: Duration.ofNanos(1),
+            expected: LocalTime.of(1, 2, 3),
+        },
+        '01:02:03 - PT0.000000002S': {
+            localTime: LocalTime.of(1, 2, 3, 2),
+            duration: Duration.ofNanos(2),
+            expected: LocalTime.of(1, 2, 3),
+        },
+    }))('can create a copy with a subtracted duration %s', (_, scenario) => {
+        const result = scenario.localTime.minus(scenario.duration);
+
+        expect(result.toString()).toStrictEqual(scenario.expected.toString());
+    });
+
+    type UntilScenario = {
+        start: LocalTime,
+        end: LocalTime,
+        duration: Duration,
+    };
+
+    it.each(Object.entries<UntilScenario>({
+        '00:00/00:00': {
+            start: LocalTime.of(0),
+            end: LocalTime.of(0),
+            duration: Duration.zero(),
+        },
+        '00:00/01:02:03.000000004': {
+            start: LocalTime.of(0),
+            end: LocalTime.of(1, 2, 3, 4),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+        },
+        '01:02:03.000000004/00:00': {
+            start: LocalTime.of(1, 2, 3, 4),
+            end: LocalTime.of(0),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+        },
+        '00:00:02.000000005/00:00:01.000000009': {
+            start: LocalTime.of(0, 0, 2, 5),
+            end: LocalTime.of(0, 0, 1, 9),
+            duration: Duration.ofSeconds(-1, 4),
+        },
+        '00:00:02.000000005/00:00:03.000000001': {
+            start: LocalTime.of(0, 0, 2, 5),
+            end: LocalTime.of(0, 0, 3, 1),
+            duration: Duration.ofSeconds(1, -4),
+        },
+        '01:02:03 / 01:02:03': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 2, 3),
+            duration: Duration.zero(),
+        },
+        '01:02:03 / 02:02:03': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(2, 2, 3),
+            duration: Duration.ofHours(1),
+        },
+        '01:02:03 / 03:02:03': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(3, 2, 3),
+            duration: Duration.ofHours(2),
+        },
+        '01:02:03 / 01:03:03': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 3, 3),
+            duration: Duration.ofMinutes(1),
+        },
+        '01:02:03 / 01:04:03': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 4, 3),
+            duration: Duration.ofMinutes(2),
+        },
+        '01:02:03 / 01:02:04': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 2, 4),
+            duration: Duration.ofSeconds(1),
+        },
+        '01:02:03 / 01:02:05': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 2, 5),
+            duration: Duration.ofSeconds(2),
+        },
+        '01:02:03 / 01:02:03.1': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 2, 3, 1000000),
+            duration: Duration.ofMillis(1),
+        },
+        '01:02:03 / 01:02:03.2': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 2, 3, 2000000),
+            duration: Duration.ofMillis(2),
+        },
+        '01:02:03 / 01:02:03.0001': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 2, 3, 1000),
+            duration: Duration.ofMicros(1),
+        },
+        '01:02:03 / 01:02:03.0002': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 2, 3, 2000),
+            duration: Duration.ofMicros(2),
+        },
+        '01:02:03 / 01:02:03.0000001': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 2, 3, 1),
+            duration: Duration.ofNanos(1),
+        },
+        '01:02:03 / 01:02:03.0000002': {
+            start: LocalTime.of(1, 2, 3),
+            end: LocalTime.of(1, 2, 3, 2),
+            duration: Duration.ofNanos(2),
+        },
+    }))('should calculate the duration between local times %s', (_, scenario) => {
+        const duration = scenario.start.until(scenario.end);
+
+        expect(duration.toString()).toStrictEqual(scenario.duration.toString());
     });
 
     it.each([
