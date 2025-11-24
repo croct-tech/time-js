@@ -633,7 +633,7 @@ describe('A value object representing a local date', () => {
             period: Period.of(-1, -2, -3),
             expected: LocalDate.of(2016, 11, 3),
         },
-    }))('should subtract a period from a local date %s', (_, scenario) => {
+    }))('should subtract $period from $start', (_, scenario) => {
         const result = scenario.start.minus(scenario.period);
 
         expect(result.toString()).toStrictEqual(scenario.expected.toString());
@@ -701,7 +701,7 @@ describe('A value object representing a local date', () => {
             end: LocalDate.of(2015, 8, 31),
             expected: Period.of(-1, -2, -3),
         },
-    }))('should calculate the period between local dates %s', (_, scenario) => {
+    }))('should calculate the period between $start and $end', (_, scenario) => {
         const period = scenario.start.until(scenario.end);
 
         expect(period.toString()).toStrictEqual(scenario.expected.toString());
