@@ -193,16 +193,6 @@ export class LocalDate {
     }
 
     /**
-     * Obtains a Period between two dates.
-     *
-     * @param start - The start date
-     * @param end - The end date
-     */
-    public static between(start: LocalDate, end: LocalDate): Period {
-        return start.periodUntil(end);
-    }
-
-    /**
      * Returns the year in the ISO-8601 calendar system.
      */
     public getYear(): number {
@@ -378,7 +368,7 @@ export class LocalDate {
      *
      * @param period The period to add.
      */
-    public addPeriod(period: Period): LocalDate {
+    public plus(period: Period): LocalDate {
         if (period.getMonths() === 0) {
             return this.plusYears(period.getYears()).plusDays(period.getDays());
         }
@@ -393,7 +383,7 @@ export class LocalDate {
      *
      * @param period The period to add.
      */
-    public subtractPeriod(period: Period): LocalDate {
+    public minus(period: Period): LocalDate {
         if (period.getMonths() === 0) {
             return this.minusYears(period.getYears()).minusDays(period.getDays());
         }
@@ -401,6 +391,39 @@ export class LocalDate {
         const totalMonths = period.toMonths();
 
         return this.minusMonths(totalMonths).minusDays(period.getDays());
+    }
+
+    /**
+     * Returns the period between this date and the given date.
+     *
+     * @param date The date to compare.
+     */
+    public until(date: LocalDate): Period {
+        if (this.equals(date)) {
+            return Period.zero();
+        }
+
+        let totalMonths = LocalDate.getProlepticMonth(date.year, date.month)
+            - LocalDate.getProlepticMonth(this.year, this.month);
+
+        let days = date.day - this.day;
+
+        if (totalMonths > 0 && days < 0) {
+            totalMonths--;
+            const previousMonth = this.plusMonths(totalMonths);
+
+            days = date.toEpochDay() - previousMonth.toEpochDay();
+        } else if (totalMonths < 0 && days > 0) {
+            totalMonths++;
+            const monthLen = LocalDate.getMonthLength(date.month, LocalDate.isLeapYear(date.year));
+
+            days -= monthLen;
+        }
+
+        const years = intDiv(totalMonths, 12);
+        const months = totalMonths % 12;
+
+        return Period.of(years, months, days);
     }
 
     /**
@@ -527,39 +550,6 @@ export class LocalDate {
             // Shift the epoch from 0000-03-01 to 1970-01-01;
             - 719468
         );
-    }
-
-    /**
-     * Returns the period between this date and the given date.
-     *
-     * @param date The date to compare.
-     */
-    public periodUntil(date: LocalDate): Period {
-        if (this.equals(date)) {
-            return Period.zero();
-        }
-
-        let totalMonths = LocalDate.getProlepticMonth(date.year, date.month)
-            - LocalDate.getProlepticMonth(this.year, this.month);
-
-        let days = date.day - this.day;
-
-        if (totalMonths > 0 && days < 0) {
-            totalMonths--;
-            const previousMonth = this.plusMonths(totalMonths);
-
-            days = date.toEpochDay() - previousMonth.toEpochDay();
-        } else if (totalMonths < 0 && days > 0) {
-            totalMonths++;
-            const monthLen = LocalDate.getMonthLength(date.month, LocalDate.isLeapYear(date.year));
-
-            days -= monthLen;
-        }
-
-        const years = intDiv(totalMonths, 12);
-        const months = totalMonths % 12;
-
-        return Period.of(years, months, days);
     }
 
     /**

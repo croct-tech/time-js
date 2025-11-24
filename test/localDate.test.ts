@@ -570,7 +570,7 @@ describe('A value object representing a local date', () => {
             expected: LocalDate.of(2015, 8, 31),
         },
     }))('should add a period to a local date %s', (_, scenario) => {
-        const result = scenario.start.addPeriod(scenario.period);
+        const result = scenario.start.plus(scenario.period);
 
         expect(result.toString()).toStrictEqual(scenario.expected.toString());
     });
@@ -634,69 +634,9 @@ describe('A value object representing a local date', () => {
             expected: LocalDate.of(2016, 11, 3),
         },
     }))('should subtract a period from a local date %s', (_, scenario) => {
-        const result = scenario.start.subtractPeriod(scenario.period);
+        const result = scenario.start.minus(scenario.period);
 
         expect(result.toString()).toStrictEqual(scenario.expected.toString());
-    });
-
-    it('should be comparable', () => {
-        const one = LocalDate.of(2015, 8, 30);
-        const two = LocalDate.of(2015, 9, 30);
-        const three = LocalDate.of(2015, 8, 30);
-
-        expect(one.isAfter(two)).toBe(false);
-        expect(two.isAfter(one)).toBe(true);
-
-        expect(one.isBefore(two)).toBe(true);
-        expect(two.isBefore(one)).toBe(false);
-
-        expect(one.isAfter(three)).toBe(false);
-        expect(one.isBefore(three)).toBe(false);
-
-        expect(one.isAfterOrEqual(two)).toBe(false);
-        expect(two.isAfterOrEqual(one)).toBe(true);
-
-        expect(one.isAfterOrEqual(three)).toBe(true);
-        expect(one.isAfterOrEqual(three)).toBe(true);
-
-        expect(one.isBeforeOrEqual(two)).toBe(true);
-        expect(two.isBeforeOrEqual(one)).toBe(false);
-
-        expect(one.isBeforeOrEqual(three)).toBe(true);
-        expect(one.isBeforeOrEqual(three)).toBe(true);
-
-        expect(one.equals(one)).toBe(true);
-        expect(one.equals(two)).toBe(false);
-        expect(one.equals(three)).toBe(true);
-
-        expect(LocalDate.of(1, 2, 3).compare(LocalDate.of(1, 1, 2))).toBe(1);
-        expect(LocalDate.of(1, 2, 3).compare(LocalDate.of(1, 2, 4))).toBe(-1);
-        expect(LocalDate.of(1, 1, 1).compare(LocalDate.of(1, 1, 1))).toBe(0);
-    });
-
-    it.each([
-        ['invalid year-08-30', false],
-        ['2015-invalid month-30', false],
-        ['2015-08-invalid day', false],
-        ['2015-02-29', false],
-        ['10000-13-30', false],
-        ['2015-13-30', false],
-        ['2015-09-32', false],
-        ['2015-08-30', true],
-    ])('can determine whether a value is a valid local date', (value: string, expected: boolean) => {
-        expect(LocalDate.isValid(value)).toBe(expected);
-    });
-
-    it.each([
-        [LocalDate.of(2015, 8, 31), 16678],
-        [LocalDate.of(2015, 2, 27), 16493],
-        [LocalDate.of(2016, 2, 27), 16858],
-        [LocalDate.of(1969, 12, 31), -1],
-        [LocalDate.of(1970, 1, 2), 1],
-        [LocalDate.MIN, LocalDate.MIN_EPOCH_DAY],
-        [LocalDate.MAX, LocalDate.MAX_EPOCH_DAY],
-    ])('can be converted to an epoch day', (localDate: LocalDate, expected: number) => {
-        expect(localDate.toEpochDay()).toStrictEqual(expected);
     });
 
     type PeriodScenario = {
@@ -762,76 +702,74 @@ describe('A value object representing a local date', () => {
             expected: Period.of(-1, -2, -3),
         },
     }))('should calculate the period between local dates %s', (_, scenario) => {
-        const period = scenario.start.periodUntil(scenario.end);
+        const period = scenario.start.until(scenario.end);
 
         expect(period.toString()).toStrictEqual(scenario.expected.toString());
+    });
+
+    it('should be comparable', () => {
+        const one = LocalDate.of(2015, 8, 30);
+        const two = LocalDate.of(2015, 9, 30);
+        const three = LocalDate.of(2015, 8, 30);
+
+        expect(one.isAfter(two)).toBe(false);
+        expect(two.isAfter(one)).toBe(true);
+
+        expect(one.isBefore(two)).toBe(true);
+        expect(two.isBefore(one)).toBe(false);
+
+        expect(one.isAfter(three)).toBe(false);
+        expect(one.isBefore(three)).toBe(false);
+
+        expect(one.isAfterOrEqual(two)).toBe(false);
+        expect(two.isAfterOrEqual(one)).toBe(true);
+
+        expect(one.isAfterOrEqual(three)).toBe(true);
+        expect(one.isAfterOrEqual(three)).toBe(true);
+
+        expect(one.isBeforeOrEqual(two)).toBe(true);
+        expect(two.isBeforeOrEqual(one)).toBe(false);
+
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+
+        expect(one.equals(one)).toBe(true);
+        expect(one.equals(two)).toBe(false);
+        expect(one.equals(three)).toBe(true);
+
+        expect(LocalDate.of(1, 2, 3).compare(LocalDate.of(1, 1, 2))).toBe(1);
+        expect(LocalDate.of(1, 2, 3).compare(LocalDate.of(1, 2, 4))).toBe(-1);
+        expect(LocalDate.of(1, 1, 1).compare(LocalDate.of(1, 1, 1))).toBe(0);
+    });
+
+    it.each([
+        ['invalid year-08-30', false],
+        ['2015-invalid month-30', false],
+        ['2015-08-invalid day', false],
+        ['2015-02-29', false],
+        ['10000-13-30', false],
+        ['2015-13-30', false],
+        ['2015-09-32', false],
+        ['2015-08-30', true],
+    ])('can determine whether a value is a valid local date', (value: string, expected: boolean) => {
+        expect(LocalDate.isValid(value)).toBe(expected);
+    });
+
+    it.each([
+        [LocalDate.of(2015, 8, 31), 16678],
+        [LocalDate.of(2015, 2, 27), 16493],
+        [LocalDate.of(2016, 2, 27), 16858],
+        [LocalDate.of(1969, 12, 31), -1],
+        [LocalDate.of(1970, 1, 2), 1],
+        [LocalDate.MIN, LocalDate.MIN_EPOCH_DAY],
+        [LocalDate.MAX, LocalDate.MAX_EPOCH_DAY],
+    ])('can be converted to an epoch day', (localDate: LocalDate, expected: number) => {
+        expect(localDate.toEpochDay()).toStrictEqual(expected);
     });
 
     it('should serialize to JSON in the ISO-8601 format', () => {
         const localDate = LocalDate.of(2015, 8, 30);
 
         expect(localDate.toJSON()).toBe('2015-08-30');
-    });
-
-    it.each(Object.entries<PeriodScenario>({
-        '2015-08-31 / 2015-08-31': {
-            start: LocalDate.of(2015, 8, 31),
-            end: LocalDate.of(2015, 8, 31),
-            expected: Period.zero(),
-        },
-        '2015-08-31 / 2015-09-01': {
-            start: LocalDate.of(2015, 8, 31),
-            end: LocalDate.of(2015, 9, 1),
-            expected: Period.ofDays(1),
-        },
-        '2015-08-31 / 2015-09-02': {
-            start: LocalDate.of(2015, 8, 31),
-            end: LocalDate.of(2015, 9, 2),
-            expected: Period.ofDays(2),
-        },
-        '2015-08-31 / 2015-09-07': {
-            start: LocalDate.of(2015, 8, 31),
-            end: LocalDate.of(2015, 9, 7),
-            expected: Period.ofWeeks(1),
-        },
-        '2015-08-31 / 2015-09-14': {
-            start: LocalDate.of(2015, 8, 31),
-            end: LocalDate.of(2015, 9, 14),
-            expected: Period.ofWeeks(2),
-        },
-        '2015-08-31 / 2015-10-01': {
-            start: LocalDate.of(2015, 8, 31),
-            end: LocalDate.of(2015, 10, 1),
-            expected: Period.of(0, 1, 1),
-        },
-        '2015-08-31 / 2015-10-31': {
-            start: LocalDate.of(2015, 8, 31),
-            end: LocalDate.of(2015, 10, 31),
-            expected: Period.ofMonths(2),
-        },
-        '2015-08-31 / 2016-08-31': {
-            start: LocalDate.of(2015, 8, 31),
-            end: LocalDate.of(2016, 8, 31),
-            expected: Period.ofYears(1),
-        },
-        '2015-08-31 / 2017-08-31': {
-            start: LocalDate.of(2015, 8, 31),
-            end: LocalDate.of(2017, 8, 31),
-            expected: Period.ofYears(2),
-        },
-        '2015-08-31 / 2016-11-04': {
-            start: LocalDate.of(2015, 8, 31),
-            end: LocalDate.of(2016, 11, 3),
-            expected: Period.of(1, 2, 3),
-        },
-        '2016-11-04 / 2015-08-31': {
-            start: LocalDate.of(2016, 11, 3),
-            end: LocalDate.of(2015, 8, 31),
-            expected: Period.of(-1, -2, -3),
-        },
-    }))('should calculate the period between local dates %s', (_, scenario) => {
-        const period = LocalDate.between(scenario.start, scenario.end);
-
-        expect(period.toString()).toStrictEqual(scenario.expected.toString());
     });
 });
