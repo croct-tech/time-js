@@ -586,7 +586,7 @@ describe('A value object representing a local time', () => {
             expected: LocalTime.of(1, 2, 3, 2),
         },
     }))('can create a copy with an added duration %s', (_, scenario) => {
-        const result = scenario.localTime.addDuration(scenario.duration);
+        const result = scenario.localTime.plus(scenario.duration);
 
         expect(result.toString()).toStrictEqual(scenario.expected.toString());
     });
@@ -685,74 +685,18 @@ describe('A value object representing a local time', () => {
             expected: LocalTime.of(1, 2, 3),
         },
     }))('can create a copy with a subtracted duration %s', (_, scenario) => {
-        const result = scenario.localTime.subtractDuration(scenario.duration);
+        const result = scenario.localTime.minus(scenario.duration);
 
         expect(result.toString()).toStrictEqual(scenario.expected.toString());
     });
 
-    it.each([
-        ['invalid hour:00:00.0000000', false],
-        ['00:invalid minute:00.0000000', false],
-        ['00:00:invalid seconds.0000000', false],
-        ['00:00:00.invalid nanos', false],
-        ['100:00:00.0000000', false],
-        ['25:00:00.0000000', false],
-        ['00:61:00.0000000', false],
-        ['00:00:61.0000000', false],
-        ['00:00:00.1000000000', false],
-        ['00:00:00.0000000', true],
-    ])('can determine whether a value is a valid local time', (value: string, expected: boolean) => {
-        expect(LocalTime.isValid(value)).toBe(expected);
-    });
-
-    it('should be comparable', () => {
-        const one = LocalTime.of(10, 20, 30);
-        const two = LocalTime.of(20, 10, 10);
-        const three = LocalTime.of(10, 20, 30);
-
-        expect(one.isAfter(two)).toBe(false);
-        expect(two.isAfter(one)).toBe(true);
-
-        expect(one.isBefore(two)).toBe(true);
-        expect(two.isBefore(one)).toBe(false);
-
-        expect(one.isAfter(three)).toBe(false);
-        expect(one.isBefore(three)).toBe(false);
-
-        expect(one.isAfterOrEqual(two)).toBe(false);
-        expect(two.isAfterOrEqual(one)).toBe(true);
-
-        expect(one.isAfterOrEqual(three)).toBe(true);
-        expect(one.isAfterOrEqual(three)).toBe(true);
-
-        expect(one.isBeforeOrEqual(two)).toBe(true);
-        expect(two.isBeforeOrEqual(one)).toBe(false);
-
-        expect(one.isBeforeOrEqual(three)).toBe(true);
-        expect(one.isBeforeOrEqual(three)).toBe(true);
-
-        expect(one.equals(one)).toBe(true);
-        expect(one.equals(two)).toBe(false);
-        expect(one.equals(three)).toBe(true);
-
-        expect(LocalTime.of(1, 2, 3).compare(LocalTime.of(1, 1, 2))).toBe(1);
-        expect(LocalTime.of(1, 2, 3).compare(LocalTime.of(1, 2, 4))).toBe(-1);
-        expect(LocalTime.of(0).compare(LocalTime.of(0))).toBe(0);
-    });
-
-    it('should serialize to JSON in the ISO-8601 format', () => {
-        const localTime = LocalTime.of(20, 6, 59, 123456789);
-
-        expect(localTime.toJSON()).toBe('20:06:59.123456789');
-    });
-
-    type DurationBetweenScenario = {
+    type UntilScenario = {
         start: LocalTime,
         end: LocalTime,
         duration: Duration,
     };
 
-    it.each(Object.entries<DurationBetweenScenario>({
+    it.each(Object.entries<UntilScenario>({
         '00:00/00:00': {
             start: LocalTime.of(0),
             end: LocalTime.of(0),
@@ -843,9 +787,65 @@ describe('A value object representing a local time', () => {
             end: LocalTime.of(1, 2, 3, 2),
             duration: Duration.ofNanos(2),
         },
-    }))('should calculate the duration between local dates %s', (_, scenario) => {
-        const duration = LocalTime.durationBetween(scenario.start, scenario.end);
+    }))('should calculate the duration between local times %s', (_, scenario) => {
+        const duration = scenario.start.until(scenario.end);
 
         expect(duration.toString()).toStrictEqual(scenario.duration.toString());
+    });
+
+    it.each([
+        ['invalid hour:00:00.0000000', false],
+        ['00:invalid minute:00.0000000', false],
+        ['00:00:invalid seconds.0000000', false],
+        ['00:00:00.invalid nanos', false],
+        ['100:00:00.0000000', false],
+        ['25:00:00.0000000', false],
+        ['00:61:00.0000000', false],
+        ['00:00:61.0000000', false],
+        ['00:00:00.1000000000', false],
+        ['00:00:00.0000000', true],
+    ])('can determine whether a value is a valid local time', (value: string, expected: boolean) => {
+        expect(LocalTime.isValid(value)).toBe(expected);
+    });
+
+    it('should be comparable', () => {
+        const one = LocalTime.of(10, 20, 30);
+        const two = LocalTime.of(20, 10, 10);
+        const three = LocalTime.of(10, 20, 30);
+
+        expect(one.isAfter(two)).toBe(false);
+        expect(two.isAfter(one)).toBe(true);
+
+        expect(one.isBefore(two)).toBe(true);
+        expect(two.isBefore(one)).toBe(false);
+
+        expect(one.isAfter(three)).toBe(false);
+        expect(one.isBefore(three)).toBe(false);
+
+        expect(one.isAfterOrEqual(two)).toBe(false);
+        expect(two.isAfterOrEqual(one)).toBe(true);
+
+        expect(one.isAfterOrEqual(three)).toBe(true);
+        expect(one.isAfterOrEqual(three)).toBe(true);
+
+        expect(one.isBeforeOrEqual(two)).toBe(true);
+        expect(two.isBeforeOrEqual(one)).toBe(false);
+
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+        expect(one.isBeforeOrEqual(three)).toBe(true);
+
+        expect(one.equals(one)).toBe(true);
+        expect(one.equals(two)).toBe(false);
+        expect(one.equals(three)).toBe(true);
+
+        expect(LocalTime.of(1, 2, 3).compare(LocalTime.of(1, 1, 2))).toBe(1);
+        expect(LocalTime.of(1, 2, 3).compare(LocalTime.of(1, 2, 4))).toBe(-1);
+        expect(LocalTime.of(0).compare(LocalTime.of(0))).toBe(0);
+    });
+
+    it('should serialize to JSON in the ISO-8601 format', () => {
+        const localTime = LocalTime.of(20, 6, 59, 123456789);
+
+        expect(localTime.toJSON()).toBe('20:06:59.123456789');
     });
 });

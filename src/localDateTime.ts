@@ -5,7 +5,6 @@ import {LocalDate} from './localDate';
 import {LocalTime} from './localTime';
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
 import {TimeZone} from './timeZone';
-import {Duration} from './duration';
 
 /**
  * A date-time without a time-zone in the ISO-8601 calendar system, such as 2007-12-03T10:15:30.
@@ -165,29 +164,6 @@ export class LocalDateTime {
             LocalDate.parse(parts[0]),
             LocalTime.parse(parts[1]),
         );
-    }
-
-    /**
-     * Obtains a Duration between two local date-times.
-     *
-     * @param start - The start local time
-     * @param end - The end local time
-     */
-    public static durationBetween(start: LocalDateTime, end: LocalDateTime): Duration {
-        const endSeconds = end.getLocalDate().toEpochDay() * LocalTime.SECONDS_PER_DAY
-            + end.getHour() * LocalTime.SECONDS_PER_HOUR
-            + end.getMinute() * LocalTime.SECONDS_PER_MINUTE
-            + end.getSecond();
-
-        const startSeconds = start.getLocalDate().toEpochDay() * LocalTime.SECONDS_PER_DAY
-            + start.getHour() * LocalTime.SECONDS_PER_HOUR
-            + start.getMinute() * LocalTime.SECONDS_PER_MINUTE
-            + start.getSecond();
-
-        const seconds = subtractExact(endSeconds, startSeconds);
-        const nanos = subtractExact(end.getNano(), start.getNano());
-
-        return Duration.ofSeconds(seconds, nanos);
     }
 
     /**
@@ -525,24 +501,6 @@ export class LocalDateTime {
      */
     public minusNanos(nanos: number): LocalDateTime {
         return this.plusNanos(-nanos);
-    }
-
-    /**
-     * Adds a duration to this local date-time.
-     *
-     * @param duration - The Duration
-     */
-    public addDuration(duration: Duration): LocalDateTime {
-        return this.plusSeconds(duration.getSeconds()).plusNanos(duration.getNanos());
-    }
-
-    /**
-     * Subtracts a duration from this local date-time.
-     *
-     * @param duration - The Duration
-     */
-    public subtractDuration(duration: Duration): LocalDateTime {
-        return this.minusSeconds(duration.getSeconds()).minusNanos(duration.getNanos());
     }
 
     /**

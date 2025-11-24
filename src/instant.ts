@@ -184,19 +184,6 @@ export class Instant {
     }
 
     /**
-     * Obtains a Duration between two instants.
-     *
-     * @param start - The start instant
-     * @param end - The end instant
-     */
-    public static durationBetween(start: Instant, end: Instant): Duration {
-        const seconds = subtractExact(end.getSeconds(), start.getSeconds());
-        const nanos = subtractExact(end.getNano(), start.getNano());
-
-        return Duration.ofSeconds(seconds, nanos);
-    }
-
-    /**
      * Compares this instant to another for ascending order.
      *
      * @param left  The first instant to compare.
@@ -542,7 +529,7 @@ export class Instant {
      *
      * @param duration - The Duration
      */
-    public addDuration(duration: Duration): Instant {
+    public plus(duration: Duration): Instant {
         return this.plusSeconds(duration.getSeconds()).plusNanos(duration.getNanos());
     }
 
@@ -551,8 +538,20 @@ export class Instant {
      *
      * @param duration - The Duration
      */
-    public subtractDuration(duration: Duration): Instant {
+    public minus(duration: Duration): Instant {
         return this.minusSeconds(duration.getSeconds()).minusNanos(duration.getNanos());
+    }
+
+    /**
+     * Returns the duration between this and the given instant.
+     *
+     * @param end - The instant to compare.
+     */
+    public until(end: Instant): Duration {
+        const seconds = subtractExact(end.getSeconds(), this.getSeconds());
+        const nanos = subtractExact(end.getNano(), this.getNano());
+
+        return Duration.ofSeconds(seconds, nanos);
     }
 
     /**

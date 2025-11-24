@@ -239,27 +239,6 @@ export class LocalTime {
     }
 
     /**
-     * Obtains a Duration between two local times.
-     *
-     * @param start - The start local time
-     * @param end - The end local time
-     */
-    public static durationBetween(start: LocalTime, end: LocalTime): Duration {
-        const endSeconds = end.getHour() * LocalTime.SECONDS_PER_HOUR
-            + end.getMinute() * LocalTime.SECONDS_PER_MINUTE
-            + end.getSecond();
-
-        const startSeconds = start.getHour() * LocalTime.SECONDS_PER_HOUR
-            + start.getMinute() * LocalTime.SECONDS_PER_MINUTE
-            + start.getSecond();
-
-        const seconds = subtractExact(endSeconds, startSeconds);
-        const nanos = subtractExact(end.getNano(), start.getNano());
-
-        return Duration.ofSeconds(seconds, nanos);
-    }
-
-    /**
      * Returns the hour of the day, in the range 0 to 23.
      */
     public getHour(): number {
@@ -526,7 +505,7 @@ export class LocalTime {
      *
      * @param duration - The Duration
      */
-    public addDuration(duration: Duration): LocalTime {
+    public plus(duration: Duration): LocalTime {
         return this.plusSeconds(duration.getSeconds()).plusNanos(duration.getNanos());
     }
 
@@ -535,8 +514,28 @@ export class LocalTime {
      *
      * @param duration - The Duration
      */
-    public subtractDuration(duration: Duration): LocalTime {
+    public minus(duration: Duration): LocalTime {
         return this.minusSeconds(duration.getSeconds()).minusNanos(duration.getNanos());
+    }
+
+    /**
+     * Returns the duration between this and the given local time.
+     *
+     * @param end - The local time to compare.
+     */
+    public until(end: LocalTime): Duration {
+        const endSeconds = end.getHour() * LocalTime.SECONDS_PER_HOUR
+            + end.getMinute() * LocalTime.SECONDS_PER_MINUTE
+            + end.getSecond();
+
+        const startSeconds = this.getHour() * LocalTime.SECONDS_PER_HOUR
+            + this.getMinute() * LocalTime.SECONDS_PER_MINUTE
+            + this.getSecond();
+
+        const seconds = subtractExact(endSeconds, startSeconds);
+        const nanos = subtractExact(end.getNano(), this.getNano());
+
+        return Duration.ofSeconds(seconds, nanos);
     }
 
     /**
