@@ -21,7 +21,7 @@ describe('A value object representing a local date', () => {
         [LocalDate.MIN_EPOCH_DAY, LocalDate.MIN],
         [LocalDate.MAX_EPOCH_DAY, LocalDate.MAX],
     ])('can be created from the number of days since the epoch', (days: number, expected: LocalDate) => {
-        expect(LocalDate.ofEpochDay(days).toString()).toStrictEqual(expected.toString());
+        expect(LocalDate.ofEpochDay(days).toString()).toEqual(expected.toString());
     });
 
     it.each([
@@ -114,7 +114,7 @@ describe('A value object representing a local date', () => {
     ])('can create a copy with an amount of years added', (years: number, expected: LocalDate) => {
         const localDate = LocalDate.of(2016, 2, 29);
 
-        expect(localDate.plusYears(years).toString()).toStrictEqual(expected.toString());
+        expect(localDate.plusYears(years).toString()).toEqual(expected.toString());
     });
 
     it.each([
@@ -144,7 +144,7 @@ describe('A value object representing a local date', () => {
     ])('can create a copy with an amount of years subtracted', (years: number, expected: LocalDate) => {
         const localDate = LocalDate.of(2016, 2, 29);
 
-        expect(localDate.minusYears(years).toString()).toStrictEqual(expected.toString());
+        expect(localDate.minusYears(years).toString()).toEqual(expected.toString());
     });
 
     it.each([
@@ -226,7 +226,7 @@ describe('A value object representing a local date', () => {
     ])(
         'can create a copy with an amount of months added',
         (months: number, localDate: LocalDate, expected: LocalDate) => {
-            expect(localDate.plusMonths(months).toString()).toStrictEqual(expected.toString());
+            expect(localDate.plusMonths(months).toString()).toEqual(expected.toString());
         },
     );
 
@@ -311,7 +311,7 @@ describe('A value object representing a local date', () => {
     ])(
         'can create a copy with an amount of months subtracted',
         (months: number, localDate: LocalDate, expected: LocalDate) => {
-            expect(localDate.minusMonths(months).toString()).toStrictEqual(expected.toString());
+            expect(localDate.minusMonths(months).toString()).toEqual(expected.toString());
         },
     );
 
@@ -338,7 +338,7 @@ describe('A value object representing a local date', () => {
     ])('can create a copy with an amount of weeks added', (weeks: number, expected: LocalDate) => {
         const localDate = LocalDate.of(2015, 8, 31);
 
-        expect(localDate.plusWeeks(weeks).toString()).toStrictEqual(expected.toString());
+        expect(localDate.plusWeeks(weeks).toString()).toEqual(expected.toString());
     });
 
     it.each([
@@ -362,7 +362,7 @@ describe('A value object representing a local date', () => {
     ])('can create a copy with an amount of weeks subtracted', (weeks: number, expected: LocalDate) => {
         const localDate = LocalDate.of(2015, 8, 31);
 
-        expect(localDate.minusWeeks(weeks).toString()).toStrictEqual(expected.toString());
+        expect(localDate.minusWeeks(weeks).toString()).toEqual(expected.toString());
     });
 
     it.each([
@@ -426,7 +426,7 @@ describe('A value object representing a local date', () => {
     ])(
         'can create a copy with an amount of days added',
         (days: number, localDate: LocalDate, expected: LocalDate) => {
-            expect(localDate.plusDays(days).toString()).toStrictEqual(expected.toString());
+            expect(localDate.plusDays(days).toString()).toEqual(expected.toString());
         },
     );
 
@@ -491,7 +491,7 @@ describe('A value object representing a local date', () => {
     ])(
         'can create a copy with an amount of days subtracted',
         (days: number, localDate: LocalDate, expected: LocalDate) => {
-            expect(localDate.minusDays(days).toString()).toStrictEqual(expected.toString());
+            expect(localDate.minusDays(days).toString()).toEqual(expected.toString());
         },
     );
 
@@ -572,7 +572,7 @@ describe('A value object representing a local date', () => {
     ])('should add $period to $start', scenario => {
         const result = scenario.start.plus(scenario.period);
 
-        expect(result.toString()).toStrictEqual(scenario.expected.toString());
+        expect(result.toString()).toEqual(scenario.expected.toString());
     });
 
     type SubtractPeriodScenario = AddPeriodScenario;
@@ -636,7 +636,7 @@ describe('A value object representing a local date', () => {
     ])('should subtract $period from $start', scenario => {
         const result = scenario.start.minus(scenario.period);
 
-        expect(result.toString()).toStrictEqual(scenario.expected.toString());
+        expect(result.toString()).toEqual(scenario.expected.toString());
     });
 
     type PeriodScenario = {
@@ -704,7 +704,7 @@ describe('A value object representing a local date', () => {
     ])('should calculate the period between $start and $end', scenario => {
         const period = scenario.start.until(scenario.end);
 
-        expect(period.toString()).toStrictEqual(scenario.expected.toString());
+        expect(period.toString()).toEqual(scenario.expected.toString());
     });
 
     it('should be comparable', () => {
@@ -764,7 +764,7 @@ describe('A value object representing a local date', () => {
         [LocalDate.MIN, LocalDate.MIN_EPOCH_DAY],
         [LocalDate.MAX, LocalDate.MAX_EPOCH_DAY],
     ])('can be converted to an epoch day', (localDate: LocalDate, expected: number) => {
-        expect(localDate.toEpochDay().toString()).toStrictEqual(expected.toString());
+        expect(localDate.toEpochDay().toString()).toEqual(expected.toString());
     });
 
     it('should serialize to JSON in the ISO-8601 format', () => {
