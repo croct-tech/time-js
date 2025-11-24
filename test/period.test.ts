@@ -100,7 +100,7 @@ describe('A ISO date-based amount of time', () => {
         ['P1Y2M3W4D', Period.of(1, 2, 3 * 7 + 4)],
         ['-P1Y2M3W4D', Period.of(-1, -2, -(3 * 7) - 4)],
         ['-P-1Y-2M-3W-4D', Period.of(1, 2, 3 * 7 + 4)],
-    ])('can parse a ISO-8601 period string %s', (value, expected) => {
+    ])('can parse %s', (value, expected) => {
         const period = Period.parse(value);
         const lowercasePeriod = Period.parse(value.toLowerCase());
 
@@ -144,7 +144,7 @@ describe('A ISO date-based amount of time', () => {
         'PP1D',
         'P1YD',
         'P1MD',
-    ])('cannot parse a malformed period string %s', value => {
+    ])('cannot parse %s', value => {
         expect(() => Period.parse(value)).toThrow(`Unrecognized ISO-8601 period string "${value}".`);
     });
 
