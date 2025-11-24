@@ -1,4 +1,4 @@
-import {Instant, LocalDate, LocalDateTime, LocalTime, TimeZone} from '../src';
+import {Duration, Instant, LocalDate, LocalDateTime, LocalTime, TimeZone} from '../src';
 import {FixedClock} from '../src/clock/fixedClock';
 
 describe('A value object representing a local date time', () => {
@@ -906,6 +906,158 @@ describe('A value object representing a local date time', () => {
         expect(localDateTime.minusNanos(nanos)).toStrictEqual(expected);
     });
 
+    type AddDurationScenario = {
+        localDateTime: LocalDateTime,
+        duration: Duration,
+        expected: LocalDateTime,
+    };
+
+    it.each(Object.entries<AddDurationScenario>({
+        '2015-08-31T00:00:00 + PT0S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0)),
+            duration: Duration.zero(),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0)),
+        },
+        '2015-08-31T00:00:00 + PT1H2M3.000000004S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0)),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31T01:02:03.000000004 + PT-1H-2M-3.000000004S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0, 0)),
+        },
+        '2015-08-31T00:00:02.000000005 + PT-0S.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 2, 5)),
+            duration: Duration.ofSeconds(-1, 4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 1, 9)),
+        },
+        '2015-08-31T00:00:02.000000005 + PT0.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 2, 5)),
+            duration: Duration.ofSeconds(1, -4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 3, 1)),
+        },
+        '2015-08-30T00:00:00 + PT24H': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(0, 0, 0)),
+            duration: Duration.ofSeconds(24 * 3600),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0)),
+        },
+        '2015-08-31T00:00:00 + PT-24H': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0)),
+            duration: Duration.ofSeconds(-24 * 3600),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(0, 0, 0)),
+        },
+        '2015-08-30T01:02:03.000000004 + PT22H57M56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(1, 2, 3, 4)),
+            duration: Duration.ofSeconds(24 * 3600 - 3600 - 2 * 60 - 3, -4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0, 0)),
+        },
+        '2015-08-31T00:00:00 + PT-22H-57M-56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0, 0)),
+            duration: Duration.ofSeconds(-24 * 3600 + 3600 + 2 * 60 + 3, 4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(1, 2, 3, 4)),
+        },
+        '-0001-01-01T01:02:03.000000004 + PT26278H57M56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(-1, 1, 1), LocalTime.of(1, 2, 3, 4)),
+            duration: Duration.ofSeconds(26278 * 3600 + 57 * 60 + 56, 999999996),
+            expected: LocalDateTime.of(LocalDate.of(1, 12, 31), LocalTime.of(0, 0, 0, 0)),
+        },
+        '0001-12-31T00:00:00 + PT-26278H-57M-56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(1, 12, 31), LocalTime.of(0, 0, 0, 0)),
+            duration: Duration.ofSeconds(-26278 * 3600 - 57 * 60 - 56, -999999996),
+            expected: LocalDateTime.of(LocalDate.of(-1, 1, 1), LocalTime.of(1, 2, 3, 4)),
+        },
+        '-999999-01-01T01:02:03.000000004 + PT17531631190H57M56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(-999999, 1, 1), LocalTime.of(1, 2, 3, 4)),
+            duration: Duration.ofSeconds(17531631190 * 3600 + 57 * 60 + 56, 999999996),
+            expected: LocalDateTime.of(LocalDate.of(999999, 12, 31), LocalTime.of(0, 0, 0, 0)),
+        },
+        '999999-12-31T00:00:00 + PT-17531631190H-57M-56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(999999, 12, 31), LocalTime.of(0, 0, 0, 0)),
+            duration: Duration.ofSeconds(-17531631190 * 3600 - 57 * 60 - 56, -999999996),
+            expected: LocalDateTime.of(LocalDate.of(-999999, 1, 1), LocalTime.of(1, 2, 3, 4)),
+        },
+    }))('can create a copy with an added duration %s', (_, scenario) => {
+        const result = scenario.localDateTime.addDuration(scenario.duration);
+
+        expect(result.toString()).toStrictEqual(scenario.expected.toString());
+    });
+
+    type SubtractDurationScenario = AddDurationScenario;
+
+    it.each(Object.entries<SubtractDurationScenario>({
+        '2015-08-31T00:00:00 - PT0S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0)),
+            duration: Duration.zero(),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0)),
+        },
+        '2015-08-31T01:02:03.000000004 - PT1H2M3.000000004S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0, 0)),
+        },
+        '2015-08-31T00:00:00 - PT-1H-2M-3.000000004S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0, 0)),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31T00:00:01.000000009 - PT-0S.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 1, 9)),
+            duration: Duration.ofSeconds(-1, 4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 2, 5)),
+        },
+        '2015-08-31T00:00:03.000000001 - PT0.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 3, 1)),
+            duration: Duration.ofSeconds(1, -4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 2, 5)),
+        },
+        '2015-08-31T00:00:00 - PT24H': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0, 0)),
+            duration: Duration.ofSeconds(24 * 3600),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(0, 0, 0, 0)),
+        },
+        '2015-08-30T00:00:00 - PT-24H': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(0, 0, 0, 0)),
+            duration: Duration.ofSeconds(-24 * 3600),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0, 0)),
+        },
+        '2015-08-31T00:00:00 - PT22H57M56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0, 0)),
+            duration: Duration.ofSeconds(24 * 3600 - 3600 - 2 * 60 - 3, -4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-30T01:02:03.000000004 - PT-22H-57M-56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(1, 2, 3, 4)),
+            duration: Duration.ofSeconds(-24 * 3600 + 3600 + 2 * 60 + 3, 4),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 0, 0, 0)),
+        },
+        '0001-12-31T00:00:00 - PT26278H57M56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(1, 12, 31), LocalTime.of(0, 0, 0, 0)),
+            duration: Duration.ofSeconds(26278 * 3600 + 57 * 60 + 56, 999999996),
+            expected: LocalDateTime.of(LocalDate.of(-1, 1, 1), LocalTime.of(1, 2, 3, 4)),
+        },
+        '-0001-01-01T01:02:03.000000004 - PT-26278H-57M-56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(-1, 1, 1), LocalTime.of(1, 2, 3, 4)),
+            duration: Duration.ofSeconds(-26278 * 3600 - 57 * 60 - 56, -999999996),
+            expected: LocalDateTime.of(LocalDate.of(1, 12, 31), LocalTime.of(0, 0, 0, 0)),
+        },
+        '999999-12-31T00:00:00 - PT17531631190H57M56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(999999, 12, 31), LocalTime.of(0, 0, 0, 0)),
+            duration: Duration.ofSeconds(17531631190 * 3600 + 57 * 60 + 56, 999999996),
+            expected: LocalDateTime.of(LocalDate.of(-999999, 1, 1), LocalTime.of(1, 2, 3, 4)),
+        },
+        '-999999-01-01T01:02:03.000000004 - PT-17531631190H-57M-56.999999996S': {
+            localDateTime: LocalDateTime.of(LocalDate.of(-999999, 1, 1), LocalTime.of(1, 2, 3, 4)),
+            duration: Duration.ofSeconds(-17531631190 * 3600 - 57 * 60 - 56, -999999996),
+            expected: LocalDateTime.of(LocalDate.of(999999, 12, 31), LocalTime.of(0, 0, 0, 0)),
+        },
+    }))('can create a copy with a subtracted duration %s', (_, scenario) => {
+        const result = scenario.localDateTime.subtractDuration(scenario.duration);
+
+        expect(result.toString()).toStrictEqual(scenario.expected.toString());
+    });
+
     it('should be comparable', () => {
         const one = LocalDateTime.of(LocalDate.of(2020, 4, 10), LocalTime.of(1));
         const two = LocalDateTime.of(LocalDate.of(2021, 4, 10), LocalTime.of(15, 2, 1, 1));
@@ -960,5 +1112,83 @@ describe('A value object representing a local date time', () => {
         const localDateTime = LocalDateTime.of(localDate, localTime);
 
         expect(localDateTime.toJSON()).toBe('2020-04-10T15:02:01.000002222');
+    });
+
+    type DurationBetweenScenario = {
+        start: LocalDateTime,
+        end: LocalDateTime,
+        duration: Duration,
+    };
+
+    it.each(Object.entries<DurationBetweenScenario>({
+        '2015-08-31T00:00:00/2015-08-31T00:00:00': {
+            start: LocalDateTime.parse('2015-08-31T00:00:00'),
+            end: LocalDateTime.parse('2015-08-31T00:00:00'),
+            duration: Duration.zero(),
+        },
+        '2015-08-31T00:00:00/2015-08-31T01:02:03.000000004': {
+            start: LocalDateTime.parse('2015-08-31T00:00:00'),
+            end: LocalDateTime.parse('2015-08-31T01:02:03.000000004'),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+        },
+        '2015-08-31T01:02:03.000000004/2015-08-31T00:00:00': {
+            start: LocalDateTime.parse('2015-08-31T01:02:03.000000004'),
+            end: LocalDateTime.parse('2015-08-31T00:00:00'),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+        },
+        '2015-08-31T00:00:02.000000005/2015-08-31T00:00:01.000000009': {
+            start: LocalDateTime.parse('2015-08-31T00:00:02.000000005'),
+            end: LocalDateTime.parse('2015-08-31T00:00:01.000000009'),
+            duration: Duration.ofSeconds(-1, 4),
+        },
+        '2015-08-31T00:00:02.000000005/2015-08-31T00:00:03.000000001': {
+            start: LocalDateTime.parse('2015-08-31T00:00:02.000000005'),
+            end: LocalDateTime.parse('2015-08-31T00:00:03.000000001'),
+            duration: Duration.ofSeconds(1, -4),
+        },
+        '2015-08-30T00:00:00/2015-08-31T00:00:00': {
+            start: LocalDateTime.parse('2015-08-30T00:00:00'),
+            end: LocalDateTime.parse('2015-08-31T00:00:00'),
+            duration: Duration.ofSeconds(24 * 3600),
+        },
+        '2015-08-31T00:00:00/2015-08-30T00:00:00': {
+            start: LocalDateTime.parse('2015-08-31T00:00:00'),
+            end: LocalDateTime.parse('2015-08-30T00:00:00'),
+            duration: Duration.ofSeconds(-24 * 3600),
+        },
+        '2015-08-30T01:02:03.000000004/2015-08-31T00:00:00': {
+            start: LocalDateTime.parse('2015-08-30T01:02:03.000000004'),
+            end: LocalDateTime.parse('2015-08-31T00:00:00'),
+            duration: Duration.ofSeconds(24 * 3600 - 3600 - 2 * 60 - 3, -4),
+        },
+        '2015-08-31T00:00:00/2015-08-30T01:02:03.000000004': {
+            start: LocalDateTime.parse('2015-08-31T00:00:00'),
+            end: LocalDateTime.parse('2015-08-30T01:02:03.000000004'),
+            duration: Duration.ofSeconds(-24 * 3600 + 3600 + 2 * 60 + 3, 4),
+        },
+        '-0001-01-01T01:02:03.000000004/0001-12-31T00:00:00': {
+            start: LocalDateTime.parse('-0001-01-01T01:02:03.000000004'),
+            end: LocalDateTime.parse('0001-12-31T00:00:00'),
+            duration: Duration.ofSeconds(26278 * 3600 + 57 * 60 + 56, 999999996),
+        },
+        '0001-12-31T00:00:00/-0001-01-01T01:02:03.000000004': {
+            start: LocalDateTime.parse('0001-12-31T00:00:00'),
+            end: LocalDateTime.parse('-0001-01-01T01:02:03.000000004'),
+            duration: Duration.ofSeconds(-26278 * 3600 - 57 * 60 - 56, -999999996),
+        },
+        '-999999-01-01T01:02:03.000000004/999999-12-31T00:00:00': {
+            start: LocalDateTime.parse('-999999-01-01T01:02:03.000000004'),
+            end: LocalDateTime.parse('999999-12-31T00:00:00'),
+            duration: Duration.ofSeconds(17531631190 * 3600 + 57 * 60 + 56, 999999996),
+        },
+        '999999-12-31T00:00:00/-999999-01-01T01:02:03.000000004': {
+            start: LocalDateTime.parse('999999-12-31T00:00:00'),
+            end: LocalDateTime.parse('-999999-01-01T01:02:03.000000004'),
+            duration: Duration.ofSeconds(-17531631190 * 3600 - 57 * 60 - 56, -999999996),
+        },
+    }))('should calculate the duration between local date-times %s', (_, scenario) => {
+        const duration = LocalDateTime.durationBetween(scenario.start, scenario.end);
+
+        expect(duration.toString()).toStrictEqual(scenario.duration.toString());
     });
 });

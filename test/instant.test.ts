@@ -1,4 +1,4 @@
-import {Instant} from '../src';
+import {Duration, Instant} from '../src';
 
 describe('A value object representing an instant in time', () => {
     it('can be created from the number of milliseconds since the epoch', () => {
@@ -484,6 +484,158 @@ describe('A value object representing an instant in time', () => {
         expect(noShift.toEpochMillis()).toBe(123456789);
     });
 
+    type AddDurationScenario = {
+        instant: Instant,
+        duration: Duration,
+        expected: Instant,
+    };
+
+    it.each(Object.entries<AddDurationScenario>({
+        '2015-08-31T00:00:00Z + PT0S': {
+            instant: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.zero(),
+            expected: Instant.parse('2015-08-31T00:00:00Z'),
+        },
+        '2015-08-31T00:00:00Z + PT1H2M3.000000004S': {
+            instant: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+            expected: Instant.parse('2015-08-31T01:02:03.000000004Z'),
+        },
+        '2015-08-31T01:02:03.000000004Z + PT-1H-2M-3.000000004S': {
+            instant: Instant.parse('2015-08-31T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+            expected: Instant.parse('2015-08-31T00:00:00Z'),
+        },
+        '2015-08-31T00:00:02.000000005Z + PT-0S.999999996S': {
+            instant: Instant.parse('2015-08-31T00:00:02.000000005Z'),
+            duration: Duration.ofSeconds(-1, 4),
+            expected: Instant.parse('2015-08-31T00:00:01.000000009Z'),
+        },
+        '2015-08-31T00:00:02.000000005Z + PT0.999999996S': {
+            instant: Instant.parse('2015-08-31T00:00:02.000000005Z'),
+            duration: Duration.ofSeconds(1, -4),
+            expected: Instant.parse('2015-08-31T00:00:03.000000001Z'),
+        },
+        '2015-08-30T00:00:00Z + PT24H': {
+            instant: Instant.parse('2015-08-30T00:00:00Z'),
+            duration: Duration.ofSeconds(24 * 3600),
+            expected: Instant.parse('2015-08-31T00:00:00Z'),
+        },
+        '2015-08-31T00:00:00Z + PT-24H': {
+            instant: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.ofSeconds(-24 * 3600),
+            expected: Instant.parse('2015-08-30T00:00:00Z'),
+        },
+        '2015-08-30T01:02:03.000000004Z + PT22H57M56.999999996S': {
+            instant: Instant.parse('2015-08-30T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(24 * 3600 - 3600 - 2 * 60 - 3, -4),
+            expected: Instant.parse('2015-08-31T00:00:00Z'),
+        },
+        '2015-08-31T00:00:00Z + PT-22H-57M-56.999999996S': {
+            instant: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.ofSeconds(-24 * 3600 + 3600 + 2 * 60 + 3, 4),
+            expected: Instant.parse('2015-08-30T01:02:03.000000004Z'),
+        },
+        '-0001-01-01T01:02:03.000000004Z + PT26278H57M56.999999996S': {
+            instant: Instant.parse('-0001-01-01T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(26278 * 3600 + 57 * 60 + 56, 999999996),
+            expected: Instant.parse('0001-12-31T00:00:00Z'),
+        },
+        '0001-12-31T00:00:00Z + PT-26278H-57M-56.999999996S': {
+            instant: Instant.parse('0001-12-31T00:00:00Z'),
+            duration: Duration.ofSeconds(-26278 * 3600 - 57 * 60 - 56, -999999996),
+            expected: Instant.parse('-0001-01-01T01:02:03.000000004Z'),
+        },
+        '-999999-01-01T01:02:03.000000004Z + PT17531631190H57M56.999999996S': {
+            instant: Instant.parse('-999999-01-01T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(17531631190 * 3600 + 57 * 60 + 56, 999999996),
+            expected: Instant.parse('999999-12-31T00:00:00Z'),
+        },
+        '999999-12-31T00:00:00Z + PT-17531631190H-57M-56.999999996S': {
+            instant: Instant.parse('999999-12-31T00:00:00Z'),
+            duration: Duration.ofSeconds(-17531631190 * 3600 - 57 * 60 - 56, -999999996),
+            expected: Instant.parse('-999999-01-01T01:02:03.000000004Z'),
+        },
+    }))('can create a copy with an added duration %s', (_, scenario) => {
+        const result = scenario.instant.addDuration(scenario.duration);
+
+        expect(result.toString()).toStrictEqual(scenario.expected.toString());
+    });
+
+    type SubtractDurationScenario = AddDurationScenario;
+
+    it.each(Object.entries<SubtractDurationScenario>({
+        '2015-08-31T00:00:00Z - PT0S': {
+            instant: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.zero(),
+            expected: Instant.parse('2015-08-31T00:00:00Z'),
+        },
+        '2015-08-31T00:00:00Z - PT1H2M3.000000004S': {
+            instant: Instant.parse('2015-08-31T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+            expected: Instant.parse('2015-08-31T00:00:00Z'),
+        },
+        '2015-08-31T01:02:03.000000004Z - PT-1H-2M-3.000000004S': {
+            instant: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+            expected: Instant.parse('2015-08-31T01:02:03.000000004Z'),
+        },
+        '2015-08-31T00:00:02.000000005Z - PT-0S.999999996S': {
+            instant: Instant.parse('2015-08-31T00:00:01.000000009Z'),
+            duration: Duration.ofSeconds(-1, 4),
+            expected: Instant.parse('2015-08-31T00:00:02.000000005Z'),
+        },
+        '2015-08-31T00:00:02.000000005Z - PT0.999999996S': {
+            instant: Instant.parse('2015-08-31T00:00:03.000000001Z'),
+            duration: Duration.ofSeconds(1, -4),
+            expected: Instant.parse('2015-08-31T00:00:02.000000005Z'),
+        },
+        '2015-08-30T00:00:00Z - PT24H': {
+            instant: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.ofSeconds(24 * 3600),
+            expected: Instant.parse('2015-08-30T00:00:00Z'),
+        },
+        '2015-08-31T00:00:00Z - PT-24H': {
+            instant: Instant.parse('2015-08-30T00:00:00Z'),
+            duration: Duration.ofSeconds(-24 * 3600),
+            expected: Instant.parse('2015-08-31T00:00:00Z'),
+        },
+        '2015-08-30T01:02:03.000000004Z - PT22H57M56.999999996S': {
+            instant: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.ofSeconds(24 * 3600 - 3600 - 2 * 60 - 3, -4),
+            expected: Instant.parse('2015-08-30T01:02:03.000000004Z'),
+        },
+        '2015-08-31T00:00:00Z - PT-22H-57M-56.999999996S': {
+            instant: Instant.parse('2015-08-30T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(-24 * 3600 + 3600 + 2 * 60 + 3, 4),
+            expected: Instant.parse('2015-08-31T00:00:00Z'),
+        },
+        '-0001-01-01T01:02:03.000000004Z - PT26278H57M56.999999996S': {
+            instant: Instant.parse('0001-12-31T00:00:00Z'),
+            duration: Duration.ofSeconds(26278 * 3600 + 57 * 60 + 56, 999999996),
+            expected: Instant.parse('-0001-01-01T01:02:03.000000004Z'),
+        },
+        '0001-12-31T00:00:00Z - PT-26278H-57M-56.999999996S': {
+            instant: Instant.parse('-0001-01-01T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(-26278 * 3600 - 57 * 60 - 56, -999999996),
+            expected: Instant.parse('0001-12-31T00:00:00Z'),
+        },
+        '-999999-01-01T01:02:03.000000004Z - PT17531631190H57M56.999999996S': {
+            instant: Instant.parse('999999-12-31T00:00:00Z'),
+            duration: Duration.ofSeconds(17531631190 * 3600 + 57 * 60 + 56, 999999996),
+            expected: Instant.parse('-999999-01-01T01:02:03.000000004Z'),
+        },
+        '999999-12-31T00:00:00Z - PT-17531631190H-57M-56.999999996S': {
+            instant: Instant.parse('-999999-01-01T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(-17531631190 * 3600 - 57 * 60 - 56, -999999996),
+            expected: Instant.parse('999999-12-31T00:00:00Z'),
+        },
+    }))('can create a copy with a subtracted duration %s', (_, scenario) => {
+        const result = scenario.instant.subtractDuration(scenario.duration);
+
+        expect(result.toString()).toStrictEqual(scenario.expected.toString());
+    });
+
     it('should be comparable', () => {
         const one = Instant.ofEpochMilli(1000000);
         const two = Instant.ofEpochMilli(2000000);
@@ -588,5 +740,83 @@ describe('A value object representing an instant in time', () => {
         const instant = Instant.ofEpochMilli(4321);
 
         expect(instant.getNano()).toEqual(321000000);
+    });
+
+    type DurationBetweenScenario = {
+        start: Instant,
+        end: Instant,
+        duration: Duration,
+    };
+
+    it.each(Object.entries<DurationBetweenScenario>({
+        '2015-08-31T00:00:00Z/2015-08-31T00:00:00Z': {
+            start: Instant.parse('2015-08-31T00:00:00Z'),
+            end: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.zero(),
+        },
+        '2015-08-31T00:00:00Z/2015-08-31T01:02:03.000000004Z': {
+            start: Instant.parse('2015-08-31T00:00:00Z'),
+            end: Instant.parse('2015-08-31T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
+        },
+        '2015-08-31T01:02:03.000000004Z/2015-08-31T00:00:00Z': {
+            start: Instant.parse('2015-08-31T01:02:03.000000004Z'),
+            end: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
+        },
+        '2015-08-31T00:00:02.000000005Z/2015-08-31T00:00:01.000000009Z': {
+            start: Instant.parse('2015-08-31T00:00:02.000000005Z'),
+            end: Instant.parse('2015-08-31T00:00:01.000000009Z'),
+            duration: Duration.ofSeconds(-1, 4),
+        },
+        '2015-08-31T00:00:02.000000005Z/2015-08-31T00:00:03.000000001Z': {
+            start: Instant.parse('2015-08-31T00:00:02.000000005Z'),
+            end: Instant.parse('2015-08-31T00:00:03.000000001Z'),
+            duration: Duration.ofSeconds(1, -4),
+        },
+        '2015-08-30T00:00:00Z/2015-08-31T00:00:00Z': {
+            start: Instant.parse('2015-08-30T00:00:00Z'),
+            end: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.ofSeconds(24 * 3600),
+        },
+        '2015-08-31T00:00:00Z/2015-08-30T00:00:00Z': {
+            start: Instant.parse('2015-08-31T00:00:00Z'),
+            end: Instant.parse('2015-08-30T00:00:00Z'),
+            duration: Duration.ofSeconds(-24 * 3600),
+        },
+        '2015-08-30T01:02:03.000000004Z/2015-08-31T00:00:00Z': {
+            start: Instant.parse('2015-08-30T01:02:03.000000004Z'),
+            end: Instant.parse('2015-08-31T00:00:00Z'),
+            duration: Duration.ofSeconds(24 * 3600 - 3600 - 2 * 60 - 3, -4),
+        },
+        '2015-08-31T00:00:00Z/2015-08-30T01:02:03.000000004Z': {
+            start: Instant.parse('2015-08-31T00:00:00Z'),
+            end: Instant.parse('2015-08-30T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(-24 * 3600 + 3600 + 2 * 60 + 3, 4),
+        },
+        '-0001-01-01T01:02:03.000000004Z/0001-12-31T00:00:00Z': {
+            start: Instant.parse('-0001-01-01T01:02:03.000000004Z'),
+            end: Instant.parse('0001-12-31T00:00:00Z'),
+            duration: Duration.ofSeconds(26278 * 3600 + 57 * 60 + 56, 999999996),
+        },
+        '0001-12-31T00:00:00Z/-0001-01-01T01:02:03.000000004Z': {
+            start: Instant.parse('0001-12-31T00:00:00Z'),
+            end: Instant.parse('-0001-01-01T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(-26278 * 3600 - 57 * 60 - 56, -999999996),
+        },
+        '-999999-01-01T01:02:03.000000004Z/999999-12-31T00:00:00Z': {
+            start: Instant.parse('-999999-01-01T01:02:03.000000004Z'),
+            end: Instant.parse('999999-12-31T00:00:00Z'),
+            duration: Duration.ofSeconds(17531631190 * 3600 + 57 * 60 + 56, 999999996),
+        },
+        '999999-12-31T00:00:00Z/-999999-01-01T01:02:03.000000004Z': {
+            start: Instant.parse('999999-12-31T00:00:00Z'),
+            end: Instant.parse('-999999-01-01T01:02:03.000000004Z'),
+            duration: Duration.ofSeconds(-17531631190 * 3600 - 57 * 60 - 56, -999999996),
+        },
+    }))('should calculate the duration between instants %s', (_, scenario) => {
+        const duration = Instant.durationBetween(scenario.start, scenario.end);
+
+        expect(duration.toString()).toStrictEqual(scenario.duration.toString());
     });
 });

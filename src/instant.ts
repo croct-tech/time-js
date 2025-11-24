@@ -4,6 +4,7 @@ import {LocalDate} from './localDate';
 import {LocalDateTime} from './localDateTime';
 import {LocalTime} from './localTime';
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
+import {Duration} from './duration';
 
 /**
  * An instantaneous point on the time-line.
@@ -180,6 +181,19 @@ export class Instant {
             multiplyExact(daysSinceEpoch, LocalTime.SECONDS_PER_DAY),
             nanoOfDay,
         );
+    }
+
+    /**
+     * Obtains a Duration between two instants.
+     *
+     * @param start - The start instant
+     * @param end - The end instant
+     */
+    public static durationBetween(start: Instant, end: Instant): Duration {
+        const seconds = subtractExact(end.getSeconds(), start.getSeconds());
+        const nanos = subtractExact(end.getNano(), start.getNano());
+
+        return Duration.ofSeconds(seconds, nanos);
     }
 
     /**
@@ -521,6 +535,24 @@ export class Instant {
      */
     public minusNanos(nanos: number): Instant {
         return this.plusNanos(-nanos);
+    }
+
+    /**
+     * Adds a duration to this instant.
+     *
+     * @param duration - The Duration
+     */
+    public addDuration(duration: Duration): Instant {
+        return this.plusSeconds(duration.getSeconds()).plusNanos(duration.getNanos());
+    }
+
+    /**
+     * Subtracts a duration from this instant.
+     *
+     * @param duration - The Duration
+     */
+    public subtractDuration(duration: Duration): Instant {
+        return this.minusSeconds(duration.getSeconds()).minusNanos(duration.getNanos());
     }
 
     /**

@@ -1,4 +1,5 @@
-import {intDiv} from './math';
+import {intDiv, subtractExact} from './math';
+import {Duration} from './duration';
 
 /**
  * A time without a time-zone in the ISO-8601 calendar system, such as 10:15:30.
@@ -235,6 +236,27 @@ export class LocalTime {
         const nanos = Number.parseInt(groups.fraction?.padEnd(9, '0') ?? '0', 10);
 
         return LocalTime.of(hour, minute, second, nanos);
+    }
+
+    /**
+     * Obtains a Duration between two local times.
+     *
+     * @param start - The start local time
+     * @param end - The end local time
+     */
+    public static durationBetween(start: LocalTime, end: LocalTime): Duration {
+        const endSeconds = end.getHour() * LocalTime.SECONDS_PER_HOUR
+            + end.getMinute() * LocalTime.SECONDS_PER_MINUTE
+            + end.getSecond();
+
+        const startSeconds = start.getHour() * LocalTime.SECONDS_PER_HOUR
+            + start.getMinute() * LocalTime.SECONDS_PER_MINUTE
+            + start.getSecond();
+
+        const seconds = subtractExact(endSeconds, startSeconds);
+        const nanos = subtractExact(end.getNano(), start.getNano());
+
+        return Duration.ofSeconds(seconds, nanos);
     }
 
     /**
@@ -497,6 +519,24 @@ export class LocalTime {
      */
     public minusNanos(nanos: number): LocalTime {
         return this.plusNanos(-nanos);
+    }
+
+    /**
+     * Adds a duration to this local time.
+     *
+     * @param duration - The Duration
+     */
+    public addDuration(duration: Duration): LocalTime {
+        return this.plusSeconds(duration.getSeconds()).plusNanos(duration.getNanos());
+    }
+
+    /**
+     * Subtracts a duration from this local time.
+     *
+     * @param duration - The Duration
+     */
+    public subtractDuration(duration: Duration): LocalTime {
+        return this.minusSeconds(duration.getSeconds()).minusNanos(duration.getNanos());
     }
 
     /**

@@ -1,6 +1,5 @@
 import {LocalTime} from './localTime';
 import {addExact, intDiv, multiplyExact, subtractExact} from './math';
-import {Instant} from './instant';
 
 /**
  * A calendar agnostic amount of time, such as '34.5 seconds'.
@@ -49,13 +48,13 @@ export class Duration {
             throw new Error(`Unrecognized ISO-8601 duration string "${value}".`);
         }
 
-        const daysAsSeconds = Number.parseInt(groups.day ?? '0', 10) * LocalTime.SECONDS_PER_DAY;
-        const hoursAsSeconds = Number.parseInt(groups.hour ?? '0', 10) * LocalTime.SECONDS_PER_HOUR;
-        const minutesAsSeconds = Number.parseInt(groups.minute ?? '0', 10) * LocalTime.SECONDS_PER_MINUTE;
+        const daysInSeconds = Number.parseInt(groups.day ?? '0', 10) * LocalTime.SECONDS_PER_DAY;
+        const hoursInSeconds = Number.parseInt(groups.hour ?? '0', 10) * LocalTime.SECONDS_PER_HOUR;
+        const minutesInSeconds = Number.parseInt(groups.minute ?? '0', 10) * LocalTime.SECONDS_PER_MINUTE;
         const seconds = Number.parseInt(groups.second ?? '0', 10);
         const fraction = Number.parseInt(groups.fraction?.padEnd(9, '0') ?? '0', 10);
 
-        const totalSeconds = Duration.safeMultiAdd(daysAsSeconds, hoursAsSeconds, minutesAsSeconds, seconds);
+        const totalSeconds = [daysInSeconds, hoursInSeconds, minutesInSeconds, seconds].reduce(addExact, 0);
         const nanos = groups.second?.[0] === '-' && fraction > 0 ? (fraction * -1) : fraction;
 
         const negate = groups.sign === '-';
@@ -168,40 +167,6 @@ export class Duration {
      */
     public static ofNanos(nanos: number): Duration {
         return Duration.ofSeconds(0, nanos);
-    }
-
-    /**
-     * Obtains a Duration between two instants.
-     *
-     * @param start - The start instant
-     * @param end - The end instant
-     */
-    public static between(start: Instant, end: Instant): Duration {
-        const seconds = subtractExact(end.getSeconds(), start.getSeconds());
-        const nanos = subtractExact(end.getNano(), start.getNano());
-
-        return Duration.ofSeconds(seconds, nanos);
-    }
-
-    /**
-     * Obtains a Duration between two local times.
-     *
-     * @param start - The start local time
-     * @param end - The end local time
-     */
-    public static betweenLocalTime(start: LocalTime, end: LocalTime): Duration {
-        const endSeconds = end.getHour() * LocalTime.SECONDS_PER_HOUR
-            + end.getMinute() * LocalTime.SECONDS_PER_MINUTE
-            + end.getSecond();
-
-        const startSeconds = start.getHour() * LocalTime.SECONDS_PER_HOUR
-            + start.getMinute() * LocalTime.SECONDS_PER_MINUTE
-            + start.getSecond();
-
-        const seconds = subtractExact(endSeconds, startSeconds);
-        const nanos = subtractExact(end.getNano(), start.getNano());
-
-        return Duration.ofSeconds(seconds, nanos);
     }
 
     /**
@@ -538,24 +503,6 @@ export class Duration {
     }
 
     /**
-     * Adds this duration to the specified instant.
-     *
-     * @param instant - The instant
-     */
-    public addTo(instant: Instant): Instant {
-        return instant.plusNanos(this.nanos).plusSeconds(this.seconds);
-    }
-
-    /**
-     * Subtracts this duration from the specified instant.
-     *
-     * @param instant - The instant
-     */
-    public subtractFrom(instant: Instant): Instant {
-        return instant.minusNanos(this.nanos).minusSeconds(this.seconds);
-    }
-
-    /**
      * Gets the number of days in this duration.
      */
     public toDays(): number {
@@ -772,20 +719,5 @@ export class Duration {
         output += 'S';
 
         return output;
-    }
-
-    /**
-     * Safely adds multiple numbers.
-     *
-     * @param elements - The numbers to add
-     */
-    private static safeMultiAdd(...elements: number[]): number {
-        let result = 0;
-
-        for (const element of elements) {
-            result = addExact(result, element);
-        }
-
-        return result;
     }
 }
