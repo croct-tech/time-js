@@ -21,7 +21,7 @@ describe('A value object representing a local date', () => {
         [LocalDate.MIN_EPOCH_DAY, LocalDate.MIN],
         [LocalDate.MAX_EPOCH_DAY, LocalDate.MAX],
     ])('can be created from the number of days since the epoch', (days: number, expected: LocalDate) => {
-        expect(LocalDate.ofEpochDay(days)).toStrictEqual(expected);
+        expect(LocalDate.ofEpochDay(days).toString()).toStrictEqual(expected.toString());
     });
 
     it.each([
@@ -114,7 +114,7 @@ describe('A value object representing a local date', () => {
     ])('can create a copy with an amount of years added', (years: number, expected: LocalDate) => {
         const localDate = LocalDate.of(2016, 2, 29);
 
-        expect(localDate.plusYears(years)).toStrictEqual(expected);
+        expect(localDate.plusYears(years).toString()).toStrictEqual(expected.toString());
     });
 
     it.each([
@@ -144,7 +144,7 @@ describe('A value object representing a local date', () => {
     ])('can create a copy with an amount of years subtracted', (years: number, expected: LocalDate) => {
         const localDate = LocalDate.of(2016, 2, 29);
 
-        expect(localDate.minusYears(years)).toStrictEqual(expected);
+        expect(localDate.minusYears(years).toString()).toStrictEqual(expected.toString());
     });
 
     it.each([
@@ -226,7 +226,7 @@ describe('A value object representing a local date', () => {
     ])(
         'can create a copy with an amount of months added',
         (months: number, localDate: LocalDate, expected: LocalDate) => {
-            expect(localDate.plusMonths(months)).toStrictEqual(expected);
+            expect(localDate.plusMonths(months).toString()).toStrictEqual(expected.toString());
         },
     );
 
@@ -311,7 +311,7 @@ describe('A value object representing a local date', () => {
     ])(
         'can create a copy with an amount of months subtracted',
         (months: number, localDate: LocalDate, expected: LocalDate) => {
-            expect(localDate.minusMonths(months)).toStrictEqual(expected);
+            expect(localDate.minusMonths(months).toString()).toStrictEqual(expected.toString());
         },
     );
 
@@ -338,7 +338,7 @@ describe('A value object representing a local date', () => {
     ])('can create a copy with an amount of weeks added', (weeks: number, expected: LocalDate) => {
         const localDate = LocalDate.of(2015, 8, 31);
 
-        expect(localDate.plusWeeks(weeks)).toStrictEqual(expected);
+        expect(localDate.plusWeeks(weeks).toString()).toStrictEqual(expected.toString());
     });
 
     it.each([
@@ -362,7 +362,7 @@ describe('A value object representing a local date', () => {
     ])('can create a copy with an amount of weeks subtracted', (weeks: number, expected: LocalDate) => {
         const localDate = LocalDate.of(2015, 8, 31);
 
-        expect(localDate.minusWeeks(weeks)).toStrictEqual(expected);
+        expect(localDate.minusWeeks(weeks).toString()).toStrictEqual(expected.toString());
     });
 
     it.each([
@@ -426,7 +426,7 @@ describe('A value object representing a local date', () => {
     ])(
         'can create a copy with an amount of days added',
         (days: number, localDate: LocalDate, expected: LocalDate) => {
-            expect(localDate.plusDays(days)).toStrictEqual(expected);
+            expect(localDate.plusDays(days).toString()).toStrictEqual(expected.toString());
         },
     );
 
@@ -491,7 +491,7 @@ describe('A value object representing a local date', () => {
     ])(
         'can create a copy with an amount of days subtracted',
         (days: number, localDate: LocalDate, expected: LocalDate) => {
-            expect(localDate.minusDays(days)).toStrictEqual(expected);
+            expect(localDate.minusDays(days).toString()).toStrictEqual(expected.toString());
         },
     );
 
@@ -513,63 +513,63 @@ describe('A value object representing a local date', () => {
         expected: LocalDate,
     };
 
-    it.each(Object.entries<AddPeriodScenario>({
-        '2015-08-31 + P0D': {
+    it.each<AddPeriodScenario>([
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.zero(),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2015-08-31 + P1D': {
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.ofDays(1),
             expected: LocalDate.of(2015, 9, 1),
         },
-        '2015-08-31 + P2D': {
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.ofDays(2),
             expected: LocalDate.of(2015, 9, 2),
         },
-        '2015-08-31 + P7D': {
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.ofWeeks(1),
             expected: LocalDate.of(2015, 9, 7),
         },
-        '2015-08-31 + P14D': {
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.ofWeeks(2),
             expected: LocalDate.of(2015, 9, 14),
         },
-        '2015-08-31 + P1M1D': {
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.of(0, 1, 1),
             expected: LocalDate.of(2015, 10, 1),
         },
-        '2015-08-31 + P2M': {
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.ofMonths(2),
             expected: LocalDate.of(2015, 10, 31),
         },
-        '2015-08-31 + P1Y': {
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.ofYears(1),
             expected: LocalDate.of(2016, 8, 31),
         },
-        '2015-08-31 + P2Y': {
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.ofYears(2),
             expected: LocalDate.of(2017, 8, 31),
         },
-        '2015-08-31 + P1Y2M3D': {
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.of(1, 2, 3),
             expected: LocalDate.of(2016, 11, 3),
         },
-        '2016-11-03 + P-1Y-2M-': {
+        {
             start: LocalDate.of(2016, 11, 3),
             period: Period.of(-1, -2, -3),
             expected: LocalDate.of(2015, 8, 31),
         },
-    }))('should add a period to a local date %s', (_, scenario) => {
+    ])('should add $period to $start', scenario => {
         const result = scenario.start.plus(scenario.period);
 
         expect(result.toString()).toStrictEqual(scenario.expected.toString());
@@ -577,63 +577,63 @@ describe('A value object representing a local date', () => {
 
     type SubtractPeriodScenario = AddPeriodScenario;
 
-    it.each(Object.entries<SubtractPeriodScenario>({
-        '2015-08-31 - P0D': {
+    it.each<SubtractPeriodScenario>([
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.zero(),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2015-08-31 - P1D': {
+        {
             start: LocalDate.of(2015, 9, 1),
             period: Period.ofDays(1),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2015-08-31 - P2D': {
+        {
             start: LocalDate.of(2015, 9, 2),
             period: Period.ofDays(2),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2015-08-31 - P7D': {
+        {
             start: LocalDate.of(2015, 9, 7),
             period: Period.ofWeeks(1),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2015-08-31 - P14D': {
+        {
             start: LocalDate.of(2015, 9, 14),
             period: Period.ofWeeks(2),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2015-08-31 - P1M1D': {
+        {
             start: LocalDate.of(2015, 10, 1),
             period: Period.of(0, 1, 1),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2015-08-31 - P2M': {
+        {
             start: LocalDate.of(2015, 10, 31),
             period: Period.ofMonths(2),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2015-08-31 - P1Y': {
+        {
             start: LocalDate.of(2016, 8, 31),
             period: Period.ofYears(1),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2015-08-31 - P2Y': {
+        {
             start: LocalDate.of(2017, 8, 31),
             period: Period.ofYears(2),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2015-08-31 - P1Y2M3D': {
+        {
             start: LocalDate.of(2016, 11, 3),
             period: Period.of(1, 2, 3),
             expected: LocalDate.of(2015, 8, 31),
         },
-        '2016-11-03 - P-1Y-2M-': {
+        {
             start: LocalDate.of(2015, 8, 31),
             period: Period.of(-1, -2, -3),
             expected: LocalDate.of(2016, 11, 3),
         },
-    }))('should subtract $period from $start', (_, scenario) => {
+    ])('should subtract $period from $start', scenario => {
         const result = scenario.start.minus(scenario.period);
 
         expect(result.toString()).toStrictEqual(scenario.expected.toString());
@@ -645,63 +645,63 @@ describe('A value object representing a local date', () => {
         expected: Period,
     };
 
-    it.each(Object.entries<PeriodScenario>({
-        '2015-08-31 / 2015-08-31': {
+    it.each<PeriodScenario>([
+        {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2015, 8, 31),
             expected: Period.zero(),
         },
-        '2015-08-31 / 2015-09-01': {
+        {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2015, 9, 1),
             expected: Period.ofDays(1),
         },
-        '2015-08-31 / 2015-09-02': {
+        {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2015, 9, 2),
             expected: Period.ofDays(2),
         },
-        '2015-08-31 / 2015-09-07': {
+        {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2015, 9, 7),
             expected: Period.ofWeeks(1),
         },
-        '2015-08-31 / 2015-09-14': {
+        {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2015, 9, 14),
             expected: Period.ofWeeks(2),
         },
-        '2015-08-31 / 2015-10-01': {
+        {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2015, 10, 1),
             expected: Period.of(0, 1, 1),
         },
-        '2015-08-31 / 2015-10-31': {
+        {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2015, 10, 31),
             expected: Period.ofMonths(2),
         },
-        '2015-08-31 / 2016-08-31': {
+        {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2016, 8, 31),
             expected: Period.ofYears(1),
         },
-        '2015-08-31 / 2017-08-31': {
+        {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2017, 8, 31),
             expected: Period.ofYears(2),
         },
-        '2015-08-31 / 2016-11-04': {
+        {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2016, 11, 3),
             expected: Period.of(1, 2, 3),
         },
-        '2016-11-04 / 2015-08-31': {
+        {
             start: LocalDate.of(2016, 11, 3),
             end: LocalDate.of(2015, 8, 31),
             expected: Period.of(-1, -2, -3),
         },
-    }))('should calculate the period between $start and $end', (_, scenario) => {
+    ])('should calculate the period between $start and $end', scenario => {
         const period = scenario.start.until(scenario.end);
 
         expect(period.toString()).toStrictEqual(scenario.expected.toString());
@@ -764,7 +764,7 @@ describe('A value object representing a local date', () => {
         [LocalDate.MIN, LocalDate.MIN_EPOCH_DAY],
         [LocalDate.MAX, LocalDate.MAX_EPOCH_DAY],
     ])('can be converted to an epoch day', (localDate: LocalDate, expected: number) => {
-        expect(localDate.toEpochDay()).toStrictEqual(expected);
+        expect(localDate.toEpochDay().toString()).toStrictEqual(expected.toString());
     });
 
     it('should serialize to JSON in the ISO-8601 format', () => {

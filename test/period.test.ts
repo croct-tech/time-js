@@ -28,25 +28,25 @@ describe('A ISO date-based amount of time', () => {
     it('can be created from a number of years', () => {
         const period = Period.ofYears(1);
 
-        expect(period).toStrictEqual(Period.of(1, 0, 0));
+        expect(period.toString()).toStrictEqual(Period.of(1, 0, 0).toString());
     });
 
     it('can be created from a number of months', () => {
         const period = Period.ofMonths(1);
 
-        expect(period).toStrictEqual(Period.of(0, 1, 0));
+        expect(period.toString()).toStrictEqual(Period.of(0, 1, 0).toString());
     });
 
     it('can be created from a number of weeks', () => {
         const period = Period.ofWeeks(1);
 
-        expect(period).toStrictEqual(Period.of(0, 0, 7));
+        expect(period.toString()).toStrictEqual(Period.of(0, 0, 7).toString());
     });
 
     it('can be created from a number of days', () => {
         const period = Period.ofDays(1);
 
-        expect(period).toStrictEqual(Period.of(0, 0, 1));
+        expect(period.toString()).toStrictEqual(Period.of(0, 0, 1).toString());
     });
 
     it.each([
@@ -203,68 +203,68 @@ describe('A ISO date-based amount of time', () => {
         const period = Period.of(1, 2, 3);
         const newPeriod = period.withYears(0);
 
-        expect(newPeriod).toStrictEqual(Period.of(0, 2, 3));
+        expect(newPeriod.toString()).toStrictEqual(Period.of(0, 2, 3).toString());
     });
 
     it('should return the period itself building a period with the same amount of years', () => {
         const period = Period.of(1, 2, 3);
         const newPeriod = period.withYears(1);
 
-        expect(newPeriod).toStrictEqual(period);
+        expect(newPeriod.toString()).toStrictEqual(period.toString());
     });
 
     it('can create a copy with a new amount of months', () => {
         const period = Period.of(1, 2, 3);
         const newPeriod = period.withMonths(0);
 
-        expect(newPeriod).toStrictEqual(Period.of(1, 0, 3));
+        expect(newPeriod.toString()).toStrictEqual(Period.of(1, 0, 3).toString());
     });
 
     it('should return the period itself building a period with the same amount of months', () => {
         const period = Period.of(1, 2, 3);
         const newPeriod = period.withMonths(2);
 
-        expect(newPeriod).toStrictEqual(period);
+        expect(newPeriod.toString()).toStrictEqual(period.toString());
     });
 
     it('can create a copy with a new amount of days', () => {
         const period = Period.of(1, 2, 3);
         const newPeriod = period.withDays(0);
 
-        expect(newPeriod).toStrictEqual(Period.of(1, 2, 0));
+        expect(newPeriod.toString()).toStrictEqual(Period.of(1, 2, 0).toString());
     });
 
     it('should return the period itself building a period with the same amount of days', () => {
         const period = Period.of(1, 2, 3);
         const newPeriod = period.withDays(3);
 
-        expect(newPeriod).toStrictEqual(period);
+        expect(newPeriod.toString()).toStrictEqual(period.toString());
     });
 
     it('can create a copy with another period added', () => {
         const period = Period.of(1, 2, 3);
         const secondPeriod = period.plusPeriod(Period.of(4, 5, 6));
 
-        expect(secondPeriod).toStrictEqual(Period.of(5, 7, 9));
+        expect(secondPeriod.toString()).toStrictEqual(Period.of(5, 7, 9).toString());
     });
 
     it('can create a copy with another period subtracted', () => {
         const period = Period.of(1, 2, 3);
         const secondPeriod = period.minusPeriod(Period.of(4, 5, 6));
 
-        expect(secondPeriod).toStrictEqual(Period.of(-3, -3, -3));
+        expect(secondPeriod.toString()).toStrictEqual(Period.of(-3, -3, -3).toString());
     });
 
     it('can create a copy with a period in years added', () => {
         const period = Period.of(1, 2, 3);
 
-        expect(Period.of(-2, 2, 3)).toStrictEqual(period.plusYears(-3));
-        expect(Period.of(-1, 2, 3)).toStrictEqual(period.plusYears(-2));
-        expect(Period.of(0, 2, 3)).toStrictEqual(period.plusYears(-1));
-        expect(Period.of(1, 2, 3)).toStrictEqual(period.plusYears(0));
-        expect(Period.of(2, 2, 3)).toStrictEqual(period.plusYears(1));
-        expect(Period.of(3, 2, 3)).toStrictEqual(period.plusYears(2));
-        expect(Period.of(4, 2, 3)).toStrictEqual(period.plusYears(3));
+        expect(Period.of(-2, 2, 3).toString()).toStrictEqual(period.plusYears(-3).toString());
+        expect(Period.of(-1, 2, 3).toString()).toStrictEqual(period.plusYears(-2).toString());
+        expect(Period.of(0, 2, 3).toString()).toStrictEqual(period.plusYears(-1).toString());
+        expect(Period.of(1, 2, 3).toString()).toStrictEqual(period.plusYears(0).toString());
+        expect(Period.of(2, 2, 3).toString()).toStrictEqual(period.plusYears(1).toString());
+        expect(Period.of(3, 2, 3).toString()).toStrictEqual(period.plusYears(2).toString());
+        expect(Period.of(4, 2, 3).toString()).toStrictEqual(period.plusYears(3).toString());
     });
 
     it('should fail to add an amount of years that exceeds the safe integer limit', () => {
@@ -275,13 +275,13 @@ describe('A ISO date-based amount of time', () => {
     it('can create a copy with period in years subtracted', () => {
         const period = Period.of(1, 2, 3);
 
-        expect(Period.of(-2, 2, 3)).toStrictEqual(period.minusYears(3));
-        expect(Period.of(-1, 2, 3)).toStrictEqual(period.minusYears(2));
-        expect(Period.of(0, 2, 3)).toStrictEqual(period.minusYears(1));
-        expect(Period.of(1, 2, 3)).toStrictEqual(period.minusYears(0));
-        expect(Period.of(2, 2, 3)).toStrictEqual(period.minusYears(-1));
-        expect(Period.of(3, 2, 3)).toStrictEqual(period.minusYears(-2));
-        expect(Period.of(4, 2, 3)).toStrictEqual(period.minusYears(-3));
+        expect(Period.of(-2, 2, 3).toString()).toStrictEqual(period.minusYears(3).toString());
+        expect(Period.of(-1, 2, 3).toString()).toStrictEqual(period.minusYears(2).toString());
+        expect(Period.of(0, 2, 3).toString()).toStrictEqual(period.minusYears(1).toString());
+        expect(Period.of(1, 2, 3).toString()).toStrictEqual(period.minusYears(0).toString());
+        expect(Period.of(2, 2, 3).toString()).toStrictEqual(period.minusYears(-1).toString());
+        expect(Period.of(3, 2, 3).toString()).toStrictEqual(period.minusYears(-2).toString());
+        expect(Period.of(4, 2, 3).toString()).toStrictEqual(period.minusYears(-3).toString());
     });
 
     it('should fail to subtract an amount of years that exceeds the safe integer limit', () => {
@@ -292,15 +292,15 @@ describe('A ISO date-based amount of time', () => {
     it('can create a copy with a period in months added', () => {
         const period = Period.of(1, 2, 3);
 
-        expect(Period.of(1, -10, 3)).toStrictEqual(period.plusMonths(-12));
-        expect(Period.of(1, -1, 3)).toStrictEqual(period.plusMonths(-3));
-        expect(Period.of(1, 0, 3)).toStrictEqual(period.plusMonths(-2));
-        expect(Period.of(1, 1, 3)).toStrictEqual(period.plusMonths(-1));
-        expect(Period.of(1, 2, 3)).toStrictEqual(period.plusMonths(0));
-        expect(Period.of(1, 3, 3)).toStrictEqual(period.plusMonths(1));
-        expect(Period.of(1, 4, 3)).toStrictEqual(period.plusMonths(2));
-        expect(Period.of(1, 5, 3)).toStrictEqual(period.plusMonths(3));
-        expect(Period.of(1, 14, 3)).toStrictEqual(period.plusMonths(12));
+        expect(Period.of(1, -10, 3).toString()).toStrictEqual(period.plusMonths(-12).toString());
+        expect(Period.of(1, -1, 3).toString()).toStrictEqual(period.plusMonths(-3).toString());
+        expect(Period.of(1, 0, 3).toString()).toStrictEqual(period.plusMonths(-2).toString());
+        expect(Period.of(1, 1, 3).toString()).toStrictEqual(period.plusMonths(-1).toString());
+        expect(Period.of(1, 2, 3).toString()).toStrictEqual(period.plusMonths(0).toString());
+        expect(Period.of(1, 3, 3).toString()).toStrictEqual(period.plusMonths(1).toString());
+        expect(Period.of(1, 4, 3).toString()).toStrictEqual(period.plusMonths(2).toString());
+        expect(Period.of(1, 5, 3).toString()).toStrictEqual(period.plusMonths(3).toString());
+        expect(Period.of(1, 14, 3).toString()).toStrictEqual(period.plusMonths(12).toString());
     });
 
     it('should fail to add an amount of months that exceeds the safe integer limit', () => {
@@ -311,15 +311,15 @@ describe('A ISO date-based amount of time', () => {
     it('can create a copy with period in months subtracted', () => {
         const period = Period.of(1, 2, 3);
 
-        expect(Period.of(1, -10, 3)).toStrictEqual(period.minusMonths(12));
-        expect(Period.of(1, -1, 3)).toStrictEqual(period.minusMonths(3));
-        expect(Period.of(1, 0, 3)).toStrictEqual(period.minusMonths(2));
-        expect(Period.of(1, 1, 3)).toStrictEqual(period.minusMonths(1));
-        expect(Period.of(1, 2, 3)).toStrictEqual(period.minusMonths(0));
-        expect(Period.of(1, 3, 3)).toStrictEqual(period.minusMonths(-1));
-        expect(Period.of(1, 4, 3)).toStrictEqual(period.minusMonths(-2));
-        expect(Period.of(1, 5, 3)).toStrictEqual(period.minusMonths(-3));
-        expect(Period.of(1, 14, 3)).toStrictEqual(period.minusMonths(-12));
+        expect(Period.of(1, -10, 3).toString()).toStrictEqual(period.minusMonths(12).toString());
+        expect(Period.of(1, -1, 3).toString()).toStrictEqual(period.minusMonths(3).toString());
+        expect(Period.of(1, 0, 3).toString()).toStrictEqual(period.minusMonths(2).toString());
+        expect(Period.of(1, 1, 3).toString()).toStrictEqual(period.minusMonths(1).toString());
+        expect(Period.of(1, 2, 3).toString()).toStrictEqual(period.minusMonths(0).toString());
+        expect(Period.of(1, 3, 3).toString()).toStrictEqual(period.minusMonths(-1).toString());
+        expect(Period.of(1, 4, 3).toString()).toStrictEqual(period.minusMonths(-2).toString());
+        expect(Period.of(1, 5, 3).toString()).toStrictEqual(period.minusMonths(-3).toString());
+        expect(Period.of(1, 14, 3).toString()).toStrictEqual(period.minusMonths(-12).toString());
     });
 
     it('should fail to subtract an amount of months that exceeds the safe integer limit', () => {
@@ -330,13 +330,13 @@ describe('A ISO date-based amount of time', () => {
     it('can create a copy with a period in weeks added', () => {
         const period = Period.of(1, 2, 3);
 
-        expect(Period.of(1, 2, -18)).toStrictEqual(period.plusWeeks(-3));
-        expect(Period.of(1, 2, -11)).toStrictEqual(period.plusWeeks(-2));
-        expect(Period.of(1, 2, -4)).toStrictEqual(period.plusWeeks(-1));
-        expect(Period.of(1, 2, 3)).toStrictEqual(period.plusWeeks(0));
-        expect(Period.of(1, 2, 10)).toStrictEqual(period.plusWeeks(1));
-        expect(Period.of(1, 2, 17)).toStrictEqual(period.plusWeeks(2));
-        expect(Period.of(1, 2, 24)).toStrictEqual(period.plusWeeks(3));
+        expect(Period.of(1, 2, -18).toString()).toStrictEqual(period.plusWeeks(-3).toString());
+        expect(Period.of(1, 2, -11).toString()).toStrictEqual(period.plusWeeks(-2).toString());
+        expect(Period.of(1, 2, -4).toString()).toStrictEqual(period.plusWeeks(-1).toString());
+        expect(Period.of(1, 2, 3).toString()).toStrictEqual(period.plusWeeks(0).toString());
+        expect(Period.of(1, 2, 10).toString()).toStrictEqual(period.plusWeeks(1).toString());
+        expect(Period.of(1, 2, 17).toString()).toStrictEqual(period.plusWeeks(2).toString());
+        expect(Period.of(1, 2, 24).toString()).toStrictEqual(period.plusWeeks(3).toString());
     });
 
     it('should fail to add an amount of weeks that exceeds the safe integer limit', () => {
@@ -347,13 +347,13 @@ describe('A ISO date-based amount of time', () => {
     it('can create a copy with a period in weeks subtracted', () => {
         const period = Period.of(1, 2, 3);
 
-        expect(Period.of(1, 2, -18)).toStrictEqual(period.minusWeeks(3));
-        expect(Period.of(1, 2, -11)).toStrictEqual(period.minusWeeks(2));
-        expect(Period.of(1, 2, -4)).toStrictEqual(period.minusWeeks(1));
-        expect(Period.of(1, 2, 3)).toStrictEqual(period.minusWeeks(0));
-        expect(Period.of(1, 2, 10)).toStrictEqual(period.minusWeeks(-1));
-        expect(Period.of(1, 2, 17)).toStrictEqual(period.minusWeeks(-2));
-        expect(Period.of(1, 2, 24)).toStrictEqual(period.minusWeeks(-3));
+        expect(Period.of(1, 2, -18).toString()).toStrictEqual(period.minusWeeks(3).toString());
+        expect(Period.of(1, 2, -11).toString()).toStrictEqual(period.minusWeeks(2).toString());
+        expect(Period.of(1, 2, -4).toString()).toStrictEqual(period.minusWeeks(1).toString());
+        expect(Period.of(1, 2, 3).toString()).toStrictEqual(period.minusWeeks(0).toString());
+        expect(Period.of(1, 2, 10).toString()).toStrictEqual(period.minusWeeks(-1).toString());
+        expect(Period.of(1, 2, 17).toString()).toStrictEqual(period.minusWeeks(-2).toString());
+        expect(Period.of(1, 2, 24).toString()).toStrictEqual(period.minusWeeks(-3).toString());
     });
 
     it('should fail to subtract an amount of weeks that exceeds the safe integer limit', () => {
@@ -364,13 +364,13 @@ describe('A ISO date-based amount of time', () => {
     it('can create a copy with a period in days added', () => {
         const period = Period.of(1, 2, 3);
 
-        expect(Period.of(1, 2, 0)).toStrictEqual(period.plusDays(-3));
-        expect(Period.of(1, 2, 1)).toStrictEqual(period.plusDays(-2));
-        expect(Period.of(1, 2, 2)).toStrictEqual(period.plusDays(-1));
-        expect(Period.of(1, 2, 3)).toStrictEqual(period.plusDays(0));
-        expect(Period.of(1, 2, 4)).toStrictEqual(period.plusDays(1));
-        expect(Period.of(1, 2, 5)).toStrictEqual(period.plusDays(2));
-        expect(Period.of(1, 2, 6)).toStrictEqual(period.plusDays(3));
+        expect(Period.of(1, 2, 0).toString()).toStrictEqual(period.plusDays(-3).toString());
+        expect(Period.of(1, 2, 1).toString()).toStrictEqual(period.plusDays(-2).toString());
+        expect(Period.of(1, 2, 2).toString()).toStrictEqual(period.plusDays(-1).toString());
+        expect(Period.of(1, 2, 3).toString()).toStrictEqual(period.plusDays(0).toString());
+        expect(Period.of(1, 2, 4).toString()).toStrictEqual(period.plusDays(1).toString());
+        expect(Period.of(1, 2, 5).toString()).toStrictEqual(period.plusDays(2).toString());
+        expect(Period.of(1, 2, 6).toString()).toStrictEqual(period.plusDays(3).toString());
     });
 
     it('should fail to add an amount of days that exceeds the safe integer limit', () => {
@@ -381,13 +381,13 @@ describe('A ISO date-based amount of time', () => {
     it('can create a copy with a period in days subtracted', () => {
         const period = Period.of(1, 2, 3);
 
-        expect(Period.of(1, 2, 0)).toStrictEqual(period.minusDays(3));
-        expect(Period.of(1, 2, 1)).toStrictEqual(period.minusDays(2));
-        expect(Period.of(1, 2, 2)).toStrictEqual(period.minusDays(1));
-        expect(Period.of(1, 2, 3)).toStrictEqual(period.minusDays(0));
-        expect(Period.of(1, 2, 4)).toStrictEqual(period.minusDays(-1));
-        expect(Period.of(1, 2, 5)).toStrictEqual(period.minusDays(-2));
-        expect(Period.of(1, 2, 6)).toStrictEqual(period.minusDays(-3));
+        expect(Period.of(1, 2, 0).toString()).toStrictEqual(period.minusDays(3).toString());
+        expect(Period.of(1, 2, 1).toString()).toStrictEqual(period.minusDays(2).toString());
+        expect(Period.of(1, 2, 2).toString()).toStrictEqual(period.minusDays(1).toString());
+        expect(Period.of(1, 2, 3).toString()).toStrictEqual(period.minusDays(0).toString());
+        expect(Period.of(1, 2, 4).toString()).toStrictEqual(period.minusDays(-1).toString());
+        expect(Period.of(1, 2, 5).toString()).toStrictEqual(period.minusDays(-2).toString());
+        expect(Period.of(1, 2, 6).toString()).toStrictEqual(period.minusDays(-3).toString());
     });
 
     it('should fail to subtract an amount of days that exceeds the safe integer limit', () => {
@@ -399,25 +399,25 @@ describe('A ISO date-based amount of time', () => {
         // Zero period
         const zeroPeriod = Period.zero();
 
-        expect(zeroPeriod).toStrictEqual(zeroPeriod.multipliedBy(-2));
-        expect(zeroPeriod).toStrictEqual(zeroPeriod.multipliedBy(-1));
-        expect(zeroPeriod).toStrictEqual(zeroPeriod.multipliedBy(0));
-        expect(zeroPeriod).toStrictEqual(zeroPeriod.multipliedBy(1));
-        expect(zeroPeriod).toStrictEqual(zeroPeriod.multipliedBy(2));
-        expect(zeroPeriod).toStrictEqual(zeroPeriod.multipliedBy(3));
+        expect(zeroPeriod.toString()).toStrictEqual(zeroPeriod.multipliedBy(-2).toString());
+        expect(zeroPeriod.toString()).toStrictEqual(zeroPeriod.multipliedBy(-1).toString());
+        expect(zeroPeriod.toString()).toStrictEqual(zeroPeriod.multipliedBy(0).toString());
+        expect(zeroPeriod.toString()).toStrictEqual(zeroPeriod.multipliedBy(1).toString());
+        expect(zeroPeriod.toString()).toStrictEqual(zeroPeriod.multipliedBy(2).toString());
+        expect(zeroPeriod.toString()).toStrictEqual(zeroPeriod.multipliedBy(3).toString());
 
         // Non-zero period multiplied by 0
-        expect(Period.zero()).toStrictEqual(Period.of(1, 2, 3).multipliedBy(0));
+        expect(Period.zero().toString()).toStrictEqual(Period.of(1, 2, 3).multipliedBy(0).toString());
 
         // Non-zero period multiplied by 1
         const period = Period.of(1, 2, 3);
 
-        expect(period).toStrictEqual(period.multipliedBy(1));
+        expect(period.toString()).toStrictEqual(period.multipliedBy(1).toString());
 
         // Non-zero period multiplied by scalar different than 1
         const newPeriod = period.multipliedBy(3);
 
-        expect(Period.of(3, 6, 9)).toStrictEqual(newPeriod);
+        expect(Period.of(3, 6, 9).toString()).toStrictEqual(newPeriod.toString());
     });
 
     it('should fail to be multiplied by a scalar which exceeds the range of valid integers', () => {
@@ -429,17 +429,17 @@ describe('A ISO date-based amount of time', () => {
         // Zero period
         const zeroPeriod = Period.zero();
 
-        expect(zeroPeriod).toStrictEqual(zeroPeriod.normalized());
+        expect(zeroPeriod.toString()).toStrictEqual(zeroPeriod.normalized().toString());
 
         // Already normalized period
         const normalizedPeriod = Period.of(1, 2, 3);
 
-        expect(normalizedPeriod).toStrictEqual(normalizedPeriod.normalized());
+        expect(normalizedPeriod.toString()).toStrictEqual(normalizedPeriod.normalized().toString());
 
         // Not normalized period
         const period = Period.of(11, 22, 33);
 
-        expect(Period.of(12, 10, 33)).toStrictEqual(period.normalized());
+        expect(Period.of(12, 10, 33).toString()).toStrictEqual(period.normalized().toString());
     });
 
     it('can calculate the total number of years', () => {
