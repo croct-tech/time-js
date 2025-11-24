@@ -711,7 +711,7 @@ describe('A value object representing a time duration', () => {
             seconds: -12 * 24 * 3600 + 1,
             nanos: 350000000,
         },
-    }))('can parse the ISO-8601 duration string %s', (_, scenario) => {
+    }))('can parse %s', (_, scenario) => {
         const duration = Duration.parse(scenario.value);
         const lowercaseDuration = Duration.parse(scenario.value.toLowerCase());
         const commaDuration = Duration.parse(scenario.value.replace('.', ','));
@@ -750,7 +750,7 @@ describe('A value object representing a time duration', () => {
         'PT-2.-3',
         'PT2.+3',
         'PT-2.+3',
-    ])('cannot parse the malformed duration string %s', value => {
+    ])('cannot parse %s', value => {
         expect(() => Duration.parse(value)).toThrow(`Unrecognized ISO-8601 duration string "${value}".`);
     });
 
