@@ -193,6 +193,16 @@ export class LocalDate {
     }
 
     /**
+     * Obtains a Period between two dates.
+     *
+     * @param start - The start date
+     * @param end - The end date
+     */
+    public static between(start: LocalDate, end: LocalDate): Period {
+        return start.periodUntil(end);
+    }
+
+    /**
      * Returns the year in the ISO-8601 calendar system.
      */
     public getYear(): number {
@@ -361,6 +371,36 @@ export class LocalDate {
      */
     public minusDays(days: number): LocalDate {
         return this.plusDays(-days);
+    }
+
+    /**
+     * Add a period to this local date.
+     *
+     * @param period The period to add.
+     */
+    public addPeriod(period: Period): LocalDate {
+        if (period.getMonths() === 0) {
+            return this.plusYears(period.getYears()).plusDays(period.getDays());
+        }
+
+        const totalMonths = period.toMonths();
+
+        return this.plusMonths(totalMonths).plusDays(period.getDays());
+    }
+
+    /**
+     * Subtract a period from this local date.
+     *
+     * @param period The period to add.
+     */
+    public subtractPeriod(period: Period): LocalDate {
+        if (period.getMonths() === 0) {
+            return this.minusYears(period.getYears()).minusDays(period.getDays());
+        }
+
+        const totalMonths = period.toMonths();
+
+        return this.minusMonths(totalMonths).minusDays(period.getDays());
     }
 
     /**

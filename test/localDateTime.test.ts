@@ -1,4 +1,4 @@
-import {Instant, LocalDate, LocalDateTime, LocalTime, TimeZone} from '../src';
+import {Instant, LocalDate, LocalDateTime, LocalTime, Period, TimeZone} from '../src';
 import {FixedClock} from '../src/clock/fixedClock';
 
 describe('A value object representing a local date time', () => {
@@ -904,6 +904,138 @@ describe('A value object representing a local date time', () => {
         const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
         expect(localDateTime.minusNanos(nanos)).toStrictEqual(expected);
+    });
+
+    type AddPeriodScenario = {
+        start: LocalDateTime,
+        period: Period,
+        expected: LocalDateTime,
+    };
+
+    it.each(Object.entries<AddPeriodScenario>({
+        '2015-08-31T01:02:03.000000004 + P0D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.zero(),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 + P1D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofDays(1),
+            expected: LocalDateTime.of(LocalDate.of(2015, 9, 1), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 + P2D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofDays(2),
+            expected: LocalDateTime.of(LocalDate.of(2015, 9, 2), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 + P7D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofWeeks(1),
+            expected: LocalDateTime.of(LocalDate.of(2015, 9, 7), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 + P14D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofWeeks(2),
+            expected: LocalDateTime.of(LocalDate.of(2015, 9, 14), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 + P1M1D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.of(0, 1, 1),
+            expected: LocalDateTime.of(LocalDate.of(2015, 10, 1), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 + P2M': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofMonths(2),
+            expected: LocalDateTime.of(LocalDate.of(2015, 10, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 + P1Y': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofYears(1),
+            expected: LocalDateTime.of(LocalDate.of(2016, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 + P2Y': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofYears(2),
+            expected: LocalDateTime.of(LocalDate.of(2017, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 + P1Y2M3D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.of(1, 2, 3),
+            expected: LocalDateTime.of(LocalDate.of(2016, 11, 3), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2016-11-03 + P-1Y-2M-': {
+            start: LocalDateTime.of(LocalDate.of(2016, 11, 3), LocalTime.of(1, 2, 3, 4)),
+            period: Period.of(-1, -2, -3),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+    }))('should add a period to a local date-time %s', (_, scenario) => {
+        const result = scenario.start.addPeriod(scenario.period);
+
+        expect(result.toString()).toStrictEqual(scenario.expected.toString());
+    });
+
+    type SubtractPeriodScenario = AddPeriodScenario;
+
+    it.each(Object.entries<SubtractPeriodScenario>({
+        '2015-08-31 - P0D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.zero(),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 - P1D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 9, 1), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofDays(1),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 - P2D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 9, 2), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofDays(2),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 - P7D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 9, 7), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofWeeks(1),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 - P14D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 9, 14), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofWeeks(2),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 - P1M1D': {
+            start: LocalDateTime.of(LocalDate.of(2015, 10, 1), LocalTime.of(1, 2, 3, 4)),
+            period: Period.of(0, 1, 1),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 - P2M': {
+            start: LocalDateTime.of(LocalDate.of(2015, 10, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofMonths(2),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 - P1Y': {
+            start: LocalDateTime.of(LocalDate.of(2016, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofYears(1),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 - P2Y': {
+            start: LocalDateTime.of(LocalDate.of(2017, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.ofYears(2),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2015-08-31 - P1Y2M3D': {
+            start: LocalDateTime.of(LocalDate.of(2016, 11, 3), LocalTime.of(1, 2, 3, 4)),
+            period: Period.of(1, 2, 3),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+        },
+        '2016-11-03 - P-1Y-2M-': {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 4)),
+            period: Period.of(-1, -2, -3),
+            expected: LocalDateTime.of(LocalDate.of(2016, 11, 3), LocalTime.of(1, 2, 3, 4)),
+        },
+    }))('should subtract a period from a local date-time %s', (_, scenario) => {
+        const result = scenario.start.subtractPeriod(scenario.period);
+
+        expect(result.toString()).toStrictEqual(scenario.expected.toString());
     });
 
     it('should be comparable', () => {

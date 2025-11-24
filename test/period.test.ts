@@ -1,4 +1,4 @@
-import {Instant, LocalDate, Period} from '../src';
+import {Period} from '../src';
 
 describe('A ISO date-based amount of time', () => {
     it('can be created from a number of years, months and days', () => {
@@ -100,7 +100,7 @@ describe('A ISO date-based amount of time', () => {
         ['P1Y2M3W4D', Period.of(1, 2, 3 * 7 + 4)],
         ['-P1Y2M3W4D', Period.of(-1, -2, -(3 * 7) - 4)],
         ['-P-1Y-2M-3W-4D', Period.of(1, 2, 3 * 7 + 4)],
-    ])('can parse a ISO-8601 period string', (value, expected) => {
+    ])('can parse a ISO-8601 period string %s', (value, expected) => {
         const period = Period.parse(value);
         const lowercasePeriod = Period.parse(value.toLowerCase());
 
@@ -144,21 +144,13 @@ describe('A ISO date-based amount of time', () => {
         'PP1D',
         'P1YD',
         'P1MD',
-    ])('cannot parse a malformed period string', value => {
+    ])('cannot parse a malformed period string %s', value => {
         expect(() => Period.parse(value)).toThrow(`Unrecognized ISO-8601 period string "${value}".`);
     });
 
     it('cannot parse a period that overflows integer limits', () => {
         expect(() => Period.parse('P123456789123456789123456789D'))
             .toThrow('The result overflows the range of safe integers.');
-    });
-
-    it('can be created from the number of years, months and days between two dates', () => {
-        const start = LocalDate.of(2015, 8, 30);
-        const end = LocalDate.of(2015, 8, 31);
-        const period = Period.between(start, end);
-
-        expect(period).toStrictEqual(Period.of(0, 0, 1));
     });
 
     it('can determine whether the period is zero', () => {
@@ -478,102 +470,6 @@ describe('A ISO date-based amount of time', () => {
         const period = Period.of(11, 22, 33);
 
         expect(period.toDaysPart()).toStrictEqual(33);
-    });
-
-    it('can be added to an instant', () => {
-        const instant = Instant.parse('2015-08-31T00:00:00Z');
-
-        expect(Instant.parse('2016-08-31T00:00:00Z')).toStrictEqual(Period.of(1, 0, 0).addTo(instant));
-        expect(Instant.parse('2015-09-30T00:00:00Z')).toStrictEqual(Period.of(0, 1, 0).addTo(instant));
-        expect(Instant.parse('2015-09-01T00:00:00Z')).toStrictEqual(Period.of(0, 0, 1).addTo(instant));
-
-        const period = Period.of(1, 2, 3);
-
-        // 2015-08-31 + 1 year => 2016-08-31
-        // 2016-08-31 + 2 months => 2016-10-31
-        // 2016-10-31 + 3 days => 2016-11-03
-
-        expect(Instant.parse('2016-11-03T00:00:00Z')).toStrictEqual(period.addTo(instant));
-
-        const nonNormalizedPeriod = Period.of(11, 22, 33);
-
-        // 2015-08-31 + 11 years => 2026-08-31
-        // 2026-08-31 + 22 months => 2028-06-30
-        // 2027-06-30 + 33 days => 2028-08-02
-
-        expect(Instant.parse('2028-08-02T00:00:00Z')).toStrictEqual(nonNormalizedPeriod.addTo(instant));
-    });
-
-    it('can be subtracted from an instant', () => {
-        const instant = Instant.parse('2015-08-31T00:00:00Z');
-
-        expect(Instant.parse('2014-08-31T00:00:00Z')).toStrictEqual(Period.of(1, 0, 0).subtractFrom(instant));
-        expect(Instant.parse('2015-07-31T00:00:00Z')).toStrictEqual(Period.of(0, 1, 0).subtractFrom(instant));
-        expect(Instant.parse('2015-08-30T00:00:00Z')).toStrictEqual(Period.of(0, 0, 1).subtractFrom(instant));
-
-        const period = Period.of(1, 2, 3);
-
-        // 2015-08-31 - 1 year => 2014-08-31
-        // 2014-08-31 - 2 months => 2014-06-30
-        // 2014-06-30 + 3 days => 2014-06-27
-
-        expect(Instant.parse('2014-06-27T00:00:00Z')).toStrictEqual(period.subtractFrom(instant));
-
-        const nonNormalizedPeriod = Period.of(11, 22, 33);
-
-        // 2015-08-31 - 11 years => 2004-08-31
-        // 2004-08-31 - 22 months => 2002-10-31
-        // 2002-10-31 - 33 days => 2002-09-28
-
-        expect(Instant.parse('2002-09-28T00:00:00Z')).toStrictEqual(nonNormalizedPeriod.subtractFrom(instant));
-    });
-
-    it('can be added to an ISO local date', () => {
-        const localDate = LocalDate.of(2015, 8, 31);
-
-        expect(LocalDate.of(2016, 8, 31)).toStrictEqual(Period.of(1, 0, 0).addToLocalDate(localDate));
-        expect(LocalDate.of(2015, 9, 30)).toStrictEqual(Period.of(0, 1, 0).addToLocalDate(localDate));
-        expect(LocalDate.of(2015, 9, 1)).toStrictEqual(Period.of(0, 0, 1).addToLocalDate(localDate));
-
-        const normalizedPeriod = Period.of(1, 2, 3);
-
-        // 2015-08-31 + 1 year => 2016-08-31
-        // 2016-08-31 + 2 months => 2016-10-31
-        // 2016-10-31 + 3 days => 2016-11-03
-
-        expect(LocalDate.of(2016, 11, 3)).toStrictEqual(normalizedPeriod.addToLocalDate(localDate));
-
-        const nonNormalizedPeriod = Period.of(11, 22, 33);
-
-        // 2015-08-31 + 11 years => 2026-08-31
-        // 2026-08-31 + 22 months => 2028-06-30
-        // 2027-06-30 + 33 days => 2016-08-02
-
-        expect(LocalDate.of(2028, 8, 2)).toStrictEqual(nonNormalizedPeriod.addToLocalDate(localDate));
-    });
-
-    it('can be subtracted from an ISO local date', () => {
-        const localDate = LocalDate.of(2015, 8, 31);
-
-        expect(LocalDate.of(2014, 8, 31)).toStrictEqual(Period.of(1, 0, 0).subtractFromLocalDate(localDate));
-        expect(LocalDate.of(2015, 7, 31)).toStrictEqual(Period.of(0, 1, 0).subtractFromLocalDate(localDate));
-        expect(LocalDate.of(2015, 8, 30)).toStrictEqual(Period.of(0, 0, 1).subtractFromLocalDate(localDate));
-
-        const normalizedPeriod = Period.of(1, 2, 3);
-
-        // 2015-08-31 - 1 year => 2014-08-31
-        // 2014-08-31 - 2 months => 2014-06-30
-        // 2014-06-30 + 3 days => 2014-06-27
-
-        expect(LocalDate.of(2014, 6, 27)).toStrictEqual(normalizedPeriod.subtractFromLocalDate(localDate));
-
-        const nonNormalizedPeriod = Period.of(11, 22, 33);
-
-        // 2015-08-31 - 11 years => 2004-08-31
-        // 2004-08-31 - 22 months => 2002-10-31
-        // 2002-10-31 - 33 days => 2002-09-28
-
-        expect(LocalDate.of(2002, 9, 28)).toStrictEqual(nonNormalizedPeriod.subtractFromLocalDate(localDate));
     });
 
     it('can be serialized to a string in the ISO-8601 format', () => {

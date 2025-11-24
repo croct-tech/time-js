@@ -5,6 +5,7 @@ import {LocalDate} from './localDate';
 import {LocalTime} from './localTime';
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
 import {TimeZone} from './timeZone';
+import {Period} from './period';
 
 /**
  * A date-time without a time-zone in the ISO-8601 calendar system, such as 2007-12-03T10:15:30.
@@ -501,6 +502,40 @@ export class LocalDateTime {
      */
     public minusNanos(nanos: number): LocalDateTime {
         return this.plusNanos(-nanos);
+    }
+
+    /**
+     * Add a period to this local date.
+     *
+     * @param period The period to add.
+     */
+    public addPeriod(period: Period): LocalDateTime {
+        if (period.getMonths() === 0) {
+            return this.plusYears(period.getYears())
+                .plusDays(period.getDays());
+        }
+
+        const totalMonths = period.toMonths();
+
+        return this.plusMonths(totalMonths)
+            .plusDays(period.getDays());
+    }
+
+    /**
+     * Subtract a period from this local date.
+     *
+     * @param period The period to add.
+     */
+    public subtractPeriod(period: Period): LocalDateTime {
+        if (period.getMonths() === 0) {
+            return this.minusYears(period.getYears())
+                .minusDays(period.getDays());
+        }
+
+        const totalMonths = period.toMonths();
+
+        return this.minusMonths(totalMonths)
+            .minusDays(period.getDays());
     }
 
     /**
