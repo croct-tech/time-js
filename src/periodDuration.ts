@@ -1,8 +1,5 @@
 import {Period} from './period';
 import {Duration} from './duration';
-import {Instant} from './instant';
-import {LocalDateTime} from './localDateTime';
-import {TimeZone} from './timeZone';
 import {LocalTime} from './localTime';
 import {intDiv} from './math';
 
@@ -47,16 +44,6 @@ export class PeriodDuration {
             Period.of(years, months, days),
             Duration.ofSeconds(seconds, nanos),
         );
-    }
-
-    public static between(start: Instant, end: Instant): PeriodDuration {
-        const startLocalTime = LocalDateTime.ofInstant(start, TimeZone.UTC);
-        const endLocalTime = LocalDateTime.ofInstant(end, TimeZone.UTC);
-
-        const period = Period.between(startLocalTime.getLocalDate(), endLocalTime.getLocalDate());
-        const duration = Duration.betweenLocalTime(startLocalTime.getLocalTime(), endLocalTime.getLocalTime());
-
-        return new PeriodDuration(period, duration);
     }
 
     public isZero(): boolean {
@@ -282,14 +269,6 @@ export class PeriodDuration {
         const duration = this.duration.withSeconds(splitSeconds);
 
         return PeriodDuration.of(period, duration);
-    }
-
-    public addTo(instant: Instant): Instant {
-        return this.duration.addTo(this.period.addTo(instant));
-    }
-
-    public subtractFrom(instant: Instant): Instant {
-        return this.duration.subtractFrom(this.period.subtractFrom(instant));
     }
 
     public toString(): string {
