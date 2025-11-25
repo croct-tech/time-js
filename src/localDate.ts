@@ -1,4 +1,5 @@
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact} from './math';
+import {Period} from './period';
 
 /**
  * A date without a time-zone in the ISO-8601 calendar system, such as 2007-12-03.
@@ -363,6 +364,69 @@ export class LocalDate {
     }
 
     /**
+     * Add a period to this local date.
+     *
+     * @param period The period to add.
+     */
+    public plus(period: Period): LocalDate {
+        if (period.getMonths() === 0) {
+            return this.plusYears(period.getYears()).plusDays(period.getDays());
+        }
+
+        const totalMonths = period.toMonths();
+
+        return this.plusMonths(totalMonths).plusDays(period.getDays());
+    }
+
+    /**
+     * Subtract a period from this local date.
+     *
+     * @param period The period to add.
+     */
+    public minus(period: Period): LocalDate {
+        if (period.getMonths() === 0) {
+            return this.minusYears(period.getYears()).minusDays(period.getDays());
+        }
+
+        const totalMonths = period.toMonths();
+
+        return this.minusMonths(totalMonths).minusDays(period.getDays());
+    }
+
+    /**
+     * Returns the period between this date and the given date.
+     *
+     * @param date The date to compare.
+     */
+    public until(date: LocalDate): Period {
+        if (this.equals(date)) {
+            return Period.zero();
+        }
+
+        let totalMonths = LocalDate.getProlepticMonth(date.year, date.month)
+            - LocalDate.getProlepticMonth(this.year, this.month);
+
+        let days = date.day - this.day;
+
+        if (totalMonths > 0 && days < 0) {
+            totalMonths--;
+            const previousMonth = this.plusMonths(totalMonths);
+
+            days = date.toEpochDay() - previousMonth.toEpochDay();
+        } else if (totalMonths < 0 && days > 0) {
+            totalMonths++;
+            const monthLen = LocalDate.getMonthLength(date.month, LocalDate.isLeapYear(date.year));
+
+            days -= monthLen;
+        }
+
+        const years = intDiv(totalMonths, 12);
+        const months = totalMonths % 12;
+
+        return Period.of(years, months, days);
+    }
+
+    /**
      * Checks whether this date comes after another in the local time-line.
      *
      * @param date The date to compare.
@@ -496,6 +560,16 @@ export class LocalDate {
         const day = `${this.day}`.padStart(2, '0');
 
         return `${this.year}-${month}-${day}`;
+    }
+
+    /**
+     * Returns the proleptic month of the given year and month.
+     *
+     * @param year The year in the ISO-8601 calendar system.
+     * @param month The month of the year.
+     */
+    private static getProlepticMonth(year: number, month: number): number {
+        return year * 12 + month - 1;
     }
 
     /**
