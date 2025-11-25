@@ -1,4 +1,5 @@
-import {intDiv} from './math';
+import {intDiv, subtractExact} from './math';
+import {Duration} from './duration';
 
 /**
  * A time without a time-zone in the ISO-8601 calendar system, such as 10:15:30.
@@ -497,6 +498,44 @@ export class LocalTime {
      */
     public minusNanos(nanos: number): LocalTime {
         return this.plusNanos(-nanos);
+    }
+
+    /**
+     * Adds a duration to this local time.
+     *
+     * @param duration - The Duration
+     */
+    public plus(duration: Duration): LocalTime {
+        return this.plusSeconds(duration.getSeconds()).plusNanos(duration.getNanos());
+    }
+
+    /**
+     * Subtracts a duration from this local time.
+     *
+     * @param duration - The Duration
+     */
+    public minus(duration: Duration): LocalTime {
+        return this.minusSeconds(duration.getSeconds()).minusNanos(duration.getNanos());
+    }
+
+    /**
+     * Returns the duration between this and the given local time.
+     *
+     * @param end - The local time to compare.
+     */
+    public until(end: LocalTime): Duration {
+        const endSeconds = end.getHour() * LocalTime.SECONDS_PER_HOUR
+            + end.getMinute() * LocalTime.SECONDS_PER_MINUTE
+            + end.getSecond();
+
+        const startSeconds = this.getHour() * LocalTime.SECONDS_PER_HOUR
+            + this.getMinute() * LocalTime.SECONDS_PER_MINUTE
+            + this.getSecond();
+
+        const seconds = subtractExact(endSeconds, startSeconds);
+        const nanos = subtractExact(end.getNano(), this.getNano());
+
+        return Duration.ofSeconds(seconds, nanos);
     }
 
     /**

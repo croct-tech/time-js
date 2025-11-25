@@ -1,4 +1,4 @@
-import {Duration, Instant, LocalTime} from '../src';
+import {Duration, LocalTime} from '../src';
 import {intDiv} from '../src/math';
 
 describe('A value object representing a time duration', () => {
@@ -105,161 +105,625 @@ describe('A value object representing a time duration', () => {
         expect(secondsDuration.getNanos()).toStrictEqual(0);
     });
 
-    it.each([
+    it.each(Object.entries({
         // Zero
-        ['PT0S', 0, 0],
-        ['-PT0S', 0, 0],
+        PT0S: {
+            value: 'PT0S',
+            seconds: 0,
+            nanos: 0,
+        },
+        '-PT0S': {
+            value: '-PT0S',
+            seconds: 0,
+            nanos: 0,
+        },
 
         // Unsigned seconds
-        ['PT1S', 1, 0],
-        ['PT12S', 12, 0],
-        ['PT123456789S', 123456789, 0],
-        [`PT${Number.MAX_SAFE_INTEGER}S`, Number.MAX_SAFE_INTEGER, 0],
-        ['-PT1S', -1, 0],
-        ['-PT12S', -12, 0],
-        ['-PT123456789S', -123456789, 0],
-        [`-PT${Number.MAX_SAFE_INTEGER}S`, Number.MIN_SAFE_INTEGER, 0],
+        PT1S: {
+            value: 'PT1S',
+            seconds: 1,
+            nanos: 0,
+        },
+        PT12S: {
+            value: 'PT12S',
+            seconds: 12,
+            nanos: 0,
+        },
+        PT123456789S: {
+            value: 'PT123456789S',
+            seconds: 123456789,
+            nanos: 0,
+        },
+        [`PT${Number.MAX_SAFE_INTEGER}S`]: {
+            value: `PT${Number.MAX_SAFE_INTEGER}S`,
+            seconds: Number.MAX_SAFE_INTEGER,
+            nanos: 0,
+        },
+        '-PT1S': {
+            value: '-PT1S',
+            seconds: -1,
+            nanos: 0,
+        },
+        '-PT12S': {
+            value: '-PT12S',
+            seconds: -12,
+            nanos: 0,
+        },
+        '-PT123456789S': {
+            value: '-PT123456789S',
+            seconds: -123456789,
+            nanos: 0,
+        },
+        [`-PT${Number.MAX_SAFE_INTEGER}S`]: {
+            value: `-PT${Number.MAX_SAFE_INTEGER}S`,
+            seconds: Number.MIN_SAFE_INTEGER,
+            nanos: 0,
+        },
 
         // Signed seconds
-        ['PT+1S', 1, 0],
-        ['PT+12S', 12, 0],
-        ['PT-1S', -1, 0],
-        ['PT-12S', -12, 0],
-        ['PT-123456789S', -123456789, 0],
-        [`PT${Number.MIN_SAFE_INTEGER}S`, Number.MIN_SAFE_INTEGER, 0],
-        ['-PT+1S', -1, 0],
-        ['-PT+12S', -12, 0],
-        ['-PT-1S', 1, 0],
-        ['-PT-12S', 12, 0],
-        ['-PT-123456789S', 123456789, 0],
-        [`-PT${Number.MIN_SAFE_INTEGER}S`, Number.MAX_SAFE_INTEGER, 0],
+        'PT+1S': {
+            value: 'PT+1S',
+            seconds: 1,
+            nanos: 0,
+        },
+        'PT+12S': {
+            value: 'PT+12S',
+            seconds: 12,
+            nanos: 0,
+        },
+        'PT-1S': {
+            value: 'PT-1S',
+            seconds: -1,
+            nanos: 0,
+        },
+        'PT-12S': {
+            value: 'PT-12S',
+            seconds: -12,
+            nanos: 0,
+        },
+        'PT-123456789S': {
+            value: 'PT-123456789S',
+            seconds: -123456789,
+            nanos: 0,
+        },
+        [`PT${Number.MIN_SAFE_INTEGER}S`]: {
+            value: `PT${Number.MIN_SAFE_INTEGER}S`,
+            seconds: Number.MIN_SAFE_INTEGER,
+            nanos: 0,
+        },
+        '-PT+1S': {
+            value: '-PT+1S',
+            seconds: -1,
+            nanos: 0,
+        },
+        '-PT+12S': {
+            value: '-PT+12S',
+            seconds: -12,
+            nanos: 0,
+        },
+        '-PT-1S': {
+            value: '-PT-1S',
+            seconds: 1,
+            nanos: 0,
+        },
+        '-PT-12S': {
+            value: '-PT-12S',
+            seconds: 12,
+            nanos: 0,
+        },
+        '-PT-123456789S': {
+            value: '-PT-123456789S',
+            seconds: 123456789,
+            nanos: 0,
+        },
+        [`-PT${Number.MIN_SAFE_INTEGER}S`]: {
+            value: `-PT${Number.MIN_SAFE_INTEGER}S`,
+            seconds: Number.MAX_SAFE_INTEGER,
+            nanos: 0,
+        },
 
         // Unsigned fractions
-        ['PT0.1S', 0, 100000000],
-        ['PT1.1S', 1, 100000000],
-        ['PT1.12S', 1, 120000000],
-        ['PT1.123S', 1, 123000000],
-        ['PT1.1234S', 1, 123400000],
-        ['PT1.12345S', 1, 123450000],
-        ['PT1.123456S', 1, 123456000],
-        ['PT1.1234567S', 1, 123456700],
-        ['PT1.12345678S', 1, 123456780],
-        ['PT1.123456789S', 1, 123456789],
-        [`PT${Number.MAX_SAFE_INTEGER}.123456789S`, Number.MAX_SAFE_INTEGER, 123456789],
-        ['-PT0.1S', -1, LocalTime.NANOS_PER_SECOND - 100000000],
-        ['-PT1.1S', -2, LocalTime.NANOS_PER_SECOND - 100000000],
-        ['-PT1.12S', -2, LocalTime.NANOS_PER_SECOND - 120000000],
-        ['-PT1.123S', -2, LocalTime.NANOS_PER_SECOND - 123000000],
-        ['-PT1.1234S', -2, LocalTime.NANOS_PER_SECOND - 123400000],
-        ['-PT1.12345S', -2, LocalTime.NANOS_PER_SECOND - 123450000],
-        ['-PT1.123456S', -2, LocalTime.NANOS_PER_SECOND - 123456000],
-        ['-PT1.1234567S', -2, LocalTime.NANOS_PER_SECOND - 123456700],
-        ['-PT1.12345678S', -2, LocalTime.NANOS_PER_SECOND - 123456780],
-        ['-PT1.123456789S', -2, LocalTime.NANOS_PER_SECOND - 123456789],
-        [
-            `-PT${Number.MAX_SAFE_INTEGER - 1}.123456789S`,
-            Number.MIN_SAFE_INTEGER,
-            LocalTime.NANOS_PER_SECOND - 123456789,
-        ],
+        'PT0.1S': {
+            value: 'PT0.1S',
+            seconds: 0,
+            nanos: 100000000,
+        },
+        'PT1.1S': {
+            value: 'PT1.1S',
+            seconds: 1,
+            nanos: 100000000,
+        },
+        'PT1.12S': {
+            value: 'PT1.12S',
+            seconds: 1,
+            nanos: 120000000,
+        },
+        'PT1.123S': {
+            value: 'PT1.123S',
+            seconds: 1,
+            nanos: 123000000,
+        },
+        'PT1.1234S': {
+            value: 'PT1.1234S',
+            seconds: 1,
+            nanos: 123400000,
+        },
+        'PT1.12345S': {
+            value: 'PT1.12345S',
+            seconds: 1,
+            nanos: 123450000,
+        },
+        'PT1.123456S': {
+            value: 'PT1.123456S',
+            seconds: 1,
+            nanos: 123456000,
+        },
+        'PT1.1234567S': {
+            value: 'PT1.1234567S',
+            seconds: 1,
+            nanos: 123456700,
+        },
+        'PT1.12345678S': {
+            value: 'PT1.12345678S',
+            seconds: 1,
+            nanos: 123456780,
+        },
+        'PT1.123456789S': {
+            value: 'PT1.123456789S',
+            seconds: 1,
+            nanos: 123456789,
+        },
+        [`PT${Number.MAX_SAFE_INTEGER}.123456789S`]: {
+            value: `PT${Number.MAX_SAFE_INTEGER}.123456789S`,
+            seconds: Number.MAX_SAFE_INTEGER,
+            nanos: 123456789,
+        },
+        '-PT0.1S': {
+            value: '-PT0.1S',
+            seconds: -1,
+            nanos: LocalTime.NANOS_PER_SECOND - 100000000,
+        },
+        '-PT1.1S': {
+            value: '-PT1.1S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 100000000,
+        },
+        '-PT1.12S': {
+            value: '-PT1.12S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 120000000,
+        },
+        '-PT1.123S': {
+            value: '-PT1.123S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123000000,
+        },
+        '-PT1.1234S': {
+            value: '-PT1.1234S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123400000,
+        },
+        '-PT1.12345S': {
+            value: '-PT1.12345S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123450000,
+        },
+        '-PT1.123456S': {
+            value: '-PT1.123456S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456000,
+        },
+        '-PT1.1234567S': {
+            value: '-PT1.1234567S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456700,
+        },
+        '-PT1.12345678S': {
+            value: '-PT1.12345678S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456780,
+        },
+        '-PT1.123456789S': {
+            value: '-PT1.123456789S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456789,
+        },
+        [`-PT${Number.MAX_SAFE_INTEGER - 1}.123456789S`]: {
+            value: `-PT${Number.MAX_SAFE_INTEGER - 1}.123456789S`,
+            seconds: Number.MIN_SAFE_INTEGER,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456789,
+        },
 
         // Signed fractions
-        ['PT+0.1S', 0, 100000000],
-        ['PT+1.1S', 1, 100000000],
-        ['PT+1.12S', 1, 120000000],
-        ['PT+1.123S', 1, 123000000],
-        ['PT+1.1234S', 1, 123400000],
-        ['PT+1.12345S', 1, 123450000],
-        ['PT+1.123456S', 1, 123456000],
-        ['PT+1.1234567S', 1, 123456700],
-        ['PT+1.12345678S', 1, 123456780],
-        ['PT+1.123456789S', 1, 123456789],
-        [`PT+${Number.MAX_SAFE_INTEGER}.123456789S`, Number.MAX_SAFE_INTEGER, 123456789],
-        ['PT-0.1S', -1, LocalTime.NANOS_PER_SECOND - 100000000],
-        ['PT-1.1S', -2, LocalTime.NANOS_PER_SECOND - 100000000],
-        ['PT-1.12S', -2, LocalTime.NANOS_PER_SECOND - 120000000],
-        ['PT-1.123S', -2, LocalTime.NANOS_PER_SECOND - 123000000],
-        ['PT-1.1234S', -2, LocalTime.NANOS_PER_SECOND - 123400000],
-        ['PT-1.12345S', -2, LocalTime.NANOS_PER_SECOND - 123450000],
-        ['PT-1.123456S', -2, LocalTime.NANOS_PER_SECOND - 123456000],
-        ['PT-1.1234567S', -2, LocalTime.NANOS_PER_SECOND - 123456700],
-        ['PT-1.12345678S', -2, LocalTime.NANOS_PER_SECOND - 123456780],
-        ['PT-1.123456789S', -2, LocalTime.NANOS_PER_SECOND - 123456789],
-        [`PT${Number.MAX_SAFE_INTEGER}.000000000S`, Number.MAX_SAFE_INTEGER, 0],
-        ['-PT+0.1S', -1, LocalTime.NANOS_PER_SECOND - 100000000],
-        ['-PT+1.1S', -2, LocalTime.NANOS_PER_SECOND - 100000000],
-        ['-PT+1.12S', -2, LocalTime.NANOS_PER_SECOND - 120000000],
-        ['-PT+1.123S', -2, LocalTime.NANOS_PER_SECOND - 123000000],
-        ['-PT+1.1234S', -2, LocalTime.NANOS_PER_SECOND - 123400000],
-        ['-PT+1.12345S', -2, LocalTime.NANOS_PER_SECOND - 123450000],
-        ['-PT+1.123456S', -2, LocalTime.NANOS_PER_SECOND - 123456000],
-        ['-PT+1.1234567S', -2, LocalTime.NANOS_PER_SECOND - 123456700],
-        ['-PT+1.12345678S', -2, LocalTime.NANOS_PER_SECOND - 123456780],
-        ['-PT+1.123456789S', -2, LocalTime.NANOS_PER_SECOND - 123456789],
-        [
-            `-PT+${Number.MAX_SAFE_INTEGER - 1}.123456789S`,
-            Number.MIN_SAFE_INTEGER,
-            LocalTime.NANOS_PER_SECOND - 123456789,
-        ],
-        ['-PT-0.1S', 0, 100000000],
-        ['-PT-1.1S', 1, 100000000],
-        ['-PT-1.12S', 1, 120000000],
-        ['-PT-1.123S', 1, 123000000],
-        ['-PT-1.1234S', 1, 123400000],
-        ['-PT-1.12345S', 1, 123450000],
-        ['-PT-1.123456S', 1, 123456000],
-        ['-PT-1.1234567S', 1, 123456700],
-        ['-PT-1.12345678S', 1, 123456780],
-        ['-PT-1.123456789S', 1, 123456789],
-        [`-PT${Number.MAX_SAFE_INTEGER}.000000000S`, Number.MIN_SAFE_INTEGER, 0],
+        'PT+0.1S': {
+            value: 'PT+0.1S',
+            seconds: 0,
+            nanos: 100000000,
+        },
+        'PT+1.1S': {
+            value: 'PT+1.1S',
+            seconds: 1,
+            nanos: 100000000,
+        },
+        'PT+1.12S': {
+            value: 'PT+1.12S',
+            seconds: 1,
+            nanos: 120000000,
+        },
+        'PT+1.123S': {
+            value: 'PT+1.123S',
+            seconds: 1,
+            nanos: 123000000,
+        },
+        'PT+1.1234S': {
+            value: 'PT+1.1234S',
+            seconds: 1,
+            nanos: 123400000,
+        },
+        'PT+1.12345S': {
+            value: 'PT+1.12345S',
+            seconds: 1,
+            nanos: 123450000,
+        },
+        'PT+1.123456S': {
+            value: 'PT+1.123456S',
+            seconds: 1,
+            nanos: 123456000,
+        },
+        'PT+1.1234567S': {
+            value: 'PT+1.1234567S',
+            seconds: 1,
+            nanos: 123456700,
+        },
+        'PT+1.12345678S': {
+            value: 'PT+1.12345678S',
+            seconds: 1,
+            nanos: 123456780,
+        },
+        'PT+1.123456789S': {
+            value: 'PT+1.123456789S',
+            seconds: 1,
+            nanos: 123456789,
+        },
+        [`PT+${Number.MAX_SAFE_INTEGER}.123456789S`]: {
+            value: `PT+${Number.MAX_SAFE_INTEGER}.123456789S`,
+            seconds: Number.MAX_SAFE_INTEGER,
+            nanos: 123456789,
+        },
+        'PT-0.1S': {
+            value: 'PT-0.1S',
+            seconds: -1,
+            nanos: LocalTime.NANOS_PER_SECOND - 100000000,
+        },
+        'PT-1.1S': {
+            value: 'PT-1.1S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 100000000,
+        },
+        'PT-1.12S': {
+            value: 'PT-1.12S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 120000000,
+        },
+        'PT-1.123S': {
+            value: 'PT-1.123S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123000000,
+        },
+        'PT-1.1234S': {
+            value: 'PT-1.1234S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123400000,
+        },
+        'PT-1.12345S': {
+            value: 'PT-1.12345S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123450000,
+        },
+        'PT-1.123456S': {
+            value: 'PT-1.123456S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456000,
+        },
+        'PT-1.1234567S': {
+            value: 'PT-1.1234567S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456700,
+        },
+        'PT-1.12345678S': {
+            value: 'PT-1.12345678S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456780,
+        },
+        'PT-1.123456789S': {
+            value: 'PT-1.123456789S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456789,
+        },
+        [`PT${Number.MAX_SAFE_INTEGER}.000000000S`]: {
+            value: `PT${Number.MAX_SAFE_INTEGER}.000000000S`,
+            seconds: Number.MAX_SAFE_INTEGER,
+            nanos: 0,
+        },
+        '-PT+0.1S': {
+            value: '-PT+0.1S',
+            seconds: -1,
+            nanos: LocalTime.NANOS_PER_SECOND - 100000000,
+        },
+        '-PT+1.1S': {
+            value: '-PT+1.1S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 100000000,
+        },
+        '-PT+1.12S': {
+            value: '-PT+1.12S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 120000000,
+        },
+        '-PT+1.123S': {
+            value: '-PT+1.123S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123000000,
+        },
+        '-PT+1.1234S': {
+            value: '-PT+1.1234S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123400000,
+        },
+        '-PT+1.12345S': {
+            value: '-PT+1.12345S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123450000,
+        },
+        '-PT+1.123456S': {
+            value: '-PT+1.123456S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456000,
+        },
+        '-PT+1.1234567S': {
+            value: '-PT+1.1234567S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456700,
+        },
+        '-PT+1.12345678S': {
+            value: '-PT+1.12345678S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456780,
+        },
+        '-PT+1.123456789S': {
+            value: '-PT+1.123456789S',
+            seconds: -2,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456789,
+        },
+        [`-PT+${Number.MAX_SAFE_INTEGER - 1}.123456789S`]: {
+            value: `-PT+${Number.MAX_SAFE_INTEGER - 1}.123456789S`,
+            seconds: Number.MIN_SAFE_INTEGER,
+            nanos: LocalTime.NANOS_PER_SECOND - 123456789,
+        },
+        '-PT-0.1S': {
+            value: '-PT-0.1S',
+            seconds: 0,
+            nanos: 100000000,
+        },
+        '-PT-1.1S': {
+            value: '-PT-1.1S',
+            seconds: 1,
+            nanos: 100000000,
+        },
+        '-PT-1.12S': {
+            value: '-PT-1.12S',
+            seconds: 1,
+            nanos: 120000000,
+        },
+        '-PT-1.123S': {
+            value: '-PT-1.123S',
+            seconds: 1,
+            nanos: 123000000,
+        },
+        '-PT-1.1234S': {
+            value: '-PT-1.1234S',
+            seconds: 1,
+            nanos: 123400000,
+        },
+        '-PT-1.12345S': {
+            value: '-PT-1.12345S',
+            seconds: 1,
+            nanos: 123450000,
+        },
+        '-PT-1.123456S': {
+            value: '-PT-1.123456S',
+            seconds: 1,
+            nanos: 123456000,
+        },
+        '-PT-1.1234567S': {
+            value: '-PT-1.1234567S',
+            seconds: 1,
+            nanos: 123456700,
+        },
+        '-PT-1.12345678S': {
+            value: '-PT-1.12345678S',
+            seconds: 1,
+            nanos: 123456780,
+        },
+        '-PT-1.123456789S': {
+            value: '-PT-1.123456789S',
+            seconds: 1,
+            nanos: 123456789,
+        },
+        [`-PT${Number.MAX_SAFE_INTEGER}.000000000S`]: {
+            value: `-PT${Number.MAX_SAFE_INTEGER}.000000000S`,
+            seconds: Number.MIN_SAFE_INTEGER,
+            nanos: 0,
+        },
 
         // Minutes
-        ['PT12M', 12 * 60, 0],
-        ['PT12M0.35S', 12 * 60, 350000000],
-        ['PT12M1.35S', 12 * 60 + 1, 350000000],
-        ['PT12M-0.35S', 12 * 60 - 1, LocalTime.NANOS_PER_SECOND - 350000000],
-        ['PT12M-1.35S', 12 * 60 - 2, LocalTime.NANOS_PER_SECOND - 350000000],
-        ['-PT12M', -12 * 60, 0],
-        ['-PT12M0.35S', -12 * 60 - 1, LocalTime.NANOS_PER_SECOND - 350000000],
-        ['-PT12M1.35S', -12 * 60 - 2, LocalTime.NANOS_PER_SECOND - 350000000],
-        ['-PT12M-0.35S', -12 * 60, 350000000],
-        ['-PT12M-1.35S', -12 * 60 + 1, 350000000],
+        PT12M: {
+            value: 'PT12M',
+            seconds: 12 * 60,
+            nanos: 0,
+        },
+        'PT12M0.35S': {
+            value: 'PT12M0.35S',
+            seconds: 12 * 60,
+            nanos: 350000000,
+        },
+        'PT12M1.35S': {
+            value: 'PT12M1.35S',
+            seconds: 12 * 60 + 1,
+            nanos: 350000000,
+        },
+        'PT12M-0.35S': {
+            value: 'PT12M-0.35S',
+            seconds: 12 * 60 - 1,
+            nanos: LocalTime.NANOS_PER_SECOND - 350000000,
+        },
+        'PT12M-1.35S': {
+            value: 'PT12M-1.35S',
+            seconds: 12 * 60 - 2,
+            nanos: LocalTime.NANOS_PER_SECOND - 350000000,
+        },
+        '-PT12M': {
+            value: '-PT12M',
+            seconds: -12 * 60,
+            nanos: 0,
+        },
+        '-PT12M0.35S': {
+            value: '-PT12M0.35S',
+            seconds: -12 * 60 - 1,
+            nanos: LocalTime.NANOS_PER_SECOND - 350000000,
+        },
+        '-PT12M1.35S': {
+            value: '-PT12M1.35S',
+            seconds: -12 * 60 - 2,
+            nanos: LocalTime.NANOS_PER_SECOND - 350000000,
+        },
+        '-PT12M-0.35S': {
+            value: '-PT12M-0.35S',
+            seconds: -12 * 60,
+            nanos: 350000000,
+        },
+        '-PT12M-1.35S': {
+            value: '-PT12M-1.35S',
+            seconds: -12 * 60 + 1,
+            nanos: 350000000,
+        },
 
         // Hours
-        ['PT12H', 12 * 3600, 0],
-        ['PT12H0.35S', 12 * 3600, 350000000],
-        ['PT12H1.35S', 12 * 3600 + 1, 350000000],
-        ['PT12H-0.35S', 12 * 3600 - 1, LocalTime.NANOS_PER_SECOND - 350000000],
-        ['PT12H-1.35S', 12 * 3600 - 2, LocalTime.NANOS_PER_SECOND - 350000000],
-        ['-PT12H', -12 * 3600, 0],
-        ['-PT12H0.35S', -12 * 3600 - 1, LocalTime.NANOS_PER_SECOND - 350000000],
-        ['-PT12H1.35S', -12 * 3600 - 2, LocalTime.NANOS_PER_SECOND - 350000000],
-        ['-PT12H-0.35S', -12 * 3600, 350000000],
-        ['-PT12H-1.35S', -12 * 3600 + 1, 350000000],
+        PT12H: {
+            value: 'PT12H',
+            seconds: 12 * 3600,
+            nanos: 0,
+        },
+        'PT12H0.35S': {
+            value: 'PT12H0.35S',
+            seconds: 12 * 3600,
+            nanos: 350000000,
+        },
+        'PT12H1.35S': {
+            value: 'PT12H1.35S',
+            seconds: 12 * 3600 + 1,
+            nanos: 350000000,
+        },
+        'PT12H-0.35S': {
+            value: 'PT12H-0.35S',
+            seconds: 12 * 3600 - 1,
+            nanos: LocalTime.NANOS_PER_SECOND - 350000000,
+        },
+        'PT12H-1.35S': {
+            value: 'PT12H-1.35S',
+            seconds: 12 * 3600 - 2,
+            nanos: LocalTime.NANOS_PER_SECOND - 350000000,
+        },
+        '-PT12H': {
+            value: '-PT12H',
+            seconds: -12 * 3600,
+            nanos: 0,
+        },
+        '-PT12H0.35S': {
+            value: '-PT12H0.35S',
+            seconds: -12 * 3600 - 1,
+            nanos: LocalTime.NANOS_PER_SECOND - 350000000,
+        },
+        '-PT12H1.35S': {
+            value: '-PT12H1.35S',
+            seconds: -12 * 3600 - 2,
+            nanos: LocalTime.NANOS_PER_SECOND - 350000000,
+        },
+        '-PT12H-0.35S': {
+            value: '-PT12H-0.35S',
+            seconds: -12 * 3600,
+            nanos: 350000000,
+        },
+        '-PT12H-1.35S': {
+            value: '-PT12H-1.35S',
+            seconds: -12 * 3600 + 1,
+            nanos: 350000000,
+        },
 
         // Days
-        ['P12D', 12 * 24 * 3600, 0],
-        ['P12DT0.35S', 12 * 24 * 3600, 350000000],
-        ['P12DT1.35S', 12 * 24 * 3600 + 1, 350000000],
-        ['P12DT-0.35S', 12 * 24 * 3600 - 1, 1000000000 - 350000000],
-        ['P12DT-1.35S', 12 * 24 * 3600 - 2, 1000000000 - 350000000],
-        ['-P12D', -12 * 24 * 3600, 0],
-        ['-P12DT0.35S', -12 * 24 * 3600 - 1, LocalTime.NANOS_PER_SECOND - 350000000],
-        ['-P12DT1.35S', -12 * 24 * 3600 - 2, LocalTime.NANOS_PER_SECOND - 350000000],
-        ['-P12DT-0.35S', -12 * 24 * 3600, 350000000],
-        ['-P12DT-1.35S', -12 * 24 * 3600 + 1, 350000000],
-    ])('can parse a ISO-8601 duration string', (value, seconds, nanos) => {
-        const duration = Duration.parse(value);
-        const lowercaseDuration = Duration.parse(value.toLowerCase());
-        const commaDuration = Duration.parse(value.replace('.', ','));
+        P12D: {
+            value: 'P12D',
+            seconds: 12 * 24 * 3600,
+            nanos: 0,
+        },
+        'P12DT0.35S': {
+            value: 'P12DT0.35S',
+            seconds: 12 * 24 * 3600,
+            nanos: 350000000,
+        },
+        'P12DT1.35S': {
+            value: 'P12DT1.35S',
+            seconds: 12 * 24 * 3600 + 1,
+            nanos: 350000000,
+        },
+        'P12DT-0.35S': {
+            value: 'P12DT-0.35S',
+            seconds: 12 * 24 * 3600 - 1,
+            nanos: 1000000000 - 350000000,
+        },
+        'P12DT-1.35S': {
+            value: 'P12DT-1.35S',
+            seconds: 12 * 24 * 3600 - 2,
+            nanos: 1000000000 - 350000000,
+        },
+        '-P12D': {
+            value: '-P12D',
+            seconds: -12 * 24 * 3600,
+            nanos: 0,
+        },
+        '-P12DT0.35S': {
+            value: '-P12DT0.35S',
+            seconds: -12 * 24 * 3600 - 1,
+            nanos: LocalTime.NANOS_PER_SECOND - 350000000,
+        },
+        '-P12DT1.35S': {
+            value: '-P12DT1.35S',
+            seconds: -12 * 24 * 3600 - 2,
+            nanos: LocalTime.NANOS_PER_SECOND - 350000000,
+        },
+        '-P12DT-0.35S': {
+            value: '-P12DT-0.35S',
+            seconds: -12 * 24 * 3600,
+            nanos: 350000000,
+        },
+        '-P12DT-1.35S': {
+            value: '-P12DT-1.35S',
+            seconds: -12 * 24 * 3600 + 1,
+            nanos: 350000000,
+        },
+    }))('can parse %s', (_, scenario) => {
+        const duration = Duration.parse(scenario.value);
+        const lowercaseDuration = Duration.parse(scenario.value.toLowerCase());
+        const commaDuration = Duration.parse(scenario.value.replace('.', ','));
 
-        expect(duration.getSeconds()).toBe(seconds);
-        expect(duration.getNanos()).toBe(nanos);
+        expect(duration.getSeconds()).toBe(scenario.seconds);
+        expect(duration.getNanos()).toBe(scenario.nanos);
 
-        expect(lowercaseDuration.getSeconds()).toBe(seconds);
-        expect(lowercaseDuration.getNanos()).toBe(nanos);
+        expect(lowercaseDuration.getSeconds()).toBe(scenario.seconds);
+        expect(lowercaseDuration.getNanos()).toBe(scenario.nanos);
 
-        expect(commaDuration.getSeconds()).toBe(seconds);
-        expect(commaDuration.getNanos()).toBe(nanos);
+        expect(commaDuration.getSeconds()).toBe(scenario.seconds);
+        expect(commaDuration.getNanos()).toBe(scenario.nanos);
     });
 
     it.each([
@@ -286,126 +750,13 @@ describe('A value object representing a time duration', () => {
         'PT-2.-3',
         'PT2.+3',
         'PT-2.+3',
-    ])('cannot parse a malformed duration string', value => {
+    ])('cannot parse %s', value => {
         expect(() => Duration.parse(value)).toThrow(`Unrecognized ISO-8601 duration string "${value}".`);
     });
 
     it('cannot parse a duration that overflows integer limits', () => {
         expect(() => Duration.parse('PT123456789123456789123456789S'))
             .toThrow('The result overflows the range of safe integers.');
-    });
-
-    type BetweenScenario = {
-        start: Instant,
-        end: Instant,
-        duration: Duration,
-    };
-
-    it.each<BetweenScenario>([
-        {
-            start: Instant.parse('2015-08-31T00:00:00Z'),
-            end: Instant.parse('2015-08-31T00:00:00Z'),
-            duration: Duration.zero(),
-        },
-        {
-            start: Instant.parse('2015-08-31T00:00:00Z'),
-            end: Instant.parse('2015-08-31T01:02:03.000000004Z'),
-            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
-        },
-        {
-            start: Instant.parse('2015-08-31T01:02:03.000000004Z'),
-            end: Instant.parse('2015-08-31T00:00:00Z'),
-            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
-        },
-        {
-            start: Instant.parse('2015-08-31T00:00:02.000000005Z'),
-            end: Instant.parse('2015-08-31T00:00:01.000000009Z'),
-            duration: Duration.ofSeconds(-1, 4),
-        },
-        {
-            start: Instant.parse('2015-08-31T00:00:02.000000005Z'),
-            end: Instant.parse('2015-08-31T00:00:03.000000001Z'),
-            duration: Duration.ofSeconds(1, -4),
-        },
-        {
-            start: Instant.parse('2015-08-30T00:00:00Z'),
-            end: Instant.parse('2015-08-31T00:00:00Z'),
-            duration: Duration.ofSeconds(24 * 3600),
-        },
-        {
-            start: Instant.parse('2015-08-31T00:00:00Z'),
-            end: Instant.parse('2015-08-30T00:00:00Z'),
-            duration: Duration.ofSeconds(-24 * 3600),
-        },
-        {
-            start: Instant.parse('2015-08-30T01:02:03.000000004Z'),
-            end: Instant.parse('2015-08-31T00:00:00Z'),
-            duration: Duration.ofSeconds(24 * 3600 - 3600 - 2 * 60 - 3, -4),
-        },
-        {
-            start: Instant.parse('2015-08-31T00:00:00Z'),
-            end: Instant.parse('2015-08-30T01:02:03.000000004Z'),
-            duration: Duration.ofSeconds(-24 * 3600 + 3600 + 2 * 60 + 3, 4),
-        },
-        {
-            start: Instant.parse('-0001-01-01T01:02:03.000000004Z'),
-            end: Instant.parse('0001-12-31T00:00:00Z'),
-            duration: Duration.ofSeconds(26278 * 3600 + 57 * 60 + 56, 999999996),
-        },
-        {
-            start: Instant.parse('0001-12-31T00:00:00Z'),
-            end: Instant.parse('-0001-01-01T01:02:03.000000004Z'),
-            duration: Duration.ofSeconds(-26278 * 3600 - 57 * 60 - 56, -999999996),
-        },
-        {
-
-            start: Instant.parse('-999999-01-01T01:02:03.000000004Z'),
-            end: Instant.parse('999999-12-31T00:00:00Z'),
-            duration: Duration.ofSeconds(17531631190 * 3600 + 57 * 60 + 56, 999999996),
-        },
-        {
-            start: Instant.parse('999999-12-31T00:00:00Z'),
-            end: Instant.parse('-999999-01-01T01:02:03.000000004Z'),
-            duration: Duration.ofSeconds(-17531631190 * 3600 - 57 * 60 - 56, -999999996),
-        },
-    ])('should calculate the duration between two instants', scenario => {
-        expect(Duration.between(scenario.start, scenario.end)).toStrictEqual(scenario.duration);
-    });
-
-    type LocalTimeBetweenScenario = {
-        start: LocalTime,
-        end: LocalTime,
-        duration: Duration,
-    };
-
-    it.each<LocalTimeBetweenScenario>([
-        {
-            start: LocalTime.of(0),
-            end: LocalTime.of(0),
-            duration: Duration.zero(),
-        },
-        {
-            start: LocalTime.of(0),
-            end: LocalTime.of(1, 2, 3, 4),
-            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 4),
-        },
-        {
-            start: LocalTime.of(1, 2, 3, 4),
-            end: LocalTime.of(0),
-            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -4),
-        },
-        {
-            start: LocalTime.of(0, 0, 2, 5),
-            end: LocalTime.of(0, 0, 1, 9),
-            duration: Duration.ofSeconds(-1, 4),
-        },
-        {
-            start: LocalTime.of(0, 0, 2, 5),
-            end: LocalTime.of(0, 0, 3, 1),
-            duration: Duration.ofSeconds(1, -4),
-        },
-    ])('should calculate the duration between two local times', scenario => {
-        expect(Duration.betweenLocalTime(scenario.start, scenario.end)).toStrictEqual(scenario.duration);
     });
 
     it(('can determine whether the duration is zero'), () => {
@@ -487,6 +838,28 @@ describe('A value object representing a time duration', () => {
 
         expect(newDuration).toStrictEqual(Duration.ofSeconds(1, 765432110));
         expect(newDuration).not.toStrictEqual(duration);
+    });
+
+    it('can create a copy with an duration added', () => {
+        const duration = Duration.ofSeconds(1, 234567890);
+
+        // Zero amount
+        expect(duration).toStrictEqual(duration.plusDuration(Duration.zero()));
+
+        const otherDuration = Duration.ofSeconds(8, 9);
+
+        expect(Duration.ofSeconds(9, 234567899)).toStrictEqual(duration.plusDuration(otherDuration));
+    });
+
+    it('can create a copy with an duration subtracted', () => {
+        const duration = Duration.ofSeconds(1, 234567890);
+
+        // Zero amount
+        expect(duration).toStrictEqual(duration.minusDuration(Duration.zero()));
+
+        const otherDuration = Duration.ofSeconds(1, 9);
+
+        expect(Duration.ofSeconds(0, 234567881)).toStrictEqual(duration.minusDuration(otherDuration));
     });
 
     it('can create a copy with a duration in standard 24 hours days added', () => {
@@ -786,29 +1159,34 @@ describe('A value object representing a time duration', () => {
         expect(duration.equals(Duration.ofSeconds(9, 234567890))).toStrictEqual(false);
     });
 
-    it('can be added to an instant', () => {
-        const instant = Instant.parse('2015-08-31T01:02:03.000000004Z');
+    it('can create a copy with each unit multiplied by a given scalar', () => {
+        // Zero duration
+        const zeroDuration = Duration.zero();
 
-        expect(Instant.parse('2015-08-31T01:02:04.000000004Z')).toStrictEqual(Duration.ofSeconds(1).addTo(instant));
-        expect(Instant.parse('2015-08-31T01:02:03.000000005Z')).toStrictEqual(Duration.ofSeconds(0, 1).addTo(instant));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(-2));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(-1));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(0));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(1));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(2));
+        expect(zeroDuration).toStrictEqual(zeroDuration.multipliedBy(3));
 
+        // Non-zero duration multiplied by 0
+        expect(Duration.zero()).toStrictEqual(Duration.ofSeconds(1, 234567890).multipliedBy(0));
+
+        // Non-zero duration multiplied by 1
         const duration = Duration.ofSeconds(1, 234567890);
 
-        expect(Instant.parse('2015-08-31T01:02:04.234567894Z')).toStrictEqual(duration.addTo(instant));
+        expect(duration).toStrictEqual(duration.multipliedBy(1));
+
+        // Non-zero duration multiplied by scalar different than 1
+        const newDuration = duration.multipliedBy(3);
+
+        expect(Duration.ofSeconds(3, 703703670)).toStrictEqual(newDuration);
     });
 
-    it('can be subtracted from an instant', () => {
-        const instant = Instant.parse('2015-08-31T01:02:03.000000004Z');
-
-        expect(Instant.parse('2015-08-31T01:02:02.000000004Z'))
-            .toStrictEqual(Duration.ofSeconds(1).subtractFrom(instant));
-
-        expect(Instant.parse('2015-08-31T01:02:03.000000003Z'))
-            .toStrictEqual(Duration.ofSeconds(0, 1).subtractFrom(instant));
-
-        const duration = Duration.ofSeconds(1, 234567890);
-
-        expect(Instant.parse('2015-08-31T01:02:01.765432114Z')).toStrictEqual(duration.subtractFrom(instant));
+    it('should fail to be multiplied by a scalar which exceeds the range of valid integers', () => {
+        expect(() => Duration.ofSeconds(1, 2).multipliedBy(Number.MAX_SAFE_INTEGER))
+            .toThrow('The result overflows the range of safe integers.');
     });
 
     it('should calculate the total number of days', () => {
@@ -921,31 +1299,100 @@ describe('A value object representing a time duration', () => {
         expected: string,
     };
 
-    it.each<ToStringScenario>([
-        {duration: Duration.zero(), expected: 'PT0S'},
-        {duration: Duration.ofHours(1), expected: 'PT1H'},
-        {duration: Duration.ofMinutes(1), expected: 'PT1M'},
-        {duration: Duration.ofSeconds(1), expected: 'PT1S'},
-        {duration: Duration.ofMillis(1), expected: 'PT0.001S'},
-        {duration: Duration.ofMicros(1), expected: 'PT0.000001S'},
-        {duration: Duration.ofNanos(1), expected: 'PT0.000000001S'},
-        {duration: Duration.ofNanos(12), expected: 'PT0.000000012S'},
-        {duration: Duration.ofNanos(123), expected: 'PT0.000000123S'},
-        {duration: Duration.ofNanos(1234), expected: 'PT0.000001234S'},
-        {duration: Duration.ofNanos(12345), expected: 'PT0.000012345S'},
-        {duration: Duration.ofNanos(123456), expected: 'PT0.000123456S'},
-        {duration: Duration.ofNanos(1234567), expected: 'PT0.001234567S'},
-        {duration: Duration.ofNanos(12345678), expected: 'PT0.012345678S'},
-        {duration: Duration.ofNanos(123456789), expected: 'PT0.123456789S'},
-        {duration: Duration.ofNanos(10), expected: 'PT0.000000010S'},
-        {duration: Duration.ofNanos(100), expected: 'PT0.000000100S'},
-        {duration: Duration.ofNanos(10000), expected: 'PT0.000010S'},
-        {duration: Duration.ofNanos(100000), expected: 'PT0.000100S'},
-        {duration: Duration.ofNanos(10000000), expected: 'PT0.010S'},
-        {duration: Duration.ofNanos(100000000), expected: 'PT0.100S'},
-        {duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 456789123), expected: 'PT1H2M3.456789123S'},
-        {duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -456789123), expected: 'PT-1H-2M-3.456789123S'},
-    ])('should convert to a ISO 8601 string', scenario => {
+    it.each(Object.entries<ToStringScenario>({
+        PT0S: {
+            duration: Duration.zero(),
+            expected: 'PT0S',
+        },
+        PT1H: {
+            duration: Duration.ofHours(1),
+            expected: 'PT1H',
+        },
+        PT1M: {
+            duration: Duration.ofMinutes(1),
+            expected: 'PT1M',
+        },
+        PT1S: {
+            duration: Duration.ofSeconds(1),
+            expected: 'PT1S',
+        },
+        'PT0.001S': {
+            duration: Duration.ofMillis(1),
+            expected: 'PT0.001S',
+        },
+        'PT0.000001S': {
+            duration: Duration.ofMicros(1),
+            expected: 'PT0.000001S',
+        },
+        'PT0.000000001S': {
+            duration: Duration.ofNanos(1),
+            expected: 'PT0.000000001S',
+        },
+        'PT0.000000012S': {
+            duration: Duration.ofNanos(12),
+            expected: 'PT0.000000012S',
+        },
+        'PT0.000000123S': {
+            duration: Duration.ofNanos(123),
+            expected: 'PT0.000000123S',
+        },
+        'PT0.000001234S': {
+            duration: Duration.ofNanos(1234),
+            expected: 'PT0.000001234S',
+        },
+        'PT0.000012345S': {
+            duration: Duration.ofNanos(12345),
+            expected: 'PT0.000012345S',
+        },
+        'PT0.000123456S': {
+            duration: Duration.ofNanos(123456),
+            expected: 'PT0.000123456S',
+        },
+        'PT0.001234567S': {
+            duration: Duration.ofNanos(1234567),
+            expected: 'PT0.001234567S',
+        },
+        'PT0.012345678S': {
+            duration: Duration.ofNanos(12345678),
+            expected: 'PT0.012345678S',
+        },
+        'PT0.123456789S': {
+            duration: Duration.ofNanos(123456789),
+            expected: 'PT0.123456789S',
+        },
+        'PT0.000000010S': {
+            duration: Duration.ofNanos(10),
+            expected: 'PT0.000000010S',
+        },
+        'PT0.000000100S': {
+            duration: Duration.ofNanos(100),
+            expected: 'PT0.000000100S',
+        },
+        'PT0.000010S': {
+            duration: Duration.ofNanos(10000),
+            expected: 'PT0.000010S',
+        },
+        'PT0.000100S': {
+            duration: Duration.ofNanos(100000),
+            expected: 'PT0.000100S',
+        },
+        'PT0.010S': {
+            duration: Duration.ofNanos(10000000),
+            expected: 'PT0.010S',
+        },
+        'PT0.100S': {
+            duration: Duration.ofNanos(100000000),
+            expected: 'PT0.100S',
+        },
+        'PT1H2M3.456789123S': {
+            duration: Duration.ofSeconds(3600 + 2 * 60 + 3, 456789123),
+            expected: 'PT1H2M3.456789123S',
+        },
+        'PT-1H-2M-3.456789123S': {
+            duration: Duration.ofSeconds(-3600 - 2 * 60 - 3, -456789123),
+            expected: 'PT-1H-2M-3.456789123S',
+        },
+    }))('should convert %s to string', (_, scenario) => {
         expect(scenario.duration.toString()).toStrictEqual(scenario.expected);
     });
 });

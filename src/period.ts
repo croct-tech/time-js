@@ -1,8 +1,4 @@
 import {addExact, intDiv, multiplyExact, subtractExact} from './math';
-import {LocalDate} from './localDate';
-import {Instant} from './instant';
-import {LocalDateTime} from './localDateTime';
-import {TimeZone} from './timeZone';
 
 /**
  * A date-based amount of time in the ISO-8601 calendar system,
@@ -99,15 +95,10 @@ export class Period {
     }
 
     /**
-     * Obtains a Period between two dates.
+     * Parses a period from an ISO-8601 based string. Such as 'P1Y2M3W4D'.
      *
-     * @param start - The start date
-     * @param end - The end date
+     * @param value The string to parse.
      */
-    public static between(start: LocalDate, end: LocalDate): Period {
-        return start.periodUntil(end);
-    }
-
     public static parse(value: string): Period {
         const {groups} = value.match(Period.PATTERN) ?? {};
 
@@ -442,56 +433,6 @@ export class Period {
      */
     public toYearsPart(): number {
         return this.toYears();
-    }
-
-    /**
-     * Adds this period to the specified instant.
-     */
-    public addTo(instant: Instant): Instant {
-        const localDateTime = LocalDateTime.ofInstant(instant, TimeZone.UTC)
-            .plusYears(this.years)
-            .plusMonths(this.months)
-            .plusDays(this.days);
-
-        return localDateTime.toInstant(TimeZone.UTC);
-    }
-
-    /**
-     * Subtracts this period to the specified instant.
-     */
-    public subtractFrom(instant: Instant): Instant {
-        const localDateTime = LocalDateTime.ofInstant(instant, TimeZone.UTC)
-            .minusYears(this.years)
-            .minusMonths(this.months)
-            .minusDays(this.days);
-
-        return localDateTime.toInstant(TimeZone.UTC);
-    }
-
-    /**
-     * Adds this period to the specified local date.
-     */
-    public addToLocalDate(date: LocalDate): LocalDate {
-        if (this.months === 0) {
-            return date.plusYears(this.years).plusDays(this.days);
-        }
-
-        const totalMonths = this.toMonths();
-
-        return date.plusMonths(totalMonths).plusDays(this.days);
-    }
-
-    /**
-     * Subtracts this period from the specified date.
-     */
-    public subtractFromLocalDate(date: LocalDate): LocalDate {
-        if (this.months === 0) {
-            return date.minusYears(this.years).minusDays(this.days);
-        }
-
-        const totalMonths = this.toMonths();
-
-        return date.minusMonths(totalMonths).minusDays(this.days);
     }
 
     /**

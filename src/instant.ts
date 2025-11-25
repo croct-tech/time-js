@@ -4,6 +4,7 @@ import {LocalDate} from './localDate';
 import {LocalDateTime} from './localDateTime';
 import {LocalTime} from './localTime';
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
+import {Duration} from './duration';
 
 /**
  * An instantaneous point on the time-line.
@@ -521,6 +522,36 @@ export class Instant {
      */
     public minusNanos(nanos: number): Instant {
         return this.plusNanos(-nanos);
+    }
+
+    /**
+     * Adds a duration to this instant.
+     *
+     * @param duration - The Duration
+     */
+    public plus(duration: Duration): Instant {
+        return this.plusSeconds(duration.getSeconds()).plusNanos(duration.getNanos());
+    }
+
+    /**
+     * Subtracts a duration from this instant.
+     *
+     * @param duration - The Duration
+     */
+    public minus(duration: Duration): Instant {
+        return this.minusSeconds(duration.getSeconds()).minusNanos(duration.getNanos());
+    }
+
+    /**
+     * Returns the duration between this and the given instant.
+     *
+     * @param end - The instant to compare.
+     */
+    public until(end: Instant): Duration {
+        const seconds = subtractExact(end.getSeconds(), this.getSeconds());
+        const nanos = subtractExact(end.getNano(), this.getNano());
+
+        return Duration.ofSeconds(seconds, nanos);
     }
 
     /**
