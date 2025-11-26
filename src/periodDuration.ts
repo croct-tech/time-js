@@ -4,7 +4,8 @@ import {LocalTime} from './localTime';
 import {intDiv} from './math';
 
 /**
- * A combination of a period and duration that represents an amount of time.
+ * A combination of a period and duration that represents an amount of
+ * date-time.
  */
 export class PeriodDuration {
     /**
@@ -95,12 +96,12 @@ export class PeriodDuration {
             throw new Error(`Unrecognized ISO-8601 period string "${value}".`);
         }
 
-        const [period, duration] = value.slice(1).split('T');
-        const time = duration ?? '';
+        const [date, time] = value.slice(1).split('T');
+        const sTime = time ?? '';
 
         return PeriodDuration.of(
-            period !== '' ? Period.parse(`P${period}`) : Period.zero(),
-            time !== '' ? Duration.parse(`PT${time}`) : Duration.zero(),
+            date !== '' ? Period.parse(`P${date}`) : Period.zero(),
+            sTime !== '' ? Duration.parse(`PT${sTime}`) : Duration.zero(),
         );
     }
 

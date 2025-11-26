@@ -1052,7 +1052,7 @@ describe('A value object representing a local date time', () => {
             periodDuration: PeriodDuration.ofDuration(Duration.ofSeconds(-20 * 3600 - 56 * 60 - 57)),
             expected: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(4, 5, 6)),
         },
-    ])('should add $period to $start', scenario => {
+    ])('should add $periodDuration to $start', scenario => {
         const result = scenario.start.plus(scenario.periodDuration);
 
         expect(result.toString()).toEqual(scenario.expected.toString());
@@ -1191,7 +1191,7 @@ describe('A value object representing a local date time', () => {
             periodDuration: PeriodDuration.ofDuration(Duration.ofSeconds(-20 * 3600 - 56 * 60 - 57)),
             expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
         },
-    ])('should subtract $period from $start', scenario => {
+    ])('should subtract $periodDuration from $start', scenario => {
         const result = scenario.start.minus(scenario.periodDuration);
 
         expect(result.toString()).toEqual(scenario.expected.toString());
