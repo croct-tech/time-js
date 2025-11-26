@@ -1,4 +1,13 @@
-import {Instant, LocalDate, LocalDateTime, LocalTime, TimeZone} from '../src';
+import {
+    Duration,
+    Instant,
+    LocalDate,
+    LocalDateTime,
+    LocalTime,
+    Period,
+    PeriodDuration,
+    TimeZone,
+} from '../src';
 import {FixedClock} from '../src/clock/fixedClock';
 
 describe('A value object representing a local date time', () => {
@@ -904,6 +913,431 @@ describe('A value object representing a local date time', () => {
         const localDateTime = LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3));
 
         expect(localDateTime.minusNanos(nanos)).toStrictEqual(expected);
+    });
+
+    type AddPeriodDurationScenario = {
+        start: LocalDateTime,
+        periodDuration: PeriodDuration,
+        expected: LocalDateTime,
+    };
+
+    it.each<AddPeriodDurationScenario>([
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.zero(),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofHours(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(2, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofHours(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(3, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMinutes(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 3, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMinutes(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 4, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofSeconds(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 4)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofSeconds(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 5)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMillis(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 1000000)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMillis(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 2000000)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMicros(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 1000)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMicros(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 2000)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofNanos(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofNanos(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.zero(),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofDays(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 9, 1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofDays(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 9, 2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofWeeks(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 9, 7)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofWeeks(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 9, 14)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of(0, 1, 1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 10, 1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofMonths(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 10, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofYears(1)),
+            expected: LocalDateTime.of(LocalDate.of(2016, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofYears(2)),
+            expected: LocalDateTime.of(LocalDate.of(2017, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of(1, 2, 3)),
+            expected: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of(-1, -2, -3)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofSeconds(22 * 3600 + 58 * 60 + 59)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 1, 2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofSeconds(-20 * 3600 - 56 * 60 - 57)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(4, 5, 6)),
+        },
+    ])('should add $periodDuration to $start', scenario => {
+        const result = scenario.start.plus(scenario.periodDuration);
+
+        expect(result.toString()).toEqual(scenario.expected.toString());
+    });
+
+    type SubtractPeriodDurationScenario = AddPeriodDurationScenario;
+
+    it.each<SubtractPeriodDurationScenario>([
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            periodDuration: PeriodDuration.zero(),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(2, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofHours(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(3, 2, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofHours(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 3, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMinutes(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 4, 3)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMinutes(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 4)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofSeconds(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 5)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofSeconds(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 1000000)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMillis(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 2000000)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMillis(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 1000)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMicros(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 2000)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofMicros(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 1)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofNanos(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 2)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofNanos(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.zero(),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 9, 1)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofDays(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 9, 2)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofDays(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 9, 7)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofWeeks(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 9, 14)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofWeeks(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 10, 1)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of(0, 1, 1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 10, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofMonths(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2016, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofYears(1)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2017, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.ofYears(2)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of(1, 2, 3)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of(-1, -2, -3)),
+            expected: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 1, 2)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofSeconds(22 * 3600 + 58 * 60 + 59)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(4, 5, 6)),
+            periodDuration: PeriodDuration.ofDuration(Duration.ofSeconds(-20 * 3600 - 56 * 60 - 57)),
+            expected: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+        },
+    ])('should subtract $periodDuration from $start', scenario => {
+        const result = scenario.start.minus(scenario.periodDuration);
+
+        expect(result.toString()).toEqual(scenario.expected.toString());
+    });
+
+    type PeriodDurationScenario = {
+        start: LocalDateTime,
+        end: LocalDateTime,
+        expected: PeriodDuration,
+    };
+
+    it.each<PeriodDurationScenario>([
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            expected: PeriodDuration.zero(),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(2, 2, 3)),
+            expected: PeriodDuration.ofDuration(Duration.ofHours(1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(3, 2, 3)),
+            expected: PeriodDuration.ofDuration(Duration.ofHours(2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 3, 3)),
+            expected: PeriodDuration.ofDuration(Duration.ofMinutes(1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 4, 3)),
+            expected: PeriodDuration.ofDuration(Duration.ofMinutes(2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 4)),
+            expected: PeriodDuration.ofDuration(Duration.ofSeconds(1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 5)),
+            expected: PeriodDuration.ofDuration(Duration.ofSeconds(2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 1000000)),
+            expected: PeriodDuration.ofDuration(Duration.ofMillis(1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 2000000)),
+            expected: PeriodDuration.ofDuration(Duration.ofMillis(2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 1000)),
+            expected: PeriodDuration.ofDuration(Duration.ofMicros(1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 2000)),
+            expected: PeriodDuration.ofDuration(Duration.ofMicros(2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 1)),
+            expected: PeriodDuration.ofDuration(Duration.ofNanos(1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3, 2)),
+            expected: PeriodDuration.ofDuration(Duration.ofNanos(2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            expected: PeriodDuration.zero(),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            end: LocalDateTime.of(LocalDate.of(2015, 9, 1)),
+            expected: PeriodDuration.ofPeriod(Period.ofDays(1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            end: LocalDateTime.of(LocalDate.of(2015, 9, 2)),
+            expected: PeriodDuration.ofPeriod(Period.ofDays(2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            end: LocalDateTime.of(LocalDate.of(2015, 9, 7)),
+            expected: PeriodDuration.ofPeriod(Period.ofWeeks(1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            end: LocalDateTime.of(LocalDate.of(2015, 9, 14)),
+            expected: PeriodDuration.ofPeriod(Period.ofWeeks(2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            end: LocalDateTime.of(LocalDate.of(2015, 10, 1)),
+            expected: PeriodDuration.ofPeriod(Period.of(0, 1, 1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            end: LocalDateTime.of(LocalDate.of(2015, 10, 31)),
+            expected: PeriodDuration.ofPeriod(Period.ofMonths(2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            end: LocalDateTime.of(LocalDate.of(2016, 8, 31)),
+            expected: PeriodDuration.ofPeriod(Period.ofYears(1)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            end: LocalDateTime.of(LocalDate.of(2017, 8, 31)),
+            expected: PeriodDuration.ofPeriod(Period.ofYears(2)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            end: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
+            expected: PeriodDuration.ofPeriod(Period.of(1, 2, 3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
+            expected: PeriodDuration.ofPeriod(Period.of(-1, -2, -3)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(0, 1, 2)),
+            expected: PeriodDuration.ofDuration(Duration.ofSeconds(22 * 3600 + 58 * 60 + 59)),
+        },
+        {
+            start: LocalDateTime.of(LocalDate.of(2015, 8, 31), LocalTime.of(1, 2, 3)),
+            end: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(4, 5, 6)),
+            expected: PeriodDuration.ofDuration(Duration.ofSeconds(-20 * 3600 - 56 * 60 - 57)),
+        },
+    ])('should calculate the period duration between $start and $end', scenario => {
+        const period = scenario.start.until(scenario.end);
+
+        expect(period.getParts()).toEqual(scenario.expected.getParts());
     });
 
     it('should be comparable', () => {
