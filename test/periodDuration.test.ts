@@ -7,11 +7,17 @@ describe('An ISO amount of date-time', () => {
 
         expect(periodDuration.getParts()).toEqual({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        const periodDurationOfParts = PeriodDuration.of(Period.of(1, 2, 3), Duration.ofSeconds(4, 5));
+        const periodDurationOfParts = PeriodDuration.of(
+            Period.of({years: 1, months: 2, days: 3}),
+            Duration.ofSeconds(4, 5),
+        );
 
         expect(periodDurationOfParts.getParts()).toEqual({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        const zeroDuration = PeriodDuration.of(Period.of(1, 2, 3), Duration.zero());
+        const zeroDuration = PeriodDuration.of(
+            Period.of({years: 1, months: 2, days: 3}),
+            Duration.zero(),
+        );
 
         expect(zeroDuration.getParts()).toEqual({years: 1, months: 2, days: 3, seconds: 0, nanos: 0});
 
@@ -31,7 +37,7 @@ describe('An ISO amount of date-time', () => {
     });
 
     it('can be created from a period', () => {
-        const periodDuration = PeriodDuration.ofPeriod(Period.of(1, 2, 3));
+        const periodDuration = PeriodDuration.ofPeriod(Period.of({years: 1, months: 2, days: 3}));
 
         expect(periodDuration.getParts()).toEqual({years: 1, months: 2, days: 3, seconds: 0, nanos: 0});
     });
@@ -210,11 +216,11 @@ describe('An ISO amount of date-time', () => {
     });
 
     it('should return the date-based part', () => {
-        const period = Period.of(1, 2, 3);
+        const period = Period.of({years: 1, months: 2, days: 3});
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
         const periodDurationDate = periodDuration.getPeriod();
 
-        expect(period.toString()).toEqual(periodDurationDate.toString());
+        expect(period.getParts()).toEqual(periodDurationDate.getParts());
     });
 
     it('should return the time-based part', () => {
@@ -283,7 +289,7 @@ describe('An ISO amount of date-time', () => {
             .toBe(false);
 
         // Partial
-        expect(periodDuration.equals(Period.of(1, 2, 3))).toBe(false);
+        expect(periodDuration.equals(Period.of({years: 1, months: 2, days: 3}))).toBe(false);
         expect(periodDuration.equals(Duration.ofSeconds(4, 5))).toBe(false);
 
         // Logically equal
@@ -293,14 +299,14 @@ describe('An ISO amount of date-time', () => {
 
     it('can create a copy with a new period and same duration', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
-        const period = Period.of(1, 2, 3);
+        const period = Period.of({years: 1, months: 2, days: 3});
 
         // Same period
         expect(periodDuration.getParts()).toEqual(periodDuration.withPeriod(period).getParts());
 
         // Different period
         const other = PeriodDuration.ofParts({years: 9, months: 8, days: 7, seconds: 4, nanos: 5});
-        const otherPeriod = Period.of(9, 8, 7);
+        const otherPeriod = Period.of({years: 9, months: 8, days: 7});
 
         expect(other.getParts()).toEqual(periodDuration.withPeriod(otherPeriod).getParts());
     });
@@ -401,7 +407,7 @@ describe('An ISO amount of date-time', () => {
 
     it('can create a copy with a period added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
-        const period = Period.of(6, 7, 8);
+        const period = Period.of({years: 6, months: 7, days: 8});
 
         const newPeriodDuration = periodDuration.plus(period);
 
@@ -411,7 +417,7 @@ describe('An ISO amount of date-time', () => {
 
     it('can create a copy with a period subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 7, months: 9, days: 11, seconds: 13, nanos: 15});
-        const period = Period.of(6, 7, 8);
+        const period = Period.of({years: 6, months: 7, days: 8});
 
         const newPeriodDuration = periodDuration.minus(period);
 

@@ -57,9 +57,9 @@ export class Period {
         }
 
         return new Period({
-            years: years ?? 0,
-            months: months ?? 0,
-            days: days ?? 0,
+            years: years,
+            months: months,
+            days: days,
         });
     }
 
@@ -67,7 +67,7 @@ export class Period {
      * Obtains a Period representing a zero length of time.
      */
     public static zero(): Period {
-        return new Period(0, 0, 0);
+        return new Period({years: 0, months: 0, days: 0});
     }
 
     /**
@@ -76,7 +76,7 @@ export class Period {
      * @param years - The number of years
      */
     public static ofYears(years: number): Period {
-        return Period.of(years, 0, 0);
+        return Period.of({years: years});
     }
 
     /**
@@ -85,7 +85,7 @@ export class Period {
      * @param months - The number of months
      */
     public static ofMonths(months: number): Period {
-        return Period.of(0, months, 0);
+        return Period.of({months: months});
     }
 
     /**
@@ -94,7 +94,7 @@ export class Period {
      * @param weeks - The number of weeks
      */
     public static ofWeeks(weeks: number): Period {
-        return Period.of(0, 0, multiplyExact(weeks, 7));
+        return Period.of({days: multiplyExact(weeks, 7)});
     }
 
     /**
@@ -103,7 +103,7 @@ export class Period {
      * @param days - The number of days
      */
     public static ofDays(days: number): Period {
-        return Period.of(0, 0, days);
+        return Period.of({days: days});
     }
 
     /**
@@ -135,7 +135,11 @@ export class Period {
         const days = Number.parseInt(groups.day ?? '0', 10);
         const totalDays = addExact(days, multiplyExact(weeks, 7));
 
-        return Period.of(sign * years, sign * months, sign * totalDays);
+        return Period.of({
+            years: sign * years,
+            months: sign * months,
+            days: sign * totalDays,
+        });
     }
 
     /**
@@ -199,7 +203,7 @@ export class Period {
             return this;
         }
 
-        return Period.of(years, this.months, this.days);
+        return Period.of({years: years, months: this.months, days: this.days});
     }
 
     /**
@@ -212,7 +216,7 @@ export class Period {
             return this;
         }
 
-        return Period.of(this.years, months, this.days);
+        return Period.of({years: this.years, months: months, days: this.days});
     }
 
     /**
@@ -225,7 +229,7 @@ export class Period {
             return this;
         }
 
-        return Period.of(this.years, this.months, days);
+        return Period.of({years: this.years, months: this.months, days: days});
     }
 
     /**
@@ -238,7 +242,7 @@ export class Period {
         const months = addExact(this.months, period.months);
         const days = addExact(this.days, period.days);
 
-        return Period.of(years, months, days);
+        return Period.of({years: years, months: months, days: days});
     }
 
     /**
@@ -251,7 +255,7 @@ export class Period {
         const months = subtractExact(this.months, period.months);
         const days = subtractExact(this.days, period.days);
 
-        return Period.of(years, months, days);
+        return Period.of({years: years, months: months, days: days});
     }
 
     /**
@@ -266,7 +270,7 @@ export class Period {
 
         const newYear = addExact(this.years, years);
 
-        return Period.of(newYear, this.months, this.days);
+        return Period.of({years: newYear, months: this.months, days: this.days});
     }
 
     /**
@@ -282,7 +286,7 @@ export class Period {
 
         const newYears = subtractExact(this.years, years);
 
-        return Period.of(newYears, this.months, this.days);
+        return Period.of({years: newYears, months: this.months, days: this.days});
     }
 
     /**
@@ -297,7 +301,7 @@ export class Period {
 
         const newMonth = addExact(this.months, months);
 
-        return Period.of(this.years, newMonth, this.days);
+        return Period.of({years: this.years, months: newMonth, days: this.days});
     }
 
     /**
@@ -313,7 +317,7 @@ export class Period {
 
         const newMonth = subtractExact(this.months, months);
 
-        return Period.of(this.years, newMonth, this.days);
+        return Period.of({years: this.years, months: newMonth, days: this.days});
     }
 
     /**
@@ -328,7 +332,7 @@ export class Period {
 
         const newDay = addExact(this.days, days);
 
-        return Period.of(this.years, this.months, newDay);
+        return Period.of({years: this.years, months: this.months, days: newDay});
     }
 
     /**
@@ -344,7 +348,7 @@ export class Period {
 
         const newDay = subtractExact(this.days, days);
 
-        return Period.of(this.years, this.months, newDay);
+        return Period.of({years: this.years, months: this.months, days: newDay});
     }
 
     /**
@@ -393,7 +397,7 @@ export class Period {
         const months = multiplyExact(this.months, scalar);
         const days = multiplyExact(this.days, scalar);
 
-        return Period.of(years, months, days);
+        return Period.of({years: years, months: months, days: days});
     }
 
     /**
@@ -409,7 +413,7 @@ export class Period {
             return this;
         }
 
-        return Period.of(splitYears, splitMonths, this.days);
+        return Period.of({years: splitYears, months: splitMonths, days: this.days});
     }
 
     /**

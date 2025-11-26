@@ -1014,7 +1014,7 @@ describe('A value object representing a local date time', () => {
         },
         {
             start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
-            periodDuration: PeriodDuration.ofPeriod(Period.of(0, 1, 1)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of({months: 1, days: 1})),
             expected: LocalDateTime.of(LocalDate.of(2015, 10, 1)),
         },
         {
@@ -1034,12 +1034,12 @@ describe('A value object representing a local date time', () => {
         },
         {
             start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
-            periodDuration: PeriodDuration.ofPeriod(Period.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of({years: 1, months: 2, days: 3})),
             expected: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
         },
         {
             start: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
-            periodDuration: PeriodDuration.ofPeriod(Period.of(-1, -2, -3)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of({years: -1, months: -2, days: -3})),
             expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
         },
         {
@@ -1153,7 +1153,7 @@ describe('A value object representing a local date time', () => {
         },
         {
             start: LocalDateTime.of(LocalDate.of(2015, 10, 1)),
-            periodDuration: PeriodDuration.ofPeriod(Period.of(0, 1, 1)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of({months: 1, days: 1})),
             expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
         },
         {
@@ -1173,12 +1173,12 @@ describe('A value object representing a local date time', () => {
         },
         {
             start: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
-            periodDuration: PeriodDuration.ofPeriod(Period.of(1, 2, 3)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of({years: 1, months: 2, days: 3})),
             expected: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
         },
         {
             start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
-            periodDuration: PeriodDuration.ofPeriod(Period.of(-1, -2, -3)),
+            periodDuration: PeriodDuration.ofPeriod(Period.of({years: -1, months: -2, days: -3})),
             expected: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
         },
         {
@@ -1297,7 +1297,7 @@ describe('A value object representing a local date time', () => {
         {
             start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
             end: LocalDateTime.of(LocalDate.of(2015, 10, 1)),
-            expected: PeriodDuration.ofPeriod(Period.of(0, 1, 1)),
+            expected: PeriodDuration.ofPeriod(Period.of({months: 1, days: 1})),
         },
         {
             start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
@@ -1317,12 +1317,12 @@ describe('A value object representing a local date time', () => {
         {
             start: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
             end: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
-            expected: PeriodDuration.ofPeriod(Period.of(1, 2, 3)),
+            expected: PeriodDuration.ofPeriod(Period.of({years: 1, months: 2, days: 3})),
         },
         {
             start: LocalDateTime.of(LocalDate.of(2016, 11, 3)),
             end: LocalDateTime.of(LocalDate.of(2015, 8, 31)),
-            expected: PeriodDuration.ofPeriod(Period.of(-1, -2, -3)),
+            expected: PeriodDuration.ofPeriod(Period.of({years: -1, months: -2, days: -3})),
         },
         {
             start: LocalDateTime.of(LocalDate.of(2015, 8, 30), LocalTime.of(1, 2, 3)),
