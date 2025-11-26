@@ -5,6 +5,7 @@ import {LocalDate} from './localDate';
 import {LocalTime} from './localTime';
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
 import {TimeZone} from './timeZone';
+import {PeriodDuration} from './periodDuration';
 
 /**
  * A date-time without a time-zone in the ISO-8601 calendar system, such as 2007-12-03T10:15:30.
@@ -501,6 +502,62 @@ export class LocalDateTime {
      */
     public minusNanos(nanos: number): LocalDateTime {
         return this.plusNanos(-nanos);
+    }
+
+    /**
+     * Add a period-duration to this local date-time.
+     *
+     * @param periodDuration The period-duration to add.
+     */
+    public plus(periodDuration: PeriodDuration): LocalDateTime {
+        const period = periodDuration.getPeriod();
+        const duration = periodDuration.getDuration();
+
+        return this.plusMonths(period.toMonths())
+            .plusDays(period.toDaysPart())
+            .plusSeconds(duration.getSeconds())
+            .plusNanos(duration.getNanos());
+    }
+
+    /**
+     * Subtract a period-duration from this local date-time.
+     *
+     * @param periodDuration The period-duration to subtract.
+     */
+    public minus(periodDuration: PeriodDuration): LocalDateTime {
+        const period = periodDuration.getPeriod();
+        const duration = periodDuration.getDuration();
+
+        return this.minusMonths(period.toMonths())
+            .minusDays(period.toDaysPart())
+            .minusSeconds(duration.getSeconds())
+            .minusNanos(duration.getNanos());
+    }
+
+    /**
+     * Returns the period between this date and the given date.
+     *
+     * @param dateTime The date to compare.
+     */
+    public until(dateTime: LocalDateTime): PeriodDuration {
+        if (this.equals(dateTime)) {
+            return PeriodDuration.zero();
+        }
+
+        let end = dateTime;
+        let duration = this.time.until(dateTime.time);
+
+        if (this.time.isBefore(dateTime.time) && this.isAfterOrEqual(dateTime)) {
+            end = end.plusDays(1);
+            duration = duration.minusDays(1);
+        } else if (this.time.isAfter(dateTime.time) && this.isBeforeOrEqual(dateTime)) {
+            end = end.minusDays(1);
+            duration = duration.plusDays(1);
+        }
+
+        const period = this.date.until(end.date);
+
+        return PeriodDuration.of(period, duration);
     }
 
     /**
