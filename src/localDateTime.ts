@@ -547,14 +547,10 @@ export class LocalDateTime {
         let end = dateTime;
         let duration = this.time.until(dateTime.time);
 
-        const negativeTimePositiveDiff = this.time.isBefore(dateTime.time) && this.isAfterOrEqual(dateTime);
-        const positiveTimeNonPositiveDiff = !negativeTimePositiveDiff
-            && this.time.isAfter(dateTime.time) && this.isBeforeOrEqual(dateTime);
-
-        if (negativeTimePositiveDiff) {
+        if (this.time.isBefore(dateTime.time) && this.isAfterOrEqual(dateTime)) {
             end = end.plusDays(1);
             duration = duration.minusDays(1);
-        } else if (positiveTimeNonPositiveDiff) {
+        } else if (this.time.isAfter(dateTime.time) && this.isBeforeOrEqual(dateTime)) {
             end = end.minusDays(1);
             duration = duration.plusDays(1);
         }

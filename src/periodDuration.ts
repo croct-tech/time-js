@@ -3,6 +3,14 @@ import {Duration} from './duration';
 import {LocalTime} from './localTime';
 import {intDiv} from './math';
 
+export type PeriodDurationParts = {
+    years: number,
+    months: number,
+    days: number,
+    seconds: number,
+    nanos: number,
+};
+
 /**
  * A combination of a period and duration that represents an amount of
  * date-time.
@@ -24,7 +32,7 @@ export class PeriodDuration {
      * @param period - The period component
      * @param duration - The duration component
      */
-    public constructor(period: Period, duration: Duration) {
+    private constructor(period: Period, duration: Duration) {
         this.period = period;
         this.duration = duration;
     }
@@ -71,13 +79,11 @@ export class PeriodDuration {
     /**
      * Obtains a period duration from individual time components.
      *
-     * @param years - The number of years
-     * @param months - The number of months
-     * @param days - The number of days
-     * @param seconds - The number of seconds
-     * @param nanos - The number of nanoseconds
+     * @param parts - The period components
      */
-    public static ofParts(years: number, months: number, days: number, seconds = 0, nanos = 0): PeriodDuration {
+    public static ofParts(parts: PeriodDurationParts): PeriodDuration {
+        const {years, months, days, seconds, nanos} = parts;
+
         return new PeriodDuration(
             Period.of(years, months, days),
             Duration.ofSeconds(seconds, nanos),
@@ -274,7 +280,33 @@ export class PeriodDuration {
      *
      * @param other - The period duration
      */
-    public plusPeriodDuration(other: PeriodDuration): PeriodDuration {
+    public plus(other: PeriodDuration): PeriodDuration;
+
+    /**
+     * Returns a copy of this period duration with the specified
+     * period added.
+     *
+     * @param other - The period
+     */
+    public plus(other: Period): PeriodDuration;
+
+    /**
+     * Returns a copy of this period duration with the specified
+     * period added.
+     *
+     * @param other - The duration
+     */
+    public plus(other: Duration): PeriodDuration;
+
+    public plus(other: PeriodDuration | Period | Duration): PeriodDuration {
+        if (other instanceof Period) {
+            return this.withPeriod(this.period.plusPeriod(other));
+        }
+
+        if (other instanceof Duration) {
+            return this.withDuration(this.duration.plusDuration(other));
+        }
+
         const period = this.period.plusPeriod(other.period);
         const duration = this.duration.plusDuration(other.duration);
 
@@ -287,7 +319,15 @@ export class PeriodDuration {
      *
      * @param other - The period duration
      */
-    public minusPeriodDuration(other: PeriodDuration): PeriodDuration {
+    public minus(other: PeriodDuration | Period | Duration): PeriodDuration {
+        if (other instanceof Period) {
+            return this.withPeriod(this.period.minusPeriod(other));
+        }
+
+        if (other instanceof Duration) {
+            return this.withDuration(this.duration.minusDuration(other));
+        }
+
         const period = this.period.minusPeriod(other.period);
         const duration = this.duration.minusDuration(other.duration);
 
@@ -542,6 +582,19 @@ export class PeriodDuration {
         const duration = this.duration.withSeconds(splitSeconds);
 
         return PeriodDuration.of(period, duration);
+    }
+
+    /**
+     * Returns the individual parts of this period-duration.
+     */
+    public getParts(): PeriodDurationParts {
+        return {
+            years: this.getYears(),
+            months: this.getMonths(),
+            days: this.getDays(),
+            seconds: this.getSeconds(),
+            nanos: this.getNanos(),
+        };
     }
 
     /**
