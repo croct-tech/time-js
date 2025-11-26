@@ -79,14 +79,14 @@ export class PeriodDuration {
     /**
      * Obtains a period duration from individual time components.
      *
-     * @param parts - The period components
+     * @param parts - The period duration components
      */
     public static ofParts(parts: Partial<PeriodDurationParts>): PeriodDuration {
-        const {years, months, days, seconds, nanos} = parts;
+        const {years = 0, months = 0, days = 0, seconds = 0, nanos = 0} = parts;
 
         return new PeriodDuration(
-            Period.of(years ?? 0, months ?? 0, days ?? 0),
-            Duration.ofSeconds(seconds ?? 0, nanos ?? 0),
+            Period.of(years, months, days),
+            Duration.ofSeconds(seconds, nanos),
         );
     }
 
