@@ -46,6 +46,20 @@ export class PeriodDuration {
         );
     }
 
+    public static parse(value: string): PeriodDuration {
+        if (value[0] !== 'P') {
+            throw new Error(`Unrecognized ISO-8601 period string "${value}".`);
+        }
+
+        const [period, duration] = value.slice(1).split('T');
+        const time = duration ?? '';
+
+        return PeriodDuration.of(
+            period !== '' ? Period.parse(`P${period}`) : Period.zero(),
+            time !== '' ? Duration.parse(`PT${time}`) : Duration.zero(),
+        );
+    }
+
     public isZero(): boolean {
         return this.period.isZero() && this.duration.isZero();
     }
