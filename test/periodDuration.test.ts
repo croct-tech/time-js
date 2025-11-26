@@ -43,11 +43,11 @@ describe('An ISO amount of date-time', () => {
     });
 
     it('can be created from the value of the period and duration parts', () => {
-        const dayPeriodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 0, nanos: 0});
+        const dayPeriodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3});
 
         expect(dayPeriodDuration.getParts()).toEqual({years: 1, months: 2, days: 3, seconds: 0, nanos: 0});
 
-        const secondPeriodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 0});
+        const secondPeriodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4});
 
         expect(secondPeriodDuration.getParts()).toEqual({years: 1, months: 2, days: 3, seconds: 4, nanos: 0});
 
@@ -63,123 +63,111 @@ describe('An ISO amount of date-time', () => {
         },
         {
             value: 'P1Y',
-            expected: PeriodDuration.ofParts({years: 1, months: 0, days: 0, seconds: 0, nanos: 0}),
+            expected: PeriodDuration.ofParts({years: 1}),
         },
         {
             value: 'P1M',
-            expected: PeriodDuration.ofParts({years: 0, months: 1, days: 0, seconds: 0, nanos: 0}),
+            expected: PeriodDuration.ofParts({months: 1}),
         },
         {
             value: 'P1D',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 1, seconds: 0, nanos: 0}),
+            expected: PeriodDuration.ofParts({days: 1}),
         },
         {
             value: 'PT1H',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 3600, nanos: 0}),
+            expected: PeriodDuration.ofParts({seconds: 3600}),
         },
         {
             value: 'PT1M',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 60, nanos: 0}),
+            expected: PeriodDuration.ofParts({seconds: 60}),
         },
         {
             value: 'PT1S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 1, nanos: 0}),
+            expected: PeriodDuration.ofParts({seconds: 1}),
         },
         {
             value: 'PT0.001S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 1000000}),
+            expected: PeriodDuration.ofParts({nanos: 1000000}),
         },
         {
             value: 'PT0.000001S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 1000}),
+            expected: PeriodDuration.ofParts({nanos: 1000}),
         },
         {
             value: 'PT0.000000001S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 1}),
+            expected: PeriodDuration.ofParts({nanos: 1}),
         },
         {
             value: 'PT0.000000012S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 12}),
+            expected: PeriodDuration.ofParts({nanos: 12}),
         },
         {
             value: 'PT0.000000123S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 123}),
+            expected: PeriodDuration.ofParts({nanos: 123}),
         },
         {
             value: 'PT0.000001234S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 1234}),
+            expected: PeriodDuration.ofParts({nanos: 1234}),
         },
         {
             value: 'PT0.000012345S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 12345}),
+            expected: PeriodDuration.ofParts({nanos: 12345}),
         },
         {
             value: 'PT0.000123456S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 123456}),
+            expected: PeriodDuration.ofParts({nanos: 123456}),
         },
         {
             value: 'PT0.001234567S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 1234567}),
+            expected: PeriodDuration.ofParts({nanos: 1234567}),
         },
         {
             value: 'PT0.012345678S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 12345678}),
+            expected: PeriodDuration.ofParts({nanos: 12345678}),
         },
         {
             value: 'PT0.123456789S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 123456789}),
+            expected: PeriodDuration.ofParts({nanos: 123456789}),
         },
         {
             value: 'PT0.000000010S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 10}),
+            expected: PeriodDuration.ofParts({nanos: 10}),
         },
         {
             value: 'PT0.000000100S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 100}),
+            expected: PeriodDuration.ofParts({nanos: 100}),
         },
         {
             value: 'PT0.000010S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 10000}),
+            expected: PeriodDuration.ofParts({nanos: 10000}),
         },
         {
             value: 'PT0.000100S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 100000}),
+            expected: PeriodDuration.ofParts({nanos: 100000}),
         },
         {
             value: 'PT0.010S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 10000000}),
+            expected: PeriodDuration.ofParts({nanos: 10000000}),
         },
         {
             value: 'PT0.100S',
-            expected: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 100000000}),
+            expected: PeriodDuration.ofParts({nanos: 100000000}),
         },
         {
             value: 'P1Y2M3D',
-            expected: PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 0, nanos: 0}),
+            expected: PeriodDuration.ofParts({years: 1, months: 2, days: 3}),
         },
         {
             value: 'P-1Y-2M-3D',
-            expected: PeriodDuration.ofParts({years: -1, months: -2, days: -3, seconds: 0, nanos: 0}),
+            expected: PeriodDuration.ofParts({years: -1, months: -2, days: -3}),
         },
         {
             value: 'PT1H2M3.456789123S',
-            expected: PeriodDuration.ofParts({
-                years: 0,
-                months: 0,
-                days: 0,
-                seconds: 3600 + 2 * 60 + 3,
-                nanos: 456789123,
-            }),
+            expected: PeriodDuration.ofParts({seconds: 3600 + 2 * 60 + 3, nanos: 456789123}),
         },
         {
             value: 'PT-1H-2M-3.456789123S',
-            expected: PeriodDuration.ofParts({
-                years: 0,
-                months: 0,
-                days: 0,
-                seconds: -1 * 3600 - 2 * 60 - 3,
-                nanos: -456789123,
-            }),
+            expected: PeriodDuration.ofParts({seconds: -1 * 3600 - 2 * 60 - 3, nanos: -456789123}),
         },
         {
             value: 'P1Y2M3DT1H2M3.456789123S',
@@ -204,7 +192,7 @@ describe('An ISO amount of date-time', () => {
     ])('can parse $value', scenario => {
         const periodDuration = PeriodDuration.parse(scenario.value);
 
-        expect(periodDuration.toString()).toEqual(scenario.expected.toString());
+        expect(periodDuration.getParts()).toEqual(scenario.expected.getParts());
     });
 
     it('cannot parse an invalid period duration', () => {
@@ -234,7 +222,8 @@ describe('An ISO amount of date-time', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
         const periodDurationTime = periodDuration.getDuration();
 
-        expect(duration.toString()).toEqual(periodDurationTime.toString());
+        expect(duration.getSeconds()).toEqual(periodDurationTime.getSeconds());
+        expect(duration.getNanos()).toEqual(periodDurationTime.getNanos());
     });
 
     it('should return the amount of years', () => {
@@ -307,13 +296,13 @@ describe('An ISO amount of date-time', () => {
         const period = Period.of(1, 2, 3);
 
         // Same period
-        expect(periodDuration.toString()).toEqual(periodDuration.withPeriod(period).toString());
+        expect(periodDuration.getParts()).toEqual(periodDuration.withPeriod(period).getParts());
 
         // Different period
         const other = PeriodDuration.ofParts({years: 9, months: 8, days: 7, seconds: 4, nanos: 5});
         const otherPeriod = Period.of(9, 8, 7);
 
-        expect(other.toString()).toEqual(periodDuration.withPeriod(otherPeriod).toString());
+        expect(other.getParts()).toEqual(periodDuration.withPeriod(otherPeriod).getParts());
     });
 
     it('can create a copy with a new duration and same period', () => {
@@ -321,73 +310,73 @@ describe('An ISO amount of date-time', () => {
         const duration = Duration.ofSeconds(4, 5);
 
         // Same duration
-        expect(periodDuration.toString()).toEqual(periodDuration.withDuration(duration).toString());
+        expect(periodDuration.getParts()).toEqual(periodDuration.withDuration(duration).getParts());
 
         // Different duration
         const other = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 9, nanos: 8});
         const otherDuration = Duration.ofSeconds(9, 8);
 
-        expect(other.toString()).toEqual(periodDuration.withDuration(otherDuration).toString());
+        expect(other.getParts()).toEqual(periodDuration.withDuration(otherDuration).getParts());
     });
 
     it('can create a copy with a new amount of years', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
         // Same years
-        expect(periodDuration.toString()).toEqual(periodDuration.withYears(1).toString());
+        expect(periodDuration.getParts()).toEqual(periodDuration.withYears(1).getParts());
 
         // Different years
         const newPeriodDuration = PeriodDuration.ofParts({years: 9, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(newPeriodDuration.toString()).toEqual(periodDuration.withYears(9).toString());
+        expect(newPeriodDuration.getParts()).toEqual(periodDuration.withYears(9).getParts());
     });
 
     it('can create a copy with a new amount of months', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
         // Same months
-        expect(periodDuration.toString()).toEqual(periodDuration.withMonths(2).toString());
+        expect(periodDuration.getParts()).toEqual(periodDuration.withMonths(2).getParts());
 
         // Different months
         const newPeriodDuration = PeriodDuration.ofParts({years: 1, months: 9, days: 3, seconds: 4, nanos: 5});
 
-        expect(newPeriodDuration.toString()).toEqual(periodDuration.withMonths(9).toString());
+        expect(newPeriodDuration.getParts()).toEqual(periodDuration.withMonths(9).getParts());
     });
 
     it('can create a copy with a new amount of days', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
         // Same days
-        expect(periodDuration.toString()).toEqual(periodDuration.withDays(3).toString());
+        expect(periodDuration.getParts()).toEqual(periodDuration.withDays(3).getParts());
 
         // Different days
         const newPeriodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 9, seconds: 4, nanos: 5});
 
-        expect(newPeriodDuration.toString()).toEqual(periodDuration.withDays(9).toString());
+        expect(newPeriodDuration.getParts()).toEqual(periodDuration.withDays(9).getParts());
     });
 
     it('can create a copy with a new amount of seconds', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
         // Same seconds
-        expect(periodDuration.toString()).toEqual(periodDuration.withSeconds(4).toString());
+        expect(periodDuration.getParts()).toEqual(periodDuration.withSeconds(4).getParts());
 
         // Different seconds
         const newPeriodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 9, nanos: 5});
 
-        expect(newPeriodDuration.toString()).toEqual(periodDuration.withSeconds(9).toString());
+        expect(newPeriodDuration.getParts()).toEqual(periodDuration.withSeconds(9).getParts());
     });
 
     it('can create a copy with a new amount of nanoseconds', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
         // Same nanoseconds
-        expect(periodDuration.toString()).toEqual(periodDuration.withNanos(5).toString());
+        expect(periodDuration.getParts()).toEqual(periodDuration.withNanos(5).getParts());
 
         // Different nanoseconds
         const newPeriodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 9});
 
-        expect(newPeriodDuration.toString()).toEqual(periodDuration.withNanos(9).toString());
+        expect(newPeriodDuration.getParts()).toEqual(periodDuration.withNanos(9).getParts());
     });
 
     it('can create a copy with a duration added', () => {
@@ -396,8 +385,8 @@ describe('An ISO amount of date-time', () => {
 
         const newPeriodDuration = periodDuration.plus(duration);
 
-        expect(newPeriodDuration.toString())
-            .toEqual(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 13, nanos: 15}).toString());
+        expect(newPeriodDuration.getParts())
+            .toEqual(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 13, nanos: 15}).getParts());
     });
 
     it('can create a copy with a duration subtracted', () => {
@@ -406,8 +395,8 @@ describe('An ISO amount of date-time', () => {
 
         const newPeriodDuration = periodDuration.minus(duration);
 
-        expect(newPeriodDuration.toString())
-            .toEqual(PeriodDuration.ofParts({years: 7, months: 9, days: 11, seconds: 4, nanos: 5}).toString());
+        expect(newPeriodDuration.getParts())
+            .toEqual(PeriodDuration.ofParts({years: 7, months: 9, days: 11, seconds: 4, nanos: 5}).getParts());
     });
 
     it('can create a copy with a period added', () => {
@@ -416,8 +405,8 @@ describe('An ISO amount of date-time', () => {
 
         const newPeriodDuration = periodDuration.plus(period);
 
-        expect(newPeriodDuration.toString())
-            .toEqual(PeriodDuration.ofParts({years: 7, months: 9, days: 11, seconds: 4, nanos: 5}).toString());
+        expect(newPeriodDuration.getParts())
+            .toEqual(PeriodDuration.ofParts({years: 7, months: 9, days: 11, seconds: 4, nanos: 5}).getParts());
     });
 
     it('can create a copy with a period subtracted', () => {
@@ -426,8 +415,8 @@ describe('An ISO amount of date-time', () => {
 
         const newPeriodDuration = periodDuration.minus(period);
 
-        expect(newPeriodDuration.toString())
-            .toEqual(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 13, nanos: 15}).toString());
+        expect(newPeriodDuration.getParts())
+            .toEqual(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 13, nanos: 15}).getParts());
     });
 
     it('can create a copy with another period duration added', () => {
@@ -436,8 +425,8 @@ describe('An ISO amount of date-time', () => {
 
         const newPeriodDuration = periodDuration.plus(secondPeriodDuration);
 
-        expect(newPeriodDuration.toString())
-            .toEqual(PeriodDuration.ofParts({years: 7, months: 9, days: 11, seconds: 13, nanos: 15}).toString());
+        expect(newPeriodDuration.getParts())
+            .toEqual(PeriodDuration.ofParts({years: 7, months: 9, days: 11, seconds: 13, nanos: 15}).getParts());
     });
 
     it('can create a copy with another period duration subtracted', () => {
@@ -446,27 +435,27 @@ describe('An ISO amount of date-time', () => {
 
         const newPeriodDuration = periodDuration.minus(secondPeriodDuration);
 
-        expect(newPeriodDuration.toString())
-            .toEqual(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString());
+        expect(newPeriodDuration.getParts())
+            .toEqual(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts());
     });
 
     it('can create a copy with a period in years added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: -1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusYears(-2).toString());
+        expect(PeriodDuration.ofParts({years: -1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusYears(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 0, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusYears(-1).toString());
+        expect(PeriodDuration.ofParts({months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusYears(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusYears(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusYears(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 2, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusYears(1).toString());
+        expect(PeriodDuration.ofParts({years: 2, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusYears(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 3, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusYears(2).toString());
+        expect(PeriodDuration.ofParts({years: 3, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusYears(2).getParts());
     });
 
     it('should fail to add an amount of years which exceeds the range of valid integers', () => {
@@ -484,20 +473,20 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a period in years subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: -1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusYears(2).toString());
+        expect(PeriodDuration.ofParts({years: -1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusYears(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 0, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusYears(1).toString());
+        expect(PeriodDuration.ofParts({months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusYears(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusYears(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusYears(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 2, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusYears(-1).toString());
+        expect(PeriodDuration.ofParts({years: 2, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusYears(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 3, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusYears(-2).toString());
+        expect(PeriodDuration.ofParts({years: 3, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusYears(-2).getParts());
     });
 
     it('should fail to subtract an amount of years which exceeds the range of valid integers', () => {
@@ -515,26 +504,26 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a period in months added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: -10, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMonths(-12).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: -10, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMonths(-12).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 0, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMonths(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMonths(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 1, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMonths(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 1, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMonths(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMonths(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMonths(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 3, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMonths(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 3, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMonths(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 4, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMonths(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 4, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMonths(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 14, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMonths(12).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 14, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMonths(12).getParts());
     });
 
     it('should fail to add an amount of months which exceeds the range of valid integers', () => {
@@ -552,26 +541,26 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a period in months subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: -10, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMonths(12).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: -10, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMonths(12).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 0, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMonths(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMonths(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 1, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMonths(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 1, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMonths(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMonths(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMonths(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 3, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMonths(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 3, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMonths(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 4, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMonths(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 4, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMonths(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 14, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMonths(-12).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 14, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMonths(-12).getParts());
     });
 
     it('should fail to subtract an amount of months which exceeds the range of valid integers', () => {
@@ -584,20 +573,20 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a period in weeks added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: -11, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusWeeks(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: -11, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusWeeks(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: -4, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusWeeks(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: -4, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusWeeks(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusWeeks(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusWeeks(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 10, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusWeeks(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 10, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusWeeks(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 17, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusWeeks(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 17, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusWeeks(2).getParts());
     });
 
     it('should fail to add an amount of weeks which exceeds the range of valid integers', () => {
@@ -615,20 +604,20 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a period in weeks subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: -11, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusWeeks(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: -11, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusWeeks(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: -4, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusWeeks(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: -4, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusWeeks(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusWeeks(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusWeeks(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 10, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusWeeks(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 10, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusWeeks(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 17, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusWeeks(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 17, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusWeeks(2).getParts());
     });
 
     it('should fail to subtract an amount of weeks which exceeds the range of valid integers', () => {
@@ -641,20 +630,20 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a period in days added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 1, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusDays(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 1, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusDays(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 2, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusDays(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 2, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusDays(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusDays(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusDays(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 4, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusDays(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 4, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusDays(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 5, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusDays(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 5, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusDays(2).getParts());
     });
 
     it('should fail to add an amount of days which exceeds the range of valid integers', () => {
@@ -667,20 +656,20 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a period in days subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 1, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusDays(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 1, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusDays(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 2, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusDays(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 2, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusDays(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusDays(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusDays(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 4, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusDays(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 4, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusDays(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 5, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusDays(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 5, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusDays(-2).getParts());
     });
 
     it('should fail to subtract an amount of days which exceeds the range of valid integers', () => {
@@ -698,26 +687,26 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a duration in standard hours added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 24 * 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.plusHours(-24).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 24 * 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusHours(-24).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2 * 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.plusHours(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2 * 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusHours(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.plusHours(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusHours(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusHours(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusHours(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.plusHours(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusHours(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2 * 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.plusHours(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2 * 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusHours(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 24 * 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.plusHours(24).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 24 * 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusHours(24).getParts());
     });
 
     it('should fail to add an amount of hours which exceeds the range of valid integers', () => {
@@ -735,26 +724,26 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a duration in standard hours subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 24 * 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.minusHours(24).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 24 * 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusHours(24).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2 * 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.minusHours(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2 * 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusHours(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.minusHours(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusHours(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusHours(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusHours(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.minusHours(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusHours(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2 * 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.minusHours(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2 * 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusHours(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 24 * 3600, nanos: 5}).toString())
-            .toEqual(periodDuration.minusHours(-24).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 24 * 3600, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusHours(-24).getParts());
     });
 
     it('should fail to subtract an amount of hours which exceeds the range of valid integers', () => {
@@ -772,20 +761,20 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a duration in standard minutes added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2 * 60, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMinutes(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2 * 60, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMinutes(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 60, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMinutes(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 60, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMinutes(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMinutes(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMinutes(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 60, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMinutes(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 60, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMinutes(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2 * 60, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMinutes(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2 * 60, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMinutes(2).getParts());
     });
 
     it('should fail to add an amount of minutes which exceeds the range of valid integers', () => {
@@ -803,20 +792,20 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a duration in standard minutes subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2 * 60, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMinutes(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2 * 60, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMinutes(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 60, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMinutes(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 60, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMinutes(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMinutes(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMinutes(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 60, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMinutes(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 60, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMinutes(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2 * 60, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMinutes(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2 * 60, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMinutes(-2).getParts());
     });
 
     it('should fail to subtract an amount of minutes which exceeds the range of valid integers', () => {
@@ -834,20 +823,20 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a duration in seconds added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 2, nanos: 5}).toString())
-            .toEqual(periodDuration.plusSeconds(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusSeconds(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 3, nanos: 5}).toString())
-            .toEqual(periodDuration.plusSeconds(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 3, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusSeconds(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusSeconds(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusSeconds(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 5, nanos: 5}).toString())
-            .toEqual(periodDuration.plusSeconds(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 5, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusSeconds(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 6, nanos: 5}).toString())
-            .toEqual(periodDuration.plusSeconds(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 6, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusSeconds(2).getParts());
     });
 
     it('should fail to add an amount of seconds which exceeds the range of valid integers', () => {
@@ -860,20 +849,20 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a duration in seconds subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 2, nanos: 5}).toString())
-            .toEqual(periodDuration.minusSeconds(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusSeconds(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 3, nanos: 5}).toString())
-            .toEqual(periodDuration.minusSeconds(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 3, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusSeconds(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusSeconds(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusSeconds(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 5, nanos: 5}).toString())
-            .toEqual(periodDuration.minusSeconds(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 5, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusSeconds(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 6, nanos: 5}).toString())
-            .toEqual(periodDuration.minusSeconds(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 6, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusSeconds(-2).getParts());
     });
 
     it('should fail to subtract an amount of seconds which exceeds the range of valid integers', () => {
@@ -886,26 +875,26 @@ describe('An ISO amount of date-time', () => {
     it('can create a copy with a duration in milliseconds added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMillis(2000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMillis(2000).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2000000}).toString())
-            .toEqual(periodDuration.plusMillis(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2000000}).getParts())
+            .toEqual(periodDuration.plusMillis(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1000000}).toString())
-            .toEqual(periodDuration.plusMillis(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1000000}).getParts())
+            .toEqual(periodDuration.plusMillis(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMillis(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMillis(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1000000}).toString())
-            .toEqual(periodDuration.plusMillis(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1000000}).getParts())
+            .toEqual(periodDuration.plusMillis(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2000000}).toString())
-            .toEqual(periodDuration.plusMillis(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2000000}).getParts())
+            .toEqual(periodDuration.plusMillis(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMillis(-2000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMillis(-2000).getParts());
 
         const maxValue = Number.MAX_SAFE_INTEGER;
         const maxSeconds = intDiv(maxValue, LocalTime.MILLIS_PER_SECOND);
@@ -918,8 +907,8 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 + maxSeconds,
                 nanos: 5 + maxNanos,
-            }).toString(),
-        ).toEqual(periodDuration.plusMillis(maxValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.plusMillis(maxValue).getParts());
 
         const minValue = Number.MIN_SAFE_INTEGER;
         const minSeconds = intDiv(minValue, LocalTime.MILLIS_PER_SECOND);
@@ -932,33 +921,33 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 + minSeconds,
                 nanos: 5 + minNanos,
-            }).toString(),
-        ).toEqual(periodDuration.plusMillis(minValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.plusMillis(minValue).getParts());
     });
 
     it('can create a copy with a duration in milliseconds subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMillis(-2000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMillis(-2000).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2000000}).toString())
-            .toEqual(periodDuration.minusMillis(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2000000}).getParts())
+            .toEqual(periodDuration.minusMillis(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1000000}).toString())
-            .toEqual(periodDuration.minusMillis(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1000000}).getParts())
+            .toEqual(periodDuration.minusMillis(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMillis(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMillis(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1000000}).toString())
-            .toEqual(periodDuration.minusMillis(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1000000}).getParts())
+            .toEqual(periodDuration.minusMillis(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2000000}).toString())
-            .toEqual(periodDuration.minusMillis(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2000000}).getParts())
+            .toEqual(periodDuration.minusMillis(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMillis(2000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMillis(2000).getParts());
 
         const maxValue = Number.MIN_SAFE_INTEGER;
         const maxSeconds = intDiv(maxValue, LocalTime.MILLIS_PER_SECOND);
@@ -971,8 +960,8 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 - maxSeconds,
                 nanos: 5 - maxNanos,
-            }).toString(),
-        ).toEqual(periodDuration.minusMillis(maxValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.minusMillis(maxValue).getParts());
 
         const minValue = Number.MIN_SAFE_INTEGER;
         const minSeconds = intDiv(minValue, LocalTime.MILLIS_PER_SECOND);
@@ -985,33 +974,33 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 - minSeconds,
                 nanos: 5 - minNanos,
-            }).toString(),
-        ).toEqual(periodDuration.minusMillis(minValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.minusMillis(minValue).getParts());
     });
 
     it('can create a copy with a duration in microseconds added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMicros(2000000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMicros(2000000).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2000}).toString())
-            .toEqual(periodDuration.plusMicros(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2000}).getParts())
+            .toEqual(periodDuration.plusMicros(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1000}).toString())
-            .toEqual(periodDuration.plusMicros(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1000}).getParts())
+            .toEqual(periodDuration.plusMicros(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMicros(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMicros(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1000}).toString())
-            .toEqual(periodDuration.plusMicros(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1000}).getParts())
+            .toEqual(periodDuration.plusMicros(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2000}).toString())
-            .toEqual(periodDuration.plusMicros(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2000}).getParts())
+            .toEqual(periodDuration.plusMicros(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).toString())
-            .toEqual(periodDuration.plusMicros(-2000000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusMicros(-2000000).getParts());
 
         const maxValue = Number.MIN_SAFE_INTEGER;
         const maxSeconds = intDiv(maxValue, LocalTime.MICROS_PER_SECOND);
@@ -1024,8 +1013,8 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 + maxSeconds,
                 nanos: 5 + maxNanos,
-            }).toString(),
-        ).toEqual(periodDuration.plusMicros(maxValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.plusMicros(maxValue).getParts());
 
         const minValue = Number.MIN_SAFE_INTEGER;
         const minSeconds = intDiv(minValue, LocalTime.MICROS_PER_SECOND);
@@ -1038,33 +1027,33 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 + minSeconds,
                 nanos: 5 + minNanos,
-            }).toString(),
-        ).toEqual(periodDuration.plusMicros(minValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.plusMicros(minValue).getParts());
     });
 
     it('can create a copy with a duration in microseconds subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMicros(-2000000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMicros(-2000000).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2000}).toString())
-            .toEqual(periodDuration.minusMicros(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2000}).getParts())
+            .toEqual(periodDuration.minusMicros(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1000}).toString())
-            .toEqual(periodDuration.minusMicros(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1000}).getParts())
+            .toEqual(periodDuration.minusMicros(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMicros(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMicros(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1000}).toString())
-            .toEqual(periodDuration.minusMicros(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1000}).getParts())
+            .toEqual(periodDuration.minusMicros(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2000}).toString())
-            .toEqual(periodDuration.minusMicros(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2000}).getParts())
+            .toEqual(periodDuration.minusMicros(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).toString())
-            .toEqual(periodDuration.minusMicros(2000000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusMicros(2000000).getParts());
 
         const maxValue = Number.MIN_SAFE_INTEGER;
         const maxSeconds = intDiv(maxValue, LocalTime.MICROS_PER_SECOND);
@@ -1077,8 +1066,8 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 - maxSeconds,
                 nanos: 5 - maxNanos,
-            }).toString(),
-        ).toEqual(periodDuration.minusMicros(maxValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.minusMicros(maxValue).getParts());
 
         const minValue = Number.MIN_SAFE_INTEGER;
         const minSeconds = intDiv(minValue, LocalTime.MICROS_PER_SECOND);
@@ -1091,33 +1080,33 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 - minSeconds,
                 nanos: 5 - minNanos,
-            }).toString(),
-        ).toEqual(periodDuration.minusMicros(minValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.minusMicros(minValue).getParts());
     });
 
     it('can create a copy with a duration in nanoseconds added', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).toString())
-            .toEqual(periodDuration.plusNanos(2000000000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusNanos(2000000000).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2}).toString())
-            .toEqual(periodDuration.plusNanos(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2}).getParts())
+            .toEqual(periodDuration.plusNanos(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1}).toString())
-            .toEqual(periodDuration.plusNanos(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1}).getParts())
+            .toEqual(periodDuration.plusNanos(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.plusNanos(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusNanos(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1}).toString())
-            .toEqual(periodDuration.plusNanos(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1}).getParts())
+            .toEqual(periodDuration.plusNanos(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2}).toString())
-            .toEqual(periodDuration.plusNanos(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2}).getParts())
+            .toEqual(periodDuration.plusNanos(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).toString())
-            .toEqual(periodDuration.plusNanos(-2000000000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.plusNanos(-2000000000).getParts());
 
         const maxValue = Number.MIN_SAFE_INTEGER;
         const maxSeconds = intDiv(maxValue, LocalTime.NANOS_PER_SECOND);
@@ -1130,8 +1119,8 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 + maxSeconds,
                 nanos: 5 + maxNanos,
-            }).toString(),
-        ).toEqual(periodDuration.plusNanos(maxValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.plusNanos(maxValue).getParts());
 
         const minValue = Number.MIN_SAFE_INTEGER;
         const minSeconds = intDiv(minValue, LocalTime.NANOS_PER_SECOND);
@@ -1144,33 +1133,33 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 + minSeconds,
                 nanos: 5 + minNanos,
-            }).toString(),
-        ).toEqual(periodDuration.plusNanos(minValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.plusNanos(minValue).getParts());
     });
 
     it('can create a copy with a duration in nanoseconds subtracted', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).toString())
-            .toEqual(periodDuration.minusNanos(-2000000000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 + 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusNanos(-2000000000).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2}).toString())
-            .toEqual(periodDuration.minusNanos(-2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 2}).getParts())
+            .toEqual(periodDuration.minusNanos(-2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1}).toString())
-            .toEqual(periodDuration.minusNanos(-1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 + 1}).getParts())
+            .toEqual(periodDuration.minusNanos(-1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).toString())
-            .toEqual(periodDuration.minusNanos(0).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusNanos(0).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1}).toString())
-            .toEqual(periodDuration.minusNanos(1).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 1}).getParts())
+            .toEqual(periodDuration.minusNanos(1).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2}).toString())
-            .toEqual(periodDuration.minusNanos(2).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5 - 2}).getParts())
+            .toEqual(periodDuration.minusNanos(2).getParts());
 
-        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).toString())
-            .toEqual(periodDuration.minusNanos(2000000000).toString());
+        expect(PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4 - 2, nanos: 5}).getParts())
+            .toEqual(periodDuration.minusNanos(2000000000).getParts());
 
         const maxValue = Number.MIN_SAFE_INTEGER;
         const maxSeconds = intDiv(maxValue, LocalTime.NANOS_PER_SECOND);
@@ -1183,8 +1172,8 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 - maxSeconds,
                 nanos: 5 - maxNanos,
-            }).toString(),
-        ).toEqual(periodDuration.minusNanos(maxValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.minusNanos(maxValue).getParts());
 
         const minValue = Number.MIN_SAFE_INTEGER;
         const minSeconds = intDiv(minValue, LocalTime.NANOS_PER_SECOND);
@@ -1197,25 +1186,25 @@ describe('An ISO amount of date-time', () => {
                 days: 3,
                 seconds: 4 - minSeconds,
                 nanos: 5 - minNanos,
-            }).toString(),
-        ).toEqual(periodDuration.minusNanos(minValue).toString());
+            }).getParts(),
+        ).toEqual(periodDuration.minusNanos(minValue).getParts());
     });
 
     it('can create a copy with each unit value multiplied by a given scalar', () => {
         const periodDuration = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(periodDuration.toString()).toEqual(periodDuration.multipliedBy(1).toString());
+        expect(periodDuration.getParts()).toEqual(periodDuration.multipliedBy(1).getParts());
 
         // Non-zero period multiplied by 0
         const zero = periodDuration.multipliedBy(0);
 
-        expect(zero.toString()).toEqual(PeriodDuration.zero().toString());
+        expect(zero.getParts()).toEqual(PeriodDuration.zero().getParts());
 
         // Non-zero period multiplied by scalar different than 1
         const nonZero = periodDuration.multipliedBy(3);
 
-        expect(PeriodDuration.ofParts({years: 3, months: 6, days: 9, seconds: 12, nanos: 15}).toString())
-            .toEqual(nonZero.toString());
+        expect(PeriodDuration.ofParts({years: 3, months: 6, days: 9, seconds: 12, nanos: 15}).getParts())
+            .toEqual(nonZero.getParts());
     });
 
     it('should fail to be multiplied by a scalar which exceeds the range of valid integers', () => {
@@ -1236,12 +1225,12 @@ describe('An ISO amount of date-time', () => {
         // Zero period
         const zero = PeriodDuration.zero();
 
-        expect(zero.toString()).toEqual(zero.normalized().toString());
+        expect(zero.getParts()).toEqual(zero.normalized().getParts());
 
         // Already normalized period
         const alreadyNormalized = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(alreadyNormalized.toString()).toEqual(alreadyNormalized.normalized().toString());
+        expect(alreadyNormalized.getParts()).toEqual(alreadyNormalized.normalized().getParts());
 
         // Not normalized period
         const nonNormalized = PeriodDuration.ofParts({years: 11, months: 22, days: 33, seconds: 44, nanos: 55});
@@ -1254,20 +1243,20 @@ describe('An ISO amount of date-time', () => {
                 days: 33,
                 seconds: 44,
                 nanos: 55,
-            }).toString(),
-        ).toEqual(normalized.toString());
+            }).getParts(),
+        ).toEqual(normalized.getParts());
     });
 
     it('can create a copy with the time parts normalized, leaving the month and year units unchanged', () => {
         // Zero period
         const zero = PeriodDuration.zero();
 
-        expect(zero.toString()).toEqual(zero.normalizedStandardDays().toString());
+        expect(zero.getParts()).toEqual(zero.normalizedStandardDays().getParts());
 
         // Already normalized period
         const alreadyNormalized = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
 
-        expect(alreadyNormalized.toString()).toEqual(alreadyNormalized.normalizedStandardDays().toString());
+        expect(alreadyNormalized.getParts()).toEqual(alreadyNormalized.normalizedStandardDays().getParts());
 
         // Not normalized period
         const nonNormalized = PeriodDuration.ofParts({
@@ -1279,8 +1268,8 @@ describe('An ISO amount of date-time', () => {
         });
         const normalized = nonNormalized.normalizedStandardDays();
 
-        expect(PeriodDuration.ofParts({years: 11, months: 22, days: 34, seconds: 1, nanos: 234567890}).toString())
-            .toEqual(normalized.toString());
+        expect(PeriodDuration.ofParts({years: 11, months: 22, days: 34, seconds: 1, nanos: 234567890}).getParts())
+            .toEqual(normalized.getParts());
     });
 
     it.each([
@@ -1289,123 +1278,111 @@ describe('An ISO amount of date-time', () => {
             expected: 'PT0S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 1, months: 0, days: 0, seconds: 0, nanos: 0}),
+            periodDuration: PeriodDuration.ofParts({years: 1}),
             expected: 'P1Y',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 1, days: 0, seconds: 0, nanos: 0}),
+            periodDuration: PeriodDuration.ofParts({months: 1}),
             expected: 'P1M',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 1, seconds: 0, nanos: 0}),
+            periodDuration: PeriodDuration.ofParts({days: 1}),
             expected: 'P1D',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 3600, nanos: 0}),
+            periodDuration: PeriodDuration.ofParts({seconds: 3600}),
             expected: 'PT1H',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 60, nanos: 0}),
+            periodDuration: PeriodDuration.ofParts({seconds: 60}),
             expected: 'PT1M',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 1, nanos: 0}),
+            periodDuration: PeriodDuration.ofParts({seconds: 1}),
             expected: 'PT1S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 1000000}),
+            periodDuration: PeriodDuration.ofParts({nanos: 1000000}),
             expected: 'PT0.001S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 1000}),
+            periodDuration: PeriodDuration.ofParts({nanos: 1000}),
             expected: 'PT0.000001S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 1}),
+            periodDuration: PeriodDuration.ofParts({nanos: 1}),
             expected: 'PT0.000000001S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 12}),
+            periodDuration: PeriodDuration.ofParts({nanos: 12}),
             expected: 'PT0.000000012S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 123}),
+            periodDuration: PeriodDuration.ofParts({nanos: 123}),
             expected: 'PT0.000000123S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 1234}),
+            periodDuration: PeriodDuration.ofParts({nanos: 1234}),
             expected: 'PT0.000001234S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 12345}),
+            periodDuration: PeriodDuration.ofParts({nanos: 12345}),
             expected: 'PT0.000012345S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 123456}),
+            periodDuration: PeriodDuration.ofParts({nanos: 123456}),
             expected: 'PT0.000123456S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 1234567}),
+            periodDuration: PeriodDuration.ofParts({nanos: 1234567}),
             expected: 'PT0.001234567S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 12345678}),
+            periodDuration: PeriodDuration.ofParts({nanos: 12345678}),
             expected: 'PT0.012345678S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 123456789}),
+            periodDuration: PeriodDuration.ofParts({nanos: 123456789}),
             expected: 'PT0.123456789S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 10}),
+            periodDuration: PeriodDuration.ofParts({nanos: 10}),
             expected: 'PT0.000000010S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 100}),
+            periodDuration: PeriodDuration.ofParts({nanos: 100}),
             expected: 'PT0.000000100S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 10000}),
+            periodDuration: PeriodDuration.ofParts({nanos: 10000}),
             expected: 'PT0.000010S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 100000}),
+            periodDuration: PeriodDuration.ofParts({nanos: 100000}),
             expected: 'PT0.000100S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 10000000}),
+            periodDuration: PeriodDuration.ofParts({nanos: 10000000}),
             expected: 'PT0.010S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 0, months: 0, days: 0, seconds: 0, nanos: 100000000}),
+            periodDuration: PeriodDuration.ofParts({nanos: 100000000}),
             expected: 'PT0.100S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 0, nanos: 0}),
+            periodDuration: PeriodDuration.ofParts({years: 1, months: 2, days: 3}),
             expected: 'P1Y2M3D',
         },
         {
-            periodDuration: PeriodDuration.ofParts({years: -1, months: -2, days: -3, seconds: 0, nanos: 0}),
+            periodDuration: PeriodDuration.ofParts({years: -1, months: -2, days: -3}),
             expected: 'P-1Y-2M-3D',
         },
         {
-            periodDuration: PeriodDuration.ofParts({
-                years: 0,
-                months: 0,
-                days: 0,
-                seconds: 3600 + 2 * 60 + 3,
-                nanos: 456789123,
-            }),
+            periodDuration: PeriodDuration.ofParts({seconds: 3600 + 2 * 60 + 3, nanos: 456789123}),
             expected: 'PT1H2M3.456789123S',
         },
         {
-            periodDuration: PeriodDuration.ofParts({
-                years: 0,
-                months: 0,
-                days: 0,
-                seconds: -1 * 3600 - 2 * 60 - 3,
-                nanos: -456789123,
-            }),
+            periodDuration: PeriodDuration.ofParts({seconds: -1 * 3600 - 2 * 60 - 3, nanos: -456789123}),
             expected: 'PT-1H-2M-3.456789123S',
         },
         {
@@ -1429,6 +1406,6 @@ describe('An ISO amount of date-time', () => {
             expected: 'P-1Y-2M-3DT-1H-2M-3.456789123S',
         },
     ])('can be converted to a string in the ISO-8601 format, such as "$expected"', scenario => {
-        expect(scenario.periodDuration.toString()).toEqual(scenario.expected.toString());
+        expect(scenario.periodDuration.toString()).toEqual(scenario.expected);
     });
 });

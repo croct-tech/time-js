@@ -81,12 +81,12 @@ export class PeriodDuration {
      *
      * @param parts - The period components
      */
-    public static ofParts(parts: PeriodDurationParts): PeriodDuration {
+    public static ofParts(parts: Partial<PeriodDurationParts>): PeriodDuration {
         const {years, months, days, seconds, nanos} = parts;
 
         return new PeriodDuration(
-            Period.of(years, months, days),
-            Duration.ofSeconds(seconds, nanos),
+            Period.of(years ?? 0, months ?? 0, days ?? 0),
+            Duration.ofSeconds(seconds ?? 0, nanos ?? 0),
         );
     }
 
@@ -276,28 +276,10 @@ export class PeriodDuration {
 
     /**
      * Returns a copy of this period duration with the specified
-     * period duration added.
+     * period and/or duration added.
      *
      * @param other - The period duration
      */
-    public plus(other: PeriodDuration): PeriodDuration;
-
-    /**
-     * Returns a copy of this period duration with the specified
-     * period added.
-     *
-     * @param other - The period
-     */
-    public plus(other: Period): PeriodDuration;
-
-    /**
-     * Returns a copy of this period duration with the specified
-     * period added.
-     *
-     * @param other - The duration
-     */
-    public plus(other: Duration): PeriodDuration;
-
     public plus(other: PeriodDuration | Period | Duration): PeriodDuration {
         if (other instanceof Period) {
             return this.withPeriod(this.period.plusPeriod(other));
@@ -315,7 +297,7 @@ export class PeriodDuration {
 
     /**
      * Returns a copy of this period duration with the specified
-     * period duration subtracted.
+     * period and/or duration subtracted.
      *
      * @param other - The period duration
      */

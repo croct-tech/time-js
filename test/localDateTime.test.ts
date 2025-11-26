@@ -1337,7 +1337,7 @@ describe('A value object representing a local date time', () => {
     ])('should calculate the period duration between $start and $end', scenario => {
         const period = scenario.start.until(scenario.end);
 
-        expect(period.toString()).toEqual(scenario.expected.toString());
+        expect(period.getParts()).toEqual(scenario.expected.getParts());
     });
 
     it('should be comparable', () => {
