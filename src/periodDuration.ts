@@ -85,7 +85,7 @@ export class PeriodDuration {
         const {years = 0, months = 0, days = 0, seconds = 0, nanos = 0} = parts;
 
         return new PeriodDuration(
-            Period.of(years, months, days),
+            Period.of({years: years, months: months, days: days}),
             Duration.ofSeconds(seconds, nanos),
         );
     }

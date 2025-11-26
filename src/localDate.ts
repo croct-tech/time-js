@@ -423,7 +423,7 @@ export class LocalDate {
         const years = intDiv(totalMonths, 12);
         const months = totalMonths % 12;
 
-        return Period.of(years, months, days);
+        return Period.of({years: years, months: months, days: days});
     }
 
     /**

@@ -541,7 +541,7 @@ describe('A value object representing a local date', () => {
         },
         {
             start: LocalDate.of(2015, 8, 31),
-            period: Period.of(0, 1, 1),
+            period: Period.of({months: 1, days: 1}),
             expected: LocalDate.of(2015, 10, 1),
         },
         {
@@ -561,12 +561,12 @@ describe('A value object representing a local date', () => {
         },
         {
             start: LocalDate.of(2015, 8, 31),
-            period: Period.of(1, 2, 3),
+            period: Period.of({years: 1, months: 2, days: 3}),
             expected: LocalDate.of(2016, 11, 3),
         },
         {
             start: LocalDate.of(2016, 11, 3),
-            period: Period.of(-1, -2, -3),
+            period: Period.of({years: -1, months: -2, days: -3}),
             expected: LocalDate.of(2015, 8, 31),
         },
     ])('should add $period to $start', scenario => {
@@ -605,7 +605,7 @@ describe('A value object representing a local date', () => {
         },
         {
             start: LocalDate.of(2015, 10, 1),
-            period: Period.of(0, 1, 1),
+            period: Period.of({months: 1, days: 1}),
             expected: LocalDate.of(2015, 8, 31),
         },
         {
@@ -625,12 +625,12 @@ describe('A value object representing a local date', () => {
         },
         {
             start: LocalDate.of(2016, 11, 3),
-            period: Period.of(1, 2, 3),
+            period: Period.of({years: 1, months: 2, days: 3}),
             expected: LocalDate.of(2015, 8, 31),
         },
         {
             start: LocalDate.of(2015, 8, 31),
-            period: Period.of(-1, -2, -3),
+            period: Period.of({years: -1, months: -2, days: -3}),
             expected: LocalDate.of(2016, 11, 3),
         },
     ])('should subtract $period from $start', scenario => {
@@ -674,7 +674,7 @@ describe('A value object representing a local date', () => {
         {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2015, 10, 1),
-            expected: Period.of(0, 1, 1),
+            expected: Period.of({months: 1, days: 1}),
         },
         {
             start: LocalDate.of(2015, 8, 31),
@@ -694,12 +694,12 @@ describe('A value object representing a local date', () => {
         {
             start: LocalDate.of(2015, 8, 31),
             end: LocalDate.of(2016, 11, 3),
-            expected: Period.of(1, 2, 3),
+            expected: Period.of({years: 1, months: 2, days: 3}),
         },
         {
             start: LocalDate.of(2016, 11, 3),
             end: LocalDate.of(2015, 8, 31),
-            expected: Period.of(-1, -2, -3),
+            expected: Period.of({years: -1, months: -2, days: -3}),
         },
     ])('should calculate the period between $start and $end', scenario => {
         const period = scenario.start.until(scenario.end);
