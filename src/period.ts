@@ -1,5 +1,11 @@
 import {addExact, intDiv, multiplyExact, subtractExact} from './math';
 
+export type PeriodParts = {
+    years: number,
+    months: number,
+    days: number,
+};
+
 /**
  * A date-based amount of time in the ISO-8601 calendar system,
  * such as '2 years, 3 months and 4 days'.
@@ -30,25 +36,31 @@ export class Period {
     /**
      * Creates an instance of Period.
      */
-    private constructor(years: number, months: number, days: number) {
+    private constructor(parts: PeriodParts) {
+        const {years, months, days} = parts;
+
         this.years = years;
         this.months = months;
         this.days = days;
     }
 
     /**
-     * Obtains a Period amounts of years, months and days.
+     * Obtains a Period from amounts of years, months and days.
      *
-     * @param years - The amount of years
-     * @param months - The amount of months
-     * @param days - The amount of days
+     * @param parts - The period components
      */
-    public static of(years: number, months: number, days: number): Period {
+    public static of(parts: Partial<PeriodParts>): Period {
+        const {years = 0, months = 0, days = 0} = parts;
+
         if (years === 0 && months === 0 && days === 0) {
             return Period.zero();
         }
 
-        return new Period(years, months, days);
+        return new Period({
+            years: years ?? 0,
+            months: months ?? 0,
+            days: days ?? 0,
+        });
     }
 
     /**
@@ -433,6 +445,17 @@ export class Period {
      */
     public toYearsPart(): number {
         return this.toYears();
+    }
+
+    /**
+     * Gets the individual parts of this period.
+     */
+    public getParts(): PeriodParts {
+        return {
+            years: this.years,
+            months: this.months,
+            days: this.days,
+        };
     }
 
     /**
