@@ -9,9 +9,7 @@
 </p>
 <p align="center">
     <img alt="Build" src="https://github.com/croct-tech/time-js/actions/workflows/validate-branch.yaml/badge.svg" />
-    <a href="https://qlty.sh/gh/croct-tech/projects/time-js"><img src="https://qlty.sh/badges/546edc69-4d40-458a-ad8e-43c968038ee0/coverage.svg" alt="Code Coverage" /></a>
-<a href="https://qlty.sh/gh/croct-tech/projects/time-js"><img src="https://qlty.sh/badges/546edc69-4d40-458a-ad8e-43c968038ee0/maintainability.svg" alt="Maintainability" /></a>
-<br />
+    <br />
     <br />
     <a href="https://github.com/croct-tech/value-object-js/releases">📦Releases</a>
         ·
