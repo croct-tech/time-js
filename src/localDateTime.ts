@@ -1,10 +1,10 @@
-import {Clock} from './clock';
+import type {Clock} from './clock';
 import {DefaultClockProvider} from './defaultClockProvider';
 import {Instant} from './instant';
 import {LocalDate} from './localDate';
 import {LocalTime} from './localTime';
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
-import {TimeZone} from './timeZone';
+import type {TimeZone} from './timeZone';
 import {PeriodDuration} from './periodDuration';
 
 /**
@@ -89,7 +89,7 @@ export class LocalDateTime {
             fractionalSecondDigits: 3,
         });
 
-        // eslint-disable-next-line max-len -- Regex literal cannot be split.
+        // eslint-disable-next-line @stylistic/max-len -- Regex literal cannot be split.
         const matches = localDateTime.match(/(?<year>\d{1,4})-(?<month>\d{2})-(?<day>\d{2}) (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2}),(?<fraction>\d{3})/);
         // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain -- Safe assertion.
         const groups = matches?.groups!;

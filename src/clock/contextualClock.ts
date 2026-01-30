@@ -1,8 +1,8 @@
 import {AsyncLocalStorage} from 'async_hooks';
-import {Clock} from '../clock';
+import type {Clock} from '../clock';
 import {DefaultClockProvider} from '../defaultClockProvider';
-import {Instant} from '../instant';
-import {TimeZone} from '../timeZone';
+import type {Instant} from '../instant';
+import type {TimeZone} from '../timeZone';
 
 /**
  * A clock that delegate to different clocks at runtime depending on the caller's context.

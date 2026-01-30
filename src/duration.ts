@@ -12,7 +12,7 @@ export class Duration {
 
     private readonly nanos: number;
 
-    // eslint-disable-next-line max-len -- Regex literal cannot be split.
+    // eslint-disable-next-line @stylistic/max-len -- Regex literal cannot be split.
     private static PATTERN = /^(?<sign>[-+]?)P(?:(?<day>[-+]?[0-9]+)D)?(?<time>T(?:(?<hour>[-+]?[0-9]+)H)?(?:(?<minute>[-+]?[0-9]+)M)?(?:(?<second>[-+]?[0-9]+)(?:[.,](?<fraction>[0-9]{0,9}))?S)?)?$/i;
 
     /**

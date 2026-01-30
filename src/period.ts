@@ -30,7 +30,7 @@ export class Period {
      */
     private readonly days: number;
 
-    // eslint-disable-next-line max-len -- Regex literal cannot be split.
+    // eslint-disable-next-line @stylistic/max-len -- Regex literal cannot be split.
     private static PATTERN = /^(?<sign>[-+]?)P(?:(?<year>[-+]?[0-9]+)Y)?(?:(?<month>[-+]?[0-9]+)M)?(?:(?<week>[-+]?[0-9]+)W)?(?:(?<day>[-+]?[0-9]+)D)?$/i;
 
     /**

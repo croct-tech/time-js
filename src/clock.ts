@@ -1,5 +1,5 @@
 import type {Instant} from './instant';
-import {TimeZone} from './timeZone';
+import type {TimeZone} from './timeZone';
 
 export interface Clock {
     getZone(): TimeZone;
