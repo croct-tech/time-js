@@ -1,4 +1,4 @@
-import {Clock} from '../clock';
+import type {Clock} from '../clock';
 import {Instant} from '../instant';
 import {TimeZone} from '../timeZone';
 

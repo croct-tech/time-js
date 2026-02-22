@@ -1,8 +1,8 @@
-import {Clock} from '../clock';
+import type {Clock} from '../clock';
 import {Instant} from '../instant';
 import {LocalTime} from '../localTime';
 import {floorMod, intDiv} from '../math';
-import {TimeZone} from '../timeZone';
+import type {TimeZone} from '../timeZone';
 
 /**
  * A clock with adjustable tick duration.

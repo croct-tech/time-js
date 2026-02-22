@@ -1,6 +1,6 @@
-import {Clock} from '../clock';
-import {Instant} from '../instant';
-import {TimeZone} from '../timeZone';
+import type {Clock} from '../clock';
+import type {Instant} from '../instant';
+import type {TimeZone} from '../timeZone';
 
 /**
  * A clock that always returns the same instant.

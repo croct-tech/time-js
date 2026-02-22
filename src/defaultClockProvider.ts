@@ -1,4 +1,4 @@
-import {Clock} from './clock';
+import type {Clock} from './clock';
 import {SystemClock} from './clock/systemClock';
 
 export namespace DefaultClockProvider {

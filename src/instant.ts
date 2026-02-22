@@ -1,4 +1,4 @@
-import {Clock} from './clock';
+import type {Clock} from './clock';
 import {DefaultClockProvider} from './defaultClockProvider';
 import {LocalDate} from './localDate';
 import {LocalDateTime} from './localDateTime';
@@ -57,7 +57,7 @@ export class Instant {
     /**
      * A regular expression that matches ISO-8601 date-time strings in UTC.
      */
-    // eslint-disable-next-line max-len -- Regex literal cannot be split.
+    // eslint-disable-next-line @stylistic/max-len -- Regex literal cannot be split.
     private static PATTERN = /^(?<year>[+-]?\d{4,19})-(?<month>\d{2})-(?<day>\d{2})T(?<hour>\d{2})(?::(?<minute>\d{2})(:(?<second>\d{2})(?:.(?<fraction>\d{1,9}))?)?)?Z$/;
 
     /**
