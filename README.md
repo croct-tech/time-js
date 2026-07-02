@@ -20,11 +20,13 @@
 
 ## Installation
 
-Use the package manage [NPM](https://getcomposer.org) to install the package:
+Use the package manager [NPM](https://www.npmjs.com) to install the package:
 
 ```sh
 npm install @croct/time
 ```
+
+The package ships dual entry points for ESM and CommonJS consumers. ESM imports resolve to the `.js` bundle and CommonJS `require` calls resolve to the `.cjs` bundle, with matching TypeScript declarations for both formats.
 
 ## Contributing
 
@@ -56,20 +58,32 @@ npm run lint
 
 ## Building
 
-Before building the project, the dependencies must be installed:
+Before building the project, install the dependencies:
+
+```sh
+npm install
+```
+
+Then build the package:
 
 ```sh
 npm run build
 ```
 
+The build uses `tsup` to emit ESM `.js` bundles, CommonJS `.cjs` bundles, source maps, and TypeScript declarations in the `build/` directory.
+
+To verify the published package layout locally:
+
+```sh
+npm run test:package
+```
+
 ## Local development
 
-To use a local development version on other projects, you must link the built artifacts with npm:
+To use a local development version on other projects, build the package and link it from the package root:
 
 ```sh
 npm run build
-cd build
-ln -s ../package.json package.json || true
 npm link
 ```
 

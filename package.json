@@ -13,8 +13,35 @@
     "personalization",
     "typescript"
   ],
-  "types": "index.d.ts",
-  "main": "index.js",
+  "type": "module",
+  "sideEffects": false,
+  "types": "./build/index.d.ts",
+  "main": "./build/index.cjs",
+  "module": "./build/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./build/index.d.ts",
+        "default": "./build/index.js"
+      },
+      "require": {
+        "types": "./build/index.d.cts",
+        "default": "./build/index.cjs"
+      },
+      "default": "./build/index.js"
+    },
+    "./*": {
+      "import": {
+        "types": "./build/*.d.ts",
+        "default": "./build/*.js"
+      },
+      "require": {
+        "types": "./build/*.d.cts",
+        "default": "./build/*.cjs"
+      },
+      "default": "./build/*.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/croct-tech/time-js.git"
@@ -24,10 +51,11 @@
   },
   "homepage": "https://github.com/croct-tech/time-js",
   "scripts": {
-    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts'",
-    "test": "jest -c jest.config.js --coverage",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.ts' tsup.config.ts '*.mjs' 'test/*.mjs'",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js -c jest.config.mjs --coverage",
+    "test:package": "npm run build && node test/package-contract.mjs",
     "validate": "tsc --noEmit",
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsup"
   },
   "devDependencies": {
     "@croct/eslint-plugin": "^0.8.3",
@@ -37,10 +65,13 @@
     "eslint": "^9.39.2",
     "jest": "^29.0.0",
     "ts-jest": "^29.0.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.0.0"
   },
   "files": [
-    "**/*.js",
-    "**/*.ts"
+    "build",
+    "README.md",
+    "src",
+    "LICENSE"
   ]
 }
