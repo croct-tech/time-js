@@ -852,17 +852,17 @@ describe('A value object representing a local time', () => {
     });
 
     it.each([
-        ['2015-08-31T12:11:59.123456789Z', TimeZone.of('America/Sao_Paulo'), LocalTime.of(9, 11, 59, 123_456_789)],
-        ['2015-08-31T12:11:59.123456789Z', TimeZone.of('Asia/Katmandu'), LocalTime.of(17, 56, 59, 123_456_789)],
-        ['2015-08-31T12:11:59.123456789Z', TimeZone.UTC, LocalTime.of(12, 11, 59, 123_456_789)],
+        ['2015-08-31T12:11:59.123456789Z', 'America/Sao_Paulo', LocalTime.of(9, 11, 59, 123_456_789)],
+        ['2015-08-31T12:11:59.123456789Z', 'Asia/Katmandu', LocalTime.of(17, 56, 59, 123_456_789)],
+        ['2015-08-31T12:11:59.123456789Z', 'UTC', LocalTime.of(12, 11, 59, 123_456_789)],
         // The instant falls on the previous day in Sao Paulo.
-        ['2015-08-31T02:11:59Z', TimeZone.of('America/Sao_Paulo'), LocalTime.of(23, 11, 59)],
-    ])('can provide the current time from the given clock', (
+        ['2015-08-31T02:11:59Z', 'America/Sao_Paulo', LocalTime.of(23, 11, 59)],
+    ])('can provide the current time at %s in %s from the given clock', (
         currentTime: string,
-        timeZone: TimeZone,
+        zone: string,
         expected: LocalTime,
     ) => {
-        const clock = FixedClock.of(Instant.parse(currentTime), timeZone);
+        const clock = FixedClock.of(Instant.parse(currentTime), TimeZone.of(zone));
 
         expect(LocalTime.now(clock).equals(expected)).toBe(true);
     });

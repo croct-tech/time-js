@@ -776,17 +776,17 @@ describe('A value object representing a local date', () => {
     });
 
     it.each([
-        ['2015-08-31T12:11:59Z', TimeZone.of('America/Sao_Paulo'), LocalDate.of(2015, 8, 31)],
+        ['2015-08-31T12:11:59Z', 'America/Sao_Paulo', LocalDate.of(2015, 8, 31)],
         // The instant falls on the previous day in Sao Paulo.
-        ['2015-08-31T02:11:59Z', TimeZone.of('America/Sao_Paulo'), LocalDate.of(2015, 8, 30)],
-        ['2015-08-31T23:11:59Z', TimeZone.of('Asia/Tokyo'), LocalDate.of(2015, 9, 1)],
-        ['2015-08-31T12:11:59Z', TimeZone.UTC, LocalDate.of(2015, 8, 31)],
-    ])('can provide the current date from the given clock', (
+        ['2015-08-31T02:11:59Z', 'America/Sao_Paulo', LocalDate.of(2015, 8, 30)],
+        ['2015-08-31T23:11:59Z', 'Asia/Tokyo', LocalDate.of(2015, 9, 1)],
+        ['2015-08-31T12:11:59Z', 'UTC', LocalDate.of(2015, 8, 31)],
+    ])('can provide the current date at %s in %s from the given clock', (
         currentTime: string,
-        timeZone: TimeZone,
+        zone: string,
         expected: LocalDate,
     ) => {
-        const clock = FixedClock.of(Instant.parse(currentTime), timeZone);
+        const clock = FixedClock.of(Instant.parse(currentTime), TimeZone.of(zone));
 
         expect(LocalDate.now(clock).equals(expected)).toBe(true);
     });
@@ -821,7 +821,7 @@ describe('A value object representing a local date', () => {
         [LocalDate.of(2024, 2, 29), 2028, LocalDate.of(2028, 2, 29)],
         [LocalDate.of(2015, 8, 30), -1, LocalDate.of(-1, 8, 30)],
         [LocalDate.of(2015, 8, 30), LocalDate.MAX_YEAR, LocalDate.of(LocalDate.MAX_YEAR, 8, 30)],
-    ])('can create a copy with a different year', (
+    ])('can create a copy of %s with the year %s', (
         localDate: LocalDate,
         year: number,
         expected: LocalDate,
@@ -849,7 +849,7 @@ describe('A value object representing a local date', () => {
         [LocalDate.of(2015, 1, 31), 2, LocalDate.of(2015, 2, 28)],
         [LocalDate.of(2024, 1, 31), 2, LocalDate.of(2024, 2, 29)],
         [LocalDate.of(2015, 1, 31), 4, LocalDate.of(2015, 4, 30)],
-    ])('can create a copy with a different month', (
+    ])('can create a copy of %s with the month %s', (
         localDate: LocalDate,
         month: number,
         expected: LocalDate,
@@ -876,7 +876,7 @@ describe('A value object representing a local date', () => {
         [LocalDate.of(2015, 8, 30), 1, LocalDate.of(2015, 8, 1)],
         [LocalDate.of(2015, 8, 30), 31, LocalDate.of(2015, 8, 31)],
         [LocalDate.of(2024, 2, 1), 29, LocalDate.of(2024, 2, 29)],
-    ])('can create a copy with a different day', (
+    ])('can create a copy of %s with the day %s', (
         localDate: LocalDate,
         day: number,
         expected: LocalDate,
@@ -896,7 +896,7 @@ describe('A value object representing a local date', () => {
         [LocalDate.of(2015, 4, 1), 31, 'Day must be an integer between 1 and 30.'],
         [LocalDate.of(2015, 8, 1), 0, 'Day must be an integer between 1 and 31.'],
         [LocalDate.of(2015, 8, 1), 1.5, 'Day must be an integer between 1 and 31.'],
-    ])('should reject an invalid day', (localDate: LocalDate, day: number, message: string) => {
+    ])('should reject the day %s for %s', (localDate: LocalDate, day: number, message: string) => {
         expect(() => localDate.withDay(day)).toThrow(message);
     });
 });

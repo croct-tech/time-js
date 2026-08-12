@@ -206,20 +206,20 @@ describe('An ISO amount of date-time', () => {
     });
 
     it.each([
-        [PeriodDuration.zero(), true],
-        [PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}), false],
+        {periodDuration: PeriodDuration.zero(), expected: true},
+        {
+            periodDuration: PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}),
+            expected: false,
+        },
         // Only the date-based part is zero.
-        [PeriodDuration.ofParts({seconds: 4}), false],
-        [PeriodDuration.ofParts({nanos: 5}), false],
+        {periodDuration: PeriodDuration.ofParts({seconds: 4}), expected: false},
+        {periodDuration: PeriodDuration.ofParts({nanos: 5}), expected: false},
         // Only the time-based part is zero.
-        [PeriodDuration.ofParts({years: 1}), false],
-        [PeriodDuration.ofParts({months: 2}), false],
-        [PeriodDuration.ofParts({days: 3}), false],
-    ])('can determine whether the period and the duration are zero', (
-        periodDuration: PeriodDuration,
-        expected: boolean,
-    ) => {
-        expect(periodDuration.isZero()).toBe(expected);
+        {periodDuration: PeriodDuration.ofParts({years: 1}), expected: false},
+        {periodDuration: PeriodDuration.ofParts({months: 2}), expected: false},
+        {periodDuration: PeriodDuration.ofParts({days: 3}), expected: false},
+    ])('can determine that $periodDuration being zero is $expected', scenario => {
+        expect(scenario.periodDuration.isZero()).toBe(scenario.expected);
     });
 
     it('should return the date-based part', () => {

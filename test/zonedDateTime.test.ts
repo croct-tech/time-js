@@ -471,9 +471,9 @@ describe('A value object representing a zoned date time', () => {
             result: DATE_BASE.minusYears(1),
             expected: zoned('2016-10-14T10:00', '-03:00', SAO_PAULO),
         },
-    ])('keeps the local time when $method crosses a transition', ({result, expected}) => {
-        expect(result.equals(expected)).toBe(true);
-        expect(result.toLocalTime().equals(LocalTime.of(10, 0))).toBe(true);
+    ])('keeps the local time when $method crosses a transition', scenario => {
+        expect(scenario.result.equals(scenario.expected)).toBe(true);
+        expect(scenario.result.toLocalTime().equals(LocalTime.of(10, 0))).toBe(true);
     });
 
     it.each([
@@ -537,8 +537,8 @@ describe('A value object representing a zoned date time', () => {
             result: TIME_BASE.minusNanos(1_000_000_000),
             expected: zoned('2018-11-03T09:59:59', '-03:00', SAO_PAULO),
         },
-    ])('keeps the elapsed time when $method crosses a transition', ({result, expected}) => {
-        expect(result.equals(expected)).toBe(true);
+    ])('keeps the elapsed time when $method crosses a transition', scenario => {
+        expect(scenario.result.equals(scenario.expected)).toBe(true);
     });
 
     it('adds a day as a local amount and twenty-four hours as an elapsed amount', () => {

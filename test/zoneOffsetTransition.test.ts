@@ -75,45 +75,43 @@ describe('A value object representing a zone offset transition', () => {
     });
 
     it.each([
-        [GAP, '2024-03-10T07:00:00Z'],
-        [OVERLAP, '2024-11-03T06:00:00Z'],
-    ])('returns the instant at which the transition occurs', (
-        transition: ZoneOffsetTransition,
-        expected: string,
-    ) => {
-        expect(transition.getInstant().equals(Instant.parse(expected))).toBe(true);
-        expect(transition.toEpochSecond()).toBe(Instant.parse(expected).getSeconds());
+        {kind: 'gap', transition: GAP, expected: '2024-03-10T07:00:00Z'},
+        {kind: 'overlap', transition: OVERLAP, expected: '2024-11-03T06:00:00Z'},
+    ])('returns the instant at which the $kind occurs', scenario => {
+        const instant = Instant.parse(scenario.expected);
+
+        expect(scenario.transition.getInstant().equals(instant)).toBe(true);
+        expect(scenario.transition.toEpochSecond()).toBe(instant.getSeconds());
     });
 
     it.each([
-        [GAP, '2024-03-10T02:00', '2024-03-10T03:00'],
-        [OVERLAP, '2024-11-03T02:00', '2024-11-03T01:00'],
-    ])('returns the local date-time before and after the transition', (
-        transition: ZoneOffsetTransition,
-        before: string,
-        after: string,
-    ) => {
-        expect(transition.getDateTimeBefore().equals(LocalDateTime.parse(before))).toBe(true);
-        expect(transition.getDateTimeAfter().equals(LocalDateTime.parse(after))).toBe(true);
+        {kind: 'gap', transition: GAP, before: '2024-03-10T02:00', after: '2024-03-10T03:00'},
+        {kind: 'overlap', transition: OVERLAP, before: '2024-11-03T02:00', after: '2024-11-03T01:00'},
+    ])('returns the local date-time before and after the $kind', scenario => {
+        const {transition} = scenario;
+
+        expect(transition.getDateTimeBefore().equals(LocalDateTime.parse(scenario.before)))
+            .toBe(true);
+        expect(transition.getDateTimeAfter().equals(LocalDateTime.parse(scenario.after)))
+            .toBe(true);
     });
 
     it.each([
-        [GAP, '-05:00', '-04:00'],
-        [OVERLAP, '-04:00', '-05:00'],
-    ])('returns the offset before and after the transition', (
-        transition: ZoneOffsetTransition,
-        before: string,
-        after: string,
-    ) => {
-        expect(transition.getOffsetBefore().equals(ZoneOffset.of(before))).toBe(true);
-        expect(transition.getOffsetAfter().equals(ZoneOffset.of(after))).toBe(true);
+        {kind: 'gap', transition: GAP, before: '-05:00', after: '-04:00'},
+        {kind: 'overlap', transition: OVERLAP, before: '-04:00', after: '-05:00'},
+    ])('returns the offset before and after the $kind', scenario => {
+        const {transition} = scenario;
+
+        expect(transition.getOffsetBefore().equals(ZoneOffset.of(scenario.before))).toBe(true);
+        expect(transition.getOffsetAfter().equals(ZoneOffset.of(scenario.after))).toBe(true);
     });
 
     it.each([
-        [GAP, 3_600],
-        [OVERLAP, -3_600],
-    ])('returns the size of the transition', (transition: ZoneOffsetTransition, seconds: number) => {
-        expect(transition.getDuration().equals(Duration.ofSeconds(seconds))).toBe(true);
+        {kind: 'gap', transition: GAP, seconds: 3_600},
+        {kind: 'overlap', transition: OVERLAP, seconds: -3_600},
+    ])('returns the size of the $kind', scenario => {
+        expect(scenario.transition.getDuration().equals(Duration.ofSeconds(scenario.seconds)))
+            .toBe(true);
     });
 
     it('distinguishes a gap from an overlap', () => {
@@ -143,15 +141,15 @@ describe('A value object representing a zone offset transition', () => {
     });
 
     it.each([
-        [GAP, '2024-03-10T02:00', '2024-03-10T03:00'],
-        [OVERLAP, '2024-11-03T01:00', '2024-11-03T02:00'],
-    ])('returns the earliest and latest local date-time affected', (
-        transition: ZoneOffsetTransition,
-        earliest: string,
-        latest: string,
-    ) => {
-        expect(transition.getEarliestDateTime().equals(LocalDateTime.parse(earliest))).toBe(true);
-        expect(transition.getLatestDateTime().equals(LocalDateTime.parse(latest))).toBe(true);
+        {kind: 'gap', transition: GAP, earliest: '2024-03-10T02:00', latest: '2024-03-10T03:00'},
+        {kind: 'overlap', transition: OVERLAP, earliest: '2024-11-03T01:00', latest: '2024-11-03T02:00'},
+    ])('returns the earliest and latest local date-time affected by the $kind', scenario => {
+        const {transition} = scenario;
+
+        expect(transition.getEarliestDateTime().equals(LocalDateTime.parse(scenario.earliest)))
+            .toBe(true);
+        expect(transition.getLatestDateTime().equals(LocalDateTime.parse(scenario.latest)))
+            .toBe(true);
     });
 
     it('checks whether it intersects another transition', () => {
@@ -185,12 +183,13 @@ describe('A value object representing a zone offset transition', () => {
     });
 
     it.each([
-        [GAP, 'Transition[Gap at 2024-03-10T02:00-05:00 to -04:00]'],
-        [OVERLAP, 'Transition[Overlap at 2024-11-03T02:00-04:00 to -05:00]'],
-    ])('can be converted to a string representation', (
-        transition: ZoneOffsetTransition,
-        expected: string,
-    ) => {
-        expect(transition.toString()).toBe(expected);
+        {kind: 'gap', transition: GAP, expected: 'Transition[Gap at 2024-03-10T02:00-05:00 to -04:00]'},
+        {
+            kind: 'overlap',
+            transition: OVERLAP,
+            expected: 'Transition[Overlap at 2024-11-03T02:00-04:00 to -05:00]',
+        },
+    ])('can convert the $kind to a string representation', scenario => {
+        expect(scenario.transition.toString()).toBe(scenario.expected);
     });
 });
