@@ -28,18 +28,18 @@ npm install @croct/time
 
 ## Time zones
 
-Offsets come from the JavaScript runtime, so there is no time zone database to
-install or keep up to date.
+Offsets for region-based zones come from `Intl`. Daylight savings gaps and
+overlaps are fully supported, but `Intl` only reports the offset in effect at a
+point in time, which leads to three limits:
 
-Daylight savings gaps and overlaps are fully supported, with a few limits:
-
-- Standard time and daylight savings time cannot be told apart. Only the offset
-  in effect is known.
-- `getNextTransition` and `getPreviousTransition` look about five years from the
-  given instant and return `null` past that. Checking whether a local date-time
-  falls in a gap or an overlap has no such limit.
-- Offsets before 1970 depend on the runtime. Some environments drop the early
-  history of some zones.
+- Standard time and daylight savings time cannot be told apart, since both look
+  the same through `Intl`.
+- There is no list of transitions to read, so `getNextTransition` and
+  `getPreviousTransition` search about five years from the given instant and
+  return `null` past that. Checking whether a local date-time falls in a gap or
+  an overlap does not need the list, and has no such limit.
+- Offsets before 1970 depend on the `Intl` data of the runtime, and some
+  environments drop the early history of some zones.
 
 ## Contributing
 

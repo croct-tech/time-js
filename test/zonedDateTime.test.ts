@@ -11,8 +11,6 @@ import {
 import {FixedClock} from '../src/clock/fixedClock';
 import {DefaultClockProvider} from '../src/defaultClockProvider';
 
-type Arithmetic = Record<string, (value: number) => ZonedDateTime>;
-
 const NEW_YORK = TimeZone.of('America/New_York');
 const SAO_PAULO = TimeZone.of('America/Sao_Paulo');
 const TOKYO = TimeZone.of('Asia/Tokyo');
@@ -39,6 +37,18 @@ const OVERLAP = LocalDateTime.parse('2024-11-03T01:30');
  * move forward on the tenth of March 2024.
  */
 const GAP = LocalDateTime.parse('2024-03-10T02:30');
+
+/**
+ * The day before São Paulo moved the clocks forward at midnight on the
+ * fifteenth of October 2017.
+ */
+const DATE_BASE = zoned('2017-10-14T10:00', '-03:00', SAO_PAULO);
+
+/**
+ * The day before São Paulo moved the clocks forward at midnight on the
+ * fourth of November 2018.
+ */
+const TIME_BASE = zoned('2018-11-03T10:00', '-03:00', SAO_PAULO);
 
 describe('A value object representing a zoned date time', () => {
     it('can provide the current date-time from the given clock', () => {
@@ -322,25 +332,45 @@ describe('A value object representing a zoned date time', () => {
         expect(fixed.withFixedOffsetZone()).toBe(fixed);
     });
 
-    it.each([
-        ['withYear', 2019, zoned('2019-06-01T12:00', '-04:00', NEW_YORK)],
-        ['withMonth', 1, zoned('2024-01-01T12:00', '-05:00', NEW_YORK)],
-        ['withDay', 2, zoned('2024-06-02T12:00', '-04:00', NEW_YORK)],
-        ['withHour', 0, zoned('2024-06-01T00:00', '-04:00', NEW_YORK)],
-        ['withMinute', 30, zoned('2024-06-01T12:30', '-04:00', NEW_YORK)],
-        ['withSecond', 30, zoned('2024-06-01T12:00:30', '-04:00', NEW_YORK)],
-        ['withMilli', 500, zoned('2024-06-01T12:00:00.5', '-04:00', NEW_YORK)],
-        ['withMicro', 500, zoned('2024-06-01T12:00:00.0005', '-04:00', NEW_YORK)],
-        ['withNano', 1, zoned('2024-06-01T12:00:00.000000001', '-04:00', NEW_YORK)],
-    ])('can create a copy with %s(%s)', (
-        method: string,
-        value: number,
-        expected: ZonedDateTime,
-    ) => {
+    it('can create a copy with a different year, month or day', () => {
         const dateTime = zoned('2024-06-01T12:00', '-04:00', NEW_YORK);
-        const result = (dateTime as unknown as Arithmetic)[method](value);
 
-        expect(result.equals(expected)).toBe(true);
+        expect(dateTime.withYear(2019).equals(zoned('2019-06-01T12:00', '-04:00', NEW_YORK)))
+            .toBe(true);
+        expect(dateTime.withMonth(1).equals(zoned('2024-01-01T12:00', '-05:00', NEW_YORK)))
+            .toBe(true);
+        expect(dateTime.withDay(2).equals(zoned('2024-06-02T12:00', '-04:00', NEW_YORK)))
+            .toBe(true);
+    });
+
+    it('can create a copy with a different hour, minute or second', () => {
+        const dateTime = zoned('2024-06-01T12:00', '-04:00', NEW_YORK);
+
+        expect(dateTime.withHour(0).equals(zoned('2024-06-01T00:00', '-04:00', NEW_YORK)))
+            .toBe(true);
+        expect(dateTime.withMinute(30).equals(zoned('2024-06-01T12:30', '-04:00', NEW_YORK)))
+            .toBe(true);
+        expect(dateTime.withSecond(30).equals(zoned('2024-06-01T12:00:30', '-04:00', NEW_YORK)))
+            .toBe(true);
+    });
+
+    it('can create a copy with a different fraction of second', () => {
+        const dateTime = zoned('2024-06-01T12:00', '-04:00', NEW_YORK);
+
+        expect(
+            dateTime.withMilli(500)
+                .equals(zoned('2024-06-01T12:00:00.5', '-04:00', NEW_YORK)),
+        ).toBe(true);
+
+        expect(
+            dateTime.withMicro(500)
+                .equals(zoned('2024-06-01T12:00:00.0005', '-04:00', NEW_YORK)),
+        ).toBe(true);
+
+        expect(
+            dateTime.withNano(1)
+                .equals(zoned('2024-06-01T12:00:00.000000001', '-04:00', NEW_YORK)),
+        ).toBe(true);
     });
 
     it('resolves the offset again when a field changes across a transition', () => {
@@ -370,67 +400,144 @@ describe('A value object representing a zoned date time', () => {
         ).toBe(true);
     });
 
-    it.each([
-        ['withMonth', 13, 'Month must be an integer between 1 and 12.'],
-        // June has thirty days.
-        ['withDay', 31, 'Day must be an integer between 1 and 30.'],
-        ['withHour', 24, 'Hour must be an integer between 0 and 23.'],
-        ['withMinute', 60, 'Minute must be an integer between 0 and 59.'],
-        ['withSecond', 60, 'Second must be an integer between 0 and 59.'],
-        ['withNano', 1_000_000_000, 'Nanosecond of second must be an integer between 0 and 999999999.'],
-    ])('should reject %s(%s)', (method: string, value: number, message: string) => {
+    it('should reject an out-of-range date field', () => {
         const dateTime = zoned('2024-06-01T12:00', '-04:00', NEW_YORK);
-        const change = (): ZonedDateTime => (dateTime as unknown as Arithmetic)[method](value);
 
-        expect(change).toThrow(message);
+        expect(() => dateTime.withMonth(13))
+            .toThrow('Month must be an integer between 1 and 12.');
+        // June has thirty days.
+        expect(() => dateTime.withDay(31))
+            .toThrow('Day must be an integer between 1 and 30.');
+    });
+
+    it('should reject an out-of-range time field', () => {
+        const dateTime = zoned('2024-06-01T12:00', '-04:00', NEW_YORK);
+
+        expect(() => dateTime.withHour(24))
+            .toThrow('Hour must be an integer between 0 and 23.');
+        expect(() => dateTime.withMinute(60))
+            .toThrow('Minute must be an integer between 0 and 59.');
+        expect(() => dateTime.withSecond(60))
+            .toThrow('Second must be an integer between 0 and 59.');
+        expect(() => dateTime.withNano(1_000_000_000))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+        expect(() => dateTime.withMilli(1_000))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+        expect(() => dateTime.withMicro(1_000_000))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
     });
 
     it.each([
         // São Paulo moved the clocks forward at midnight on the fifteenth of October 2017,
         // so these amounts land on the far side of the transition.
-        ['plusDays', 1, zoned('2017-10-15T10:00', '-02:00', SAO_PAULO)],
-        ['plusWeeks', 1, zoned('2017-10-21T10:00', '-02:00', SAO_PAULO)],
-        ['plusMonths', 1, zoned('2017-11-14T10:00', '-02:00', SAO_PAULO)],
+        {
+            method: 'plusDays',
+            result: DATE_BASE.plusDays(1),
+            expected: zoned('2017-10-15T10:00', '-02:00', SAO_PAULO),
+        },
+        {
+            method: 'plusWeeks',
+            result: DATE_BASE.plusWeeks(1),
+            expected: zoned('2017-10-21T10:00', '-02:00', SAO_PAULO),
+        },
+        {
+            method: 'plusMonths',
+            result: DATE_BASE.plusMonths(1),
+            expected: zoned('2017-11-14T10:00', '-02:00', SAO_PAULO),
+        },
         // These stay on the near side, as daylight savings started later in 2016 and 2018.
-        ['minusDays', 1, zoned('2017-10-13T10:00', '-03:00', SAO_PAULO)],
-        ['minusWeeks', 1, zoned('2017-10-07T10:00', '-03:00', SAO_PAULO)],
-        ['minusMonths', 1, zoned('2017-09-14T10:00', '-03:00', SAO_PAULO)],
-        ['plusYears', 1, zoned('2018-10-14T10:00', '-03:00', SAO_PAULO)],
-        ['minusYears', 1, zoned('2016-10-14T10:00', '-03:00', SAO_PAULO)],
-    ])('keeps the local time when %s(%s) crosses a transition', (
-        method: string,
-        amount: number,
-        expected: ZonedDateTime,
-    ) => {
-        const dateTime = zoned('2017-10-14T10:00', '-03:00', SAO_PAULO);
-        const result = (dateTime as unknown as Arithmetic)[method](amount);
-
+        {
+            method: 'minusDays',
+            result: DATE_BASE.minusDays(1),
+            expected: zoned('2017-10-13T10:00', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'minusWeeks',
+            result: DATE_BASE.minusWeeks(1),
+            expected: zoned('2017-10-07T10:00', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'minusMonths',
+            result: DATE_BASE.minusMonths(1),
+            expected: zoned('2017-09-14T10:00', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'plusYears',
+            result: DATE_BASE.plusYears(1),
+            expected: zoned('2018-10-14T10:00', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'minusYears',
+            result: DATE_BASE.minusYears(1),
+            expected: zoned('2016-10-14T10:00', '-03:00', SAO_PAULO),
+        },
+    ])('keeps the local time when $method crosses a transition', ({result, expected}) => {
         expect(result.equals(expected)).toBe(true);
         expect(result.toLocalTime().equals(LocalTime.of(10, 0))).toBe(true);
     });
 
     it.each([
-        ['plusHours', 24, zoned('2018-11-04T11:00', '-02:00', SAO_PAULO)],
-        ['minusHours', 24, zoned('2018-11-02T10:00', '-03:00', SAO_PAULO)],
-        ['plusMinutes', 60, zoned('2018-11-03T11:00', '-03:00', SAO_PAULO)],
-        ['minusMinutes', 60, zoned('2018-11-03T09:00', '-03:00', SAO_PAULO)],
-        ['plusSeconds', 3_600, zoned('2018-11-03T11:00', '-03:00', SAO_PAULO)],
-        ['minusSeconds', 3_600, zoned('2018-11-03T09:00', '-03:00', SAO_PAULO)],
-        ['plusMillis', 1_000, zoned('2018-11-03T10:00:01', '-03:00', SAO_PAULO)],
-        ['minusMillis', 1_000, zoned('2018-11-03T09:59:59', '-03:00', SAO_PAULO)],
-        ['plusMicros', 1_000_000, zoned('2018-11-03T10:00:01', '-03:00', SAO_PAULO)],
-        ['minusMicros', 1_000_000, zoned('2018-11-03T09:59:59', '-03:00', SAO_PAULO)],
-        ['plusNanos', 1_000_000_000, zoned('2018-11-03T10:00:01', '-03:00', SAO_PAULO)],
-        ['minusNanos', 1_000_000_000, zoned('2018-11-03T09:59:59', '-03:00', SAO_PAULO)],
-    ])('keeps the elapsed time when %s(%s) crosses a transition', (
-        method: string,
-        amount: number,
-        expected: ZonedDateTime,
-    ) => {
-        // São Paulo moved the clocks forward at midnight on the fourth of November 2018.
-        const dateTime = zoned('2018-11-03T10:00', '-03:00', SAO_PAULO);
-        const result = (dateTime as unknown as Arithmetic)[method](amount);
-
+        {
+            method: 'plusHours',
+            result: TIME_BASE.plusHours(24),
+            expected: zoned('2018-11-04T11:00', '-02:00', SAO_PAULO),
+        },
+        {
+            method: 'minusHours',
+            result: TIME_BASE.minusHours(24),
+            expected: zoned('2018-11-02T10:00', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'plusMinutes',
+            result: TIME_BASE.plusMinutes(60),
+            expected: zoned('2018-11-03T11:00', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'minusMinutes',
+            result: TIME_BASE.minusMinutes(60),
+            expected: zoned('2018-11-03T09:00', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'plusSeconds',
+            result: TIME_BASE.plusSeconds(3_600),
+            expected: zoned('2018-11-03T11:00', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'minusSeconds',
+            result: TIME_BASE.minusSeconds(3_600),
+            expected: zoned('2018-11-03T09:00', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'plusMillis',
+            result: TIME_BASE.plusMillis(1_000),
+            expected: zoned('2018-11-03T10:00:01', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'minusMillis',
+            result: TIME_BASE.minusMillis(1_000),
+            expected: zoned('2018-11-03T09:59:59', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'plusMicros',
+            result: TIME_BASE.plusMicros(1_000_000),
+            expected: zoned('2018-11-03T10:00:01', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'minusMicros',
+            result: TIME_BASE.minusMicros(1_000_000),
+            expected: zoned('2018-11-03T09:59:59', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'plusNanos',
+            result: TIME_BASE.plusNanos(1_000_000_000),
+            expected: zoned('2018-11-03T10:00:01', '-03:00', SAO_PAULO),
+        },
+        {
+            method: 'minusNanos',
+            result: TIME_BASE.minusNanos(1_000_000_000),
+            expected: zoned('2018-11-03T09:59:59', '-03:00', SAO_PAULO),
+        },
+    ])('keeps the elapsed time when $method crosses a transition', ({result, expected}) => {
         expect(result.equals(expected)).toBe(true);
     });
 

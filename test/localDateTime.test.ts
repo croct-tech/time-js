@@ -11,8 +11,6 @@ import {
 import {FixedClock} from '../src/clock/fixedClock';
 import {DefaultClockProvider} from '../src/defaultClockProvider';
 
-type Adjuster = Record<string, (value: number) => LocalDateTime>;
-
 describe('A value object representing a local date time', () => {
     it('can be created from its components', () => {
         const year = 1970;
@@ -1453,40 +1451,60 @@ describe('A value object representing a local date time', () => {
         }
     });
 
-    it.each([
-        ['withYear', 2016, LocalDateTime.parse('2016-08-30T14:20:05.123456789')],
-        ['withMonth', 9, LocalDateTime.parse('2015-09-30T14:20:05.123456789')],
-        ['withDay', 1, LocalDateTime.parse('2015-08-01T14:20:05.123456789')],
-        ['withHour', 0, LocalDateTime.parse('2015-08-30T00:20:05.123456789')],
-        ['withMinute', 0, LocalDateTime.parse('2015-08-30T14:00:05.123456789')],
-        ['withSecond', 0, LocalDateTime.parse('2015-08-30T14:20:00.123456789')],
-        ['withMilli', 500, LocalDateTime.parse('2015-08-30T14:20:05.5')],
-        ['withMicro', 500, LocalDateTime.parse('2015-08-30T14:20:05.0005')],
-        ['withNano', 0, LocalDateTime.parse('2015-08-30T14:20:05')],
-    ])('can create a copy with %s(%s)', (
-        method: string,
-        value: number,
-        expected: LocalDateTime,
-    ) => {
+    it('can create a copy with a different year, month or day', () => {
         const dateTime = LocalDateTime.parse('2015-08-30T14:20:05.123456789');
-        const result = (dateTime as unknown as Adjuster)[method](value);
 
-        expect(result.equals(expected)).toBe(true);
+        expect(
+            dateTime.withYear(2016)
+                .equals(LocalDateTime.parse('2016-08-30T14:20:05.123456789')),
+        ).toBe(true);
+
+        expect(
+            dateTime.withMonth(9)
+                .equals(LocalDateTime.parse('2015-09-30T14:20:05.123456789')),
+        ).toBe(true);
+
+        expect(
+            dateTime.withDay(1)
+                .equals(LocalDateTime.parse('2015-08-01T14:20:05.123456789')),
+        ).toBe(true);
     });
 
-    it.each([
-        // The day of month is adjusted to the last valid day of the resulting month.
-        ['withYear', 2023, LocalDateTime.parse('2023-02-28T10:00')],
-        ['withMonth', 4, LocalDateTime.parse('2024-04-29T10:00')],
-    ])('adjusts an invalid day of month when %s(%s) is applied', (
-        method: string,
-        value: number,
-        expected: LocalDateTime,
-    ) => {
-        const dateTime = LocalDateTime.parse('2024-02-29T10:00');
-        const result = (dateTime as unknown as Adjuster)[method](value);
+    it('can create a copy with a different hour, minute or second', () => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05.123456789');
 
-        expect(result.equals(expected)).toBe(true);
+        expect(
+            dateTime.withHour(0)
+                .equals(LocalDateTime.parse('2015-08-30T00:20:05.123456789')),
+        ).toBe(true);
+
+        expect(
+            dateTime.withMinute(0)
+                .equals(LocalDateTime.parse('2015-08-30T14:00:05.123456789')),
+        ).toBe(true);
+
+        expect(
+            dateTime.withSecond(0)
+                .equals(LocalDateTime.parse('2015-08-30T14:20:00.123456789')),
+        ).toBe(true);
+    });
+
+    it('can create a copy with a different fraction of second', () => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05.123456789');
+
+        // The remaining sub-millisecond and sub-microsecond parts are discarded.
+        expect(dateTime.withMilli(500).equals(LocalDateTime.parse('2015-08-30T14:20:05.5')))
+            .toBe(true);
+        expect(dateTime.withMicro(500).equals(LocalDateTime.parse('2015-08-30T14:20:05.0005')))
+            .toBe(true);
+        expect(dateTime.withNano(0).equals(LocalDateTime.parse('2015-08-30T14:20:05'))).toBe(true);
+    });
+
+    it('adjusts an invalid day of month to the last valid one', () => {
+        const dateTime = LocalDateTime.parse('2024-02-29T10:00');
+
+        expect(dateTime.withYear(2023).equals(LocalDateTime.parse('2023-02-28T10:00'))).toBe(true);
+        expect(dateTime.withMonth(4).equals(LocalDateTime.parse('2024-04-29T10:00'))).toBe(true);
     });
 
     it('can create a copy with a different local date or time', () => {
@@ -1506,18 +1524,28 @@ describe('A value object representing a local date time', () => {
         expect(dateTime.withTime(LocalTime.of(14, 20, 5))).toBe(dateTime);
     });
 
-    it.each([
-        ['withMonth', 13, 'Month must be an integer between 1 and 12.'],
-        ['withDay', 32, 'Day must be an integer between 1 and 31.'],
-        ['withHour', 24, 'Hour must be an integer between 0 and 23.'],
-        ['withMinute', 60, 'Minute must be an integer between 0 and 59.'],
-        ['withSecond', 60, 'Second must be an integer between 0 and 59.'],
-        ['withNano', 1_000_000_000, 'Nanosecond of second must be an integer between 0 and 999999999.'],
-    ])('should reject %s(%s)', (method: string, value: number, message: string) => {
+    it('should reject an out-of-range date field', () => {
         const dateTime = LocalDateTime.parse('2015-08-30T14:20:05');
-        const change = (): LocalDateTime => (dateTime as unknown as Adjuster)[method](value);
 
-        expect(change).toThrow(message);
+        expect(() => dateTime.withYear(LocalDate.MAX_YEAR + 1)).toThrow();
+        expect(() => dateTime.withMonth(13)).toThrow('Month must be an integer between 1 and 12.');
+        expect(() => dateTime.withDay(32)).toThrow('Day must be an integer between 1 and 31.');
+    });
+
+    it('should reject an out-of-range time field', () => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05');
+
+        expect(() => dateTime.withHour(24)).toThrow('Hour must be an integer between 0 and 23.');
+        expect(() => dateTime.withMinute(60))
+            .toThrow('Minute must be an integer between 0 and 59.');
+        expect(() => dateTime.withSecond(60))
+            .toThrow('Second must be an integer between 0 and 59.');
+        expect(() => dateTime.withNano(1_000_000_000))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+        expect(() => dateTime.withMilli(1_000))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+        expect(() => dateTime.withMicro(1_000_000))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
     });
 
     it.each([

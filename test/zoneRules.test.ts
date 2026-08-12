@@ -1,9 +1,5 @@
 import {Instant, LocalDateTime, TimeZone, ZoneOffset, ZoneRules} from '../src';
 
-function rulesOf(zone: string): ZoneRules {
-    return TimeZone.of(zone).getRules();
-}
-
 function expectOffsets(actual: ZoneOffset[], expected: string[]): void {
     expect(actual).toHaveLength(expected.length);
 
@@ -14,7 +10,7 @@ function expectOffsets(actual: ZoneOffset[], expected: string[]): void {
 
 describe('The rules of a region-based time zone', () => {
     it('is provided by both region-based and offset-based time zones', () => {
-        expect(rulesOf('America/Sao_Paulo')).toBeInstanceOf(ZoneRules);
+        expect(TimeZone.of('America/Sao_Paulo').getRules()).toBeInstanceOf(ZoneRules);
         expect(TimeZone.of('-03:00').getRules()).toBeInstanceOf(ZoneRules);
     });
 
@@ -33,7 +29,7 @@ describe('The rules of a region-based time zone', () => {
         ['Atlantic/Reykjavik', '2024-06-01T00:00:00Z', 'Z'],
     ])('resolves the offset of %s at %s', (zone: string, instant: string, expected: string) => {
         expect(
-            rulesOf(zone).getOffset(Instant.parse(instant))
+            TimeZone.of(zone).getRules().getOffset(Instant.parse(instant))
                 .equals(ZoneOffset.of(expected)),
         ).toBe(true);
     });
@@ -48,7 +44,7 @@ describe('The rules of a region-based time zone', () => {
         expected: string,
     ) => {
         expect(
-            rulesOf(zone).getOffset(Instant.parse(instant))
+            TimeZone.of(zone).getRules().getOffset(Instant.parse(instant))
                 .equals(ZoneOffset.of(expected)),
         ).toBe(true);
     });
@@ -62,7 +58,7 @@ describe('The rules of a region-based time zone', () => {
         dateTime: string,
         expected: string[],
     ) => {
-        const rules = rulesOf(zone);
+        const rules = TimeZone.of(zone).getRules();
         const local = LocalDateTime.parse(dateTime);
 
         expectOffsets(rules.getValidOffsets(local), expected);
@@ -83,7 +79,7 @@ describe('The rules of a region-based time zone', () => {
         zone: string,
         dateTime: string,
     ) => {
-        const rules = rulesOf(zone);
+        const rules = TimeZone.of(zone).getRules();
         const local = LocalDateTime.parse(dateTime);
         const transition = rules.getTransition(local);
 
@@ -102,7 +98,7 @@ describe('The rules of a region-based time zone', () => {
         dateTime: string,
         expected: string[],
     ) => {
-        const rules = rulesOf(zone);
+        const rules = TimeZone.of(zone).getRules();
         const local = LocalDateTime.parse(dateTime);
         const transition = rules.getTransition(local);
 
@@ -122,7 +118,9 @@ describe('The rules of a region-based time zone', () => {
         dateTime: string,
         expected: string,
     ) => {
-        const transition = rulesOf(zone).getTransition(LocalDateTime.parse(dateTime));
+        const transition = TimeZone.of(zone)
+            .getRules()
+            .getTransition(LocalDateTime.parse(dateTime));
 
         expect(transition?.getInstant().equals(Instant.parse(expected))).toBe(true);
     });
@@ -135,7 +133,9 @@ describe('The rules of a region-based time zone', () => {
         instant: string,
         expected: string,
     ) => {
-        const transition = rulesOf(zone).getNextTransition(Instant.parse(instant));
+        const transition = TimeZone.of(zone)
+            .getRules()
+            .getNextTransition(Instant.parse(instant));
 
         expect(transition?.getInstant().equals(Instant.parse(expected))).toBe(true);
     });
@@ -148,7 +148,9 @@ describe('The rules of a region-based time zone', () => {
         instant: string,
         expected: string,
     ) => {
-        const transition = rulesOf(zone).getPreviousTransition(Instant.parse(instant));
+        const transition = TimeZone.of(zone)
+            .getRules()
+            .getPreviousTransition(Instant.parse(instant));
 
         expect(transition?.getInstant().equals(Instant.parse(expected))).toBe(true);
     });
@@ -156,7 +158,7 @@ describe('The rules of a region-based time zone', () => {
     it('reports only a past transition for a zone that no longer observes daylight savings', () => {
         // Brazil abolished daylight savings after the transition of February 2019,
         // which still falls within the window the rules search backwards.
-        const rules = rulesOf('America/Sao_Paulo');
+        const rules = TimeZone.of('America/Sao_Paulo').getRules();
         const instant = Instant.parse('2024-01-01T00:00:00Z');
         const previous = rules.getPreviousTransition(instant);
 
@@ -167,13 +169,13 @@ describe('The rules of a region-based time zone', () => {
     it('reports no transition beyond the window it searches', () => {
         // The last transition of America/Sao_Paulo is far outside the bounded window
         // searched from this instant, so it is not reported.
-        const rules = rulesOf('America/Sao_Paulo');
+        const rules = TimeZone.of('America/Sao_Paulo').getRules();
 
         expect(rules.getPreviousTransition(Instant.parse('2030-01-01T00:00:00Z'))).toBeNull();
     });
 
     it('reports no adjacent transition for a zone that has never observed daylight savings', () => {
-        const rules = rulesOf('Asia/Tokyo');
+        const rules = TimeZone.of('Asia/Tokyo').getRules();
         const instant = Instant.parse('2024-01-01T00:00:00Z');
 
         expect(rules.getNextTransition(instant)).toBeNull();
@@ -190,13 +192,13 @@ describe('The rules of a region-based time zone', () => {
         expected: string,
     ) => {
         expect(
-            rulesOf(zone).resolveOffset(LocalDateTime.parse(dateTime))
+            TimeZone.of(zone).getRules().resolveOffset(LocalDateTime.parse(dateTime))
                 .equals(ZoneOffset.of(expected)),
         ).toBe(true);
     });
 
     it('can be converted to a string representation', () => {
-        expect(rulesOf('America/Sao_Paulo').toString()).toBe('ZoneRules[America/Sao_Paulo]');
+        expect(TimeZone.of('America/Sao_Paulo').getRules().toString()).toBe('ZoneRules[America/Sao_Paulo]');
         expect(TimeZone.of('-03:00').getRules().toString()).toBe('FixedRules[-03:00]');
     });
 
@@ -249,21 +251,29 @@ describe('The rules of a region-based time zone', () => {
         it('should reject an offset it cannot parse', () => {
             mockOffsets(() => 'Coordinated Universal Time');
 
-            expect(() => rulesOf('America/New_York').getOffset(Instant.EPOCH))
+            expect(
+                () => TimeZone.of('America/New_York')
+                    .getRules()
+                    .getOffset(Instant.EPOCH),
+            )
                 .toThrow('Unable to determine the offset of the timezone America/New_York.');
         });
 
         it('should reject a report with no offset at all', () => {
             jest.spyOn(Intl.DateTimeFormat.prototype, 'formatToParts').mockReturnValue([]);
 
-            expect(() => rulesOf('America/New_York').getOffset(Instant.EPOCH))
+            expect(
+                () => TimeZone.of('America/New_York')
+                    .getRules()
+                    .getOffset(Instant.EPOCH),
+            )
                 .toThrow('Unable to determine the offset of the timezone America/New_York.');
         });
 
         it('reports no transition when the offsets bounding the search window agree', () => {
             mockOffsets(resolveInconsistently);
 
-            const rules = rulesOf('America/New_York');
+            const rules = TimeZone.of('America/New_York').getRules();
             const local = LocalDateTime.parse('2024-06-01T12:00');
 
             expect(rules.getValidOffsets(local)).toHaveLength(0);
@@ -275,7 +285,9 @@ describe('The rules of a region-based time zone', () => {
 
             const local = LocalDateTime.parse('2024-06-01T12:00');
 
-            const resolve = (): ZoneOffset => rulesOf('America/New_York').resolveOffset(local);
+            const resolve = (): ZoneOffset => TimeZone.of('America/New_York')
+                .getRules()
+                .resolveOffset(local);
 
             expect(resolve).toThrow(
                 'Unable to resolve the offset of 2024-06-01T12:00 '
@@ -285,9 +297,14 @@ describe('The rules of a region-based time zone', () => {
     });
 
     it('should be comparable', () => {
-        expect(rulesOf('America/Sao_Paulo').equals(rulesOf('America/Sao_Paulo'))).toBe(true);
-        expect(rulesOf('America/Sao_Paulo').equals(rulesOf('Asia/Tokyo'))).toBe(false);
-        expect(TimeZone.of('-03:00').getRules().equals(TimeZone.of('-03:00').getRules())).toBe(true);
-        expect(TimeZone.of('-03:00').getRules().equals(TimeZone.of('+03:00').getRules())).toBe(false);
+        const saoPaulo = TimeZone.of('America/Sao_Paulo').getRules();
+        const tokyo = TimeZone.of('Asia/Tokyo').getRules();
+        const behind = TimeZone.of('-03:00').getRules();
+        const ahead = TimeZone.of('+03:00').getRules();
+
+        expect(saoPaulo.equals(TimeZone.of('America/Sao_Paulo').getRules())).toBe(true);
+        expect(saoPaulo.equals(tokyo)).toBe(false);
+        expect(behind.equals(TimeZone.of('-03:00').getRules())).toBe(true);
+        expect(behind.equals(ahead)).toBe(false);
     });
 });

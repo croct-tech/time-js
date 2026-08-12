@@ -2,8 +2,6 @@ import {Duration, Instant, LocalTime, TimeZone} from '../src';
 import {FixedClock} from '../src/clock/fixedClock';
 import {DefaultClockProvider} from '../src/defaultClockProvider';
 
-type Adjuster = Record<string, (value: number) => LocalTime>;
-
 describe('A value object representing a local time', () => {
     it('can be created from its components', () => {
         const hour = 14;
@@ -897,55 +895,104 @@ describe('A value object representing a local time', () => {
     });
 
     it.each([
-        ['withHour', 5, LocalTime.of(5, 6, 59, 123_456_789)],
-        ['withHour', 0, LocalTime.of(0, 6, 59, 123_456_789)],
-        ['withHour', 23, LocalTime.of(23, 6, 59, 123_456_789)],
-        ['withMinute', 0, LocalTime.of(20, 0, 59, 123_456_789)],
-        ['withMinute', 59, LocalTime.of(20, 59, 59, 123_456_789)],
-        ['withSecond', 0, LocalTime.of(20, 6, 0, 123_456_789)],
-        ['withSecond', 59, LocalTime.of(20, 6, 59, 123_456_789)],
-        // The sub-millisecond and sub-microsecond parts are discarded.
-        ['withMilli', 500, LocalTime.of(20, 6, 59, 500_000_000)],
-        ['withMicro', 500, LocalTime.of(20, 6, 59, 500_000)],
-        ['withNano', 0, LocalTime.of(20, 6, 59)],
-        ['withNano', 999_999_999, LocalTime.of(20, 6, 59, 999_999_999)],
-    ])('can create a copy with %s(%s)', (method: string, value: number, expected: LocalTime) => {
-        const localTime = LocalTime.of(20, 6, 59, 123_456_789);
-        const result = (localTime as unknown as Adjuster)[method](value);
-
-        expect(result.equals(expected)).toBe(true);
+        [5, LocalTime.of(5, 6, 59, 123_456_789)],
+        [0, LocalTime.of(0, 6, 59, 123_456_789)],
+        [23, LocalTime.of(23, 6, 59, 123_456_789)],
+    ])('can create a copy with the hour %s', (hour: number, expected: LocalTime) => {
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withHour(hour).equals(expected)).toBe(true);
     });
 
     it.each([
-        ['withHour', 20],
-        ['withMinute', 6],
-        ['withSecond', 59],
-        ['withNano', 123_456_789],
-    ])('should return the same local time when %s leaves it unchanged', (
-        method: string,
-        value: number,
-    ) => {
-        const localTime = LocalTime.of(20, 6, 59, 123_456_789);
-        const result = (localTime as unknown as Adjuster)[method](value);
-
-        expect(result).toBe(localTime);
+        [0, LocalTime.of(20, 0, 59, 123_456_789)],
+        [59, LocalTime.of(20, 59, 59, 123_456_789)],
+    ])('can create a copy with the minute %s', (minute: number, expected: LocalTime) => {
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withMinute(minute).equals(expected)).toBe(true);
     });
 
     it.each([
-        ['withHour', -1, 'Hour must be an integer between 0 and 23.'],
-        ['withHour', 24, 'Hour must be an integer between 0 and 23.'],
-        ['withMinute', -1, 'Minute must be an integer between 0 and 59.'],
-        ['withMinute', 60, 'Minute must be an integer between 0 and 59.'],
-        ['withSecond', -1, 'Second must be an integer between 0 and 59.'],
-        ['withSecond', 60, 'Second must be an integer between 0 and 59.'],
-        ['withNano', -1, 'Nanosecond of second must be an integer between 0 and 999999999.'],
-        ['withNano', 1_000_000_000, 'Nanosecond of second must be an integer between 0 and 999999999.'],
-        ['withMilli', 1_000, 'Nanosecond of second must be an integer between 0 and 999999999.'],
-        ['withMicro', 1_000_000, 'Nanosecond of second must be an integer between 0 and 999999999.'],
-    ])('should reject %s(%s)', (method: string, value: number, message: string) => {
-        const localTime = LocalTime.of(20, 6, 59, 123_456_789);
-        const change = (): LocalTime => (localTime as unknown as Adjuster)[method](value);
+        [0, LocalTime.of(20, 6, 0, 123_456_789)],
+        [59, LocalTime.of(20, 6, 59, 123_456_789)],
+    ])('can create a copy with the second %s', (second: number, expected: LocalTime) => {
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withSecond(second).equals(expected)).toBe(true);
+    });
 
-        expect(change).toThrow(message);
+    it.each([
+        [500, LocalTime.of(20, 6, 59, 500_000_000)],
+        [0, LocalTime.of(20, 6, 59)],
+        [999, LocalTime.of(20, 6, 59, 999_000_000)],
+    ])('can create a copy with the millisecond %s', (millis: number, expected: LocalTime) => {
+        // The remaining sub-millisecond part is discarded.
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withMilli(millis).equals(expected)).toBe(true);
+    });
+
+    it.each([
+        [500, LocalTime.of(20, 6, 59, 500_000)],
+        [0, LocalTime.of(20, 6, 59)],
+        [999_999, LocalTime.of(20, 6, 59, 999_999_000)],
+    ])('can create a copy with the microsecond %s', (micros: number, expected: LocalTime) => {
+        // The remaining sub-microsecond part is discarded.
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withMicro(micros).equals(expected)).toBe(true);
+    });
+
+    it.each([
+        [0, LocalTime.of(20, 6, 59)],
+        [999_999_999, LocalTime.of(20, 6, 59, 999_999_999)],
+    ])('can create a copy with the nanosecond %s', (nanos: number, expected: LocalTime) => {
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withNano(nanos).equals(expected)).toBe(true);
+    });
+
+    it('should return the same local time when a field is unchanged', () => {
+        const localTime = LocalTime.of(20, 6, 59, 123_456_789);
+
+        expect(localTime.withHour(20)).toBe(localTime);
+        expect(localTime.withMinute(6)).toBe(localTime);
+        expect(localTime.withSecond(59)).toBe(localTime);
+        expect(localTime.withNano(123_456_789)).toBe(localTime);
+    });
+
+    it.each([
+        [-1],
+        [24],
+        [1.5],
+    ])('should reject the invalid hour %s', (hour: number) => {
+        expect(() => LocalTime.of(20, 6, 59).withHour(hour))
+            .toThrow('Hour must be an integer between 0 and 23.');
+    });
+
+    it.each([
+        [-1],
+        [60],
+        [1.5],
+    ])('should reject the invalid minute %s', (minute: number) => {
+        expect(() => LocalTime.of(20, 6, 59).withMinute(minute))
+            .toThrow('Minute must be an integer between 0 and 59.');
+    });
+
+    it.each([
+        [-1],
+        [60],
+        [1.5],
+    ])('should reject the invalid second %s', (second: number) => {
+        expect(() => LocalTime.of(20, 6, 59).withSecond(second))
+            .toThrow('Second must be an integer between 0 and 59.');
+    });
+
+    it.each([
+        [-1],
+        [1_000_000_000],
+        [1.5],
+    ])('should reject the invalid nanosecond %s', (nanos: number) => {
+        expect(() => LocalTime.of(20, 6, 59).withNano(nanos))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+    });
+
+    it('should reject an out-of-range millisecond', () => {
+        expect(() => LocalTime.of(20, 6, 59).withMilli(1_000))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+    });
+
+    it('should reject an out-of-range microsecond', () => {
+        expect(() => LocalTime.of(20, 6, 59).withMicro(1_000_000))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
     });
 });
