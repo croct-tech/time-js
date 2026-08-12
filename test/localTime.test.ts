@@ -1,4 +1,8 @@
-import {Duration, LocalTime} from '../src';
+import {Duration, Instant, LocalTime, TimeZone} from '../src';
+import {FixedClock} from '../src/clock/fixedClock';
+import {DefaultClockProvider} from '../src/defaultClockProvider';
+
+type Adjuster = Record<string, (value: number) => LocalTime>;
 
 describe('A value object representing a local time', () => {
     it('can be created from its components', () => {
@@ -847,5 +851,101 @@ describe('A value object representing a local time', () => {
         const localTime = LocalTime.of(20, 6, 59, 123456789);
 
         expect(localTime.toJSON()).toBe('20:06:59.123456789');
+    });
+
+    it.each([
+        ['2015-08-31T12:11:59.123456789Z', TimeZone.of('America/Sao_Paulo'), LocalTime.of(9, 11, 59, 123_456_789)],
+        ['2015-08-31T12:11:59.123456789Z', TimeZone.of('Asia/Katmandu'), LocalTime.of(17, 56, 59, 123_456_789)],
+        ['2015-08-31T12:11:59.123456789Z', TimeZone.UTC, LocalTime.of(12, 11, 59, 123_456_789)],
+        // The instant falls on the previous day in Sao Paulo.
+        ['2015-08-31T02:11:59Z', TimeZone.of('America/Sao_Paulo'), LocalTime.of(23, 11, 59)],
+    ])('can provide the current time from the given clock', (
+        currentTime: string,
+        timeZone: TimeZone,
+        expected: LocalTime,
+    ) => {
+        const clock = FixedClock.of(Instant.parse(currentTime), timeZone);
+
+        expect(LocalTime.now(clock).equals(expected)).toBe(true);
+    });
+
+    it('can provide the current time from the given clock in a given time-zone', () => {
+        const clock = FixedClock.of(Instant.parse('2015-08-31T12:11:59Z'), TimeZone.UTC);
+
+        expect(
+            LocalTime.nowIn(TimeZone.of('America/Sao_Paulo'), clock)
+                .equals(LocalTime.of(9, 11, 59)),
+        ).toBe(true);
+    });
+
+    it('can provide the current time from the default clock', () => {
+        const previous = DefaultClockProvider.getClock();
+
+        DefaultClockProvider.setClock(
+            FixedClock.of(Instant.parse('2015-08-31T12:11:59Z'), TimeZone.UTC),
+        );
+
+        try {
+            expect(LocalTime.now().equals(LocalTime.of(12, 11, 59))).toBe(true);
+            expect(
+                LocalTime.nowIn(TimeZone.of('America/Sao_Paulo'))
+                    .equals(LocalTime.of(9, 11, 59)),
+            ).toBe(true);
+        } finally {
+            DefaultClockProvider.setClock(previous);
+        }
+    });
+
+    it.each([
+        ['withHour', 5, LocalTime.of(5, 6, 59, 123_456_789)],
+        ['withHour', 0, LocalTime.of(0, 6, 59, 123_456_789)],
+        ['withHour', 23, LocalTime.of(23, 6, 59, 123_456_789)],
+        ['withMinute', 0, LocalTime.of(20, 0, 59, 123_456_789)],
+        ['withMinute', 59, LocalTime.of(20, 59, 59, 123_456_789)],
+        ['withSecond', 0, LocalTime.of(20, 6, 0, 123_456_789)],
+        ['withSecond', 59, LocalTime.of(20, 6, 59, 123_456_789)],
+        // The sub-millisecond and sub-microsecond parts are discarded.
+        ['withMilli', 500, LocalTime.of(20, 6, 59, 500_000_000)],
+        ['withMicro', 500, LocalTime.of(20, 6, 59, 500_000)],
+        ['withNano', 0, LocalTime.of(20, 6, 59)],
+        ['withNano', 999_999_999, LocalTime.of(20, 6, 59, 999_999_999)],
+    ])('can create a copy with %s(%s)', (method: string, value: number, expected: LocalTime) => {
+        const localTime = LocalTime.of(20, 6, 59, 123_456_789);
+        const result = (localTime as unknown as Adjuster)[method](value);
+
+        expect(result.equals(expected)).toBe(true);
+    });
+
+    it.each([
+        ['withHour', 20],
+        ['withMinute', 6],
+        ['withSecond', 59],
+        ['withNano', 123_456_789],
+    ])('should return the same local time when %s leaves it unchanged', (
+        method: string,
+        value: number,
+    ) => {
+        const localTime = LocalTime.of(20, 6, 59, 123_456_789);
+        const result = (localTime as unknown as Adjuster)[method](value);
+
+        expect(result).toBe(localTime);
+    });
+
+    it.each([
+        ['withHour', -1, 'Hour must be an integer between 0 and 23.'],
+        ['withHour', 24, 'Hour must be an integer between 0 and 23.'],
+        ['withMinute', -1, 'Minute must be an integer between 0 and 59.'],
+        ['withMinute', 60, 'Minute must be an integer between 0 and 59.'],
+        ['withSecond', -1, 'Second must be an integer between 0 and 59.'],
+        ['withSecond', 60, 'Second must be an integer between 0 and 59.'],
+        ['withNano', -1, 'Nanosecond of second must be an integer between 0 and 999999999.'],
+        ['withNano', 1_000_000_000, 'Nanosecond of second must be an integer between 0 and 999999999.'],
+        ['withMilli', 1_000, 'Nanosecond of second must be an integer between 0 and 999999999.'],
+        ['withMicro', 1_000_000, 'Nanosecond of second must be an integer between 0 and 999999999.'],
+    ])('should reject %s(%s)', (method: string, value: number, message: string) => {
+        const localTime = LocalTime.of(20, 6, 59, 123_456_789);
+        const change = (): LocalTime => (localTime as unknown as Adjuster)[method](value);
+
+        expect(change).toThrow(message);
     });
 });

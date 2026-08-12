@@ -5,6 +5,7 @@ import {LocalDate} from './localDate';
 import {LocalTime} from './localTime';
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
 import type {TimeZone} from './timeZone';
+import {ZonedDateTime} from './zonedDateTime';
 import {PeriodDuration} from './periodDuration';
 
 /**
@@ -64,48 +65,18 @@ export class LocalDateTime {
         return LocalDateTime.ofInstant(clock.getInstant(), clock.getZone());
     }
 
+    /**
+     * Obtains the local date-time at the given instant in the given time-zone.
+     *
+     * @param instant The instant to convert.
+     * @param zone    The time-zone to express the instant in.
+     */
     public static ofInstant(instant: Instant, zone: TimeZone): LocalDateTime {
-        return LocalDateTime.fromZonedDate(instant.toDate(), zone);
-    }
+        const offset = zone.getRules().getOffset(instant);
 
-    private static fromZonedDate(date: Date, zone: TimeZone): LocalDateTime {
-        const localDateTime = date.toLocaleString('sv-SE', {
-            timeZone: zone.getId(),
-            // Handle a bug on recent versions of Node and browsers where dates up to the year 200
-            // are correct only for the gregory calendar and not the iso8601 calendar
-            // as defined by the ECMAScript specification.
-            // Tracking issue:
-            // https://github.com/nodejs/node/issues/49157
-            calendar: date.getUTCFullYear() < 200 ? 'gregory' : 'iso8601',
-            hourCycle: 'h23',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Missing type definition.
-            // @ts-ignore
-            fractionalSecondDigits: 3,
-        });
-
-        // eslint-disable-next-line @stylistic/max-len -- Regex literal cannot be split.
-        const matches = localDateTime.match(/(?<year>\d{1,4})-(?<month>\d{2})-(?<day>\d{2}) (?<hour>\d{2}):(?<minute>\d{2}):(?<second>\d{2}),(?<fraction>\d{3})/);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain -- Safe assertion.
-        const groups = matches?.groups!;
-
-        return LocalDateTime.of(
-            LocalDate.of(
-                Number.parseInt(groups.year, 10),
-                Number.parseInt(groups.month, 10),
-                Number.parseInt(groups.day, 10),
-            ),
-            LocalTime.of(
-                Number.parseInt(groups.hour, 10),
-                Number.parseInt(groups.minute, 10),
-                Number.parseInt(groups.second, 10),
-                Number.parseInt(groups.fraction.padEnd(9, '0'), 10),
-            ),
+        return LocalDateTime.ofEpochSecond(
+            addExact(instant.getSeconds(), offset.getTotalSeconds()),
+            instant.getNano(),
         );
     }
 
@@ -505,6 +476,141 @@ export class LocalDateTime {
     }
 
     /**
+     * Returns a copy of this local date-time with the given local date.
+     *
+     * @param date The local date.
+     */
+    public withDate(date: LocalDate): LocalDateTime {
+        if (this.date.equals(date)) {
+            return this;
+        }
+
+        return LocalDateTime.of(date, this.time);
+    }
+
+    /**
+     * Returns a copy of this local date-time with the given local time.
+     *
+     * @param time The local time.
+     */
+    public withTime(time: LocalTime): LocalDateTime {
+        if (this.time.equals(time)) {
+            return this;
+        }
+
+        return LocalDateTime.of(this.date, time);
+    }
+
+    /**
+     * Returns a copy of this local date-time with the given year.
+     *
+     * If the day of month is invalid for the resulting year and month, it is
+     * adjusted to the last valid day.
+     *
+     * @param year The year in the ISO-8601 calendar system.
+     *
+     * @throws {Error} If the year is out of range.
+     */
+    public withYear(year: number): LocalDateTime {
+        return this.withDate(this.date.withYear(year));
+    }
+
+    /**
+     * Returns a copy of this local date-time with the given month of year.
+     *
+     * If the day of month is invalid for the resulting year and month, it is
+     * adjusted to the last valid day.
+     *
+     * @param month The month of year, in the range 1 to 12.
+     *
+     * @throws {Error} If the month is out of range.
+     */
+    public withMonth(month: number): LocalDateTime {
+        return this.withDate(this.date.withMonth(month));
+    }
+
+    /**
+     * Returns a copy of this local date-time with the given day of month.
+     *
+     * @param day The day of month, in the range 1 to 31.
+     *
+     * @throws {Error} If the day is invalid for the year and month of this date-time.
+     */
+    public withDay(day: number): LocalDateTime {
+        return this.withDate(this.date.withDay(day));
+    }
+
+    /**
+     * Returns a copy of this local date-time with the given hour of day.
+     *
+     * @param hour The hour of the day, in the range 0 to 23.
+     *
+     * @throws {Error} If the hour is out of range.
+     */
+    public withHour(hour: number): LocalDateTime {
+        return this.withTime(this.time.withHour(hour));
+    }
+
+    /**
+     * Returns a copy of this local date-time with the given minute of hour.
+     *
+     * @param minute The minute of the hour, in the range 0 to 59.
+     *
+     * @throws {Error} If the minute is out of range.
+     */
+    public withMinute(minute: number): LocalDateTime {
+        return this.withTime(this.time.withMinute(minute));
+    }
+
+    /**
+     * Returns a copy of this local date-time with the given second of minute.
+     *
+     * @param second The second of the minute, in the range 0 to 59.
+     *
+     * @throws {Error} If the second is out of range.
+     */
+    public withSecond(second: number): LocalDateTime {
+        return this.withTime(this.time.withSecond(second));
+    }
+
+    /**
+     * Returns a copy of this local date-time with the given millisecond of second.
+     *
+     * The remaining sub-millisecond part of the second is discarded.
+     *
+     * @param millis The millisecond of the second, in the range 0 to 999.
+     *
+     * @throws {Error} If the millisecond is out of range.
+     */
+    public withMilli(millis: number): LocalDateTime {
+        return this.withTime(this.time.withMilli(millis));
+    }
+
+    /**
+     * Returns a copy of this local date-time with the given microsecond of second.
+     *
+     * The remaining sub-microsecond part of the second is discarded.
+     *
+     * @param micros The microsecond of the second, in the range 0 to 999,999.
+     *
+     * @throws {Error} If the microsecond is out of range.
+     */
+    public withMicro(micros: number): LocalDateTime {
+        return this.withTime(this.time.withMicro(micros));
+    }
+
+    /**
+     * Returns a copy of this local date-time with the given nanosecond of second.
+     *
+     * @param nanos The nanosecond of the second, in the range 0 to 999,999,999.
+     *
+     * @throws {Error} If the nanosecond is out of range.
+     */
+    public withNano(nanos: number): LocalDateTime {
+        return this.withTime(this.time.withNano(nanos));
+    }
+
+    /**
      * Add a period-duration to this local date-time.
      *
      * @param periodDuration The period-duration to add.
@@ -660,137 +766,37 @@ export class LocalDateTime {
      * @returns The instant in the UTC time-line.
      */
     public toInstant(zone: TimeZone): Instant {
-        // Since JavaScript doesn't expose an API to get the time-zone offset
-        // for a given local date-time. The workaround is to convert the local
-        // date-time to a point in the UTC time-line and iteratively add/subtract
-        // the time-zone offset until finding the correct offset.
-        //
-        // This is not the most efficient way to do this, but it's
-        // the only way to do it in JavaScript without using a third-party
-        // library.
+        // For local date-times that fall in an overlap, the earlier offset is used,
+        // typically "summer" time. For those that fall in a gap, the offset after the
+        // transition is used, which shifts the result forwards by the length of the gap.
+        const offset = zone.getRules().resolveOffset(this);
 
-        const epochDay = this.date.toEpochDay();
-        const seconds = multiplyExact(epochDay, LocalTime.SECONDS_PER_DAY);
-
-        // Assumes the target timezone is in a range of -12 to +14 hours.
-        // While most time zones differ from Coordinated Universal Time (UTC) by a number of full
-        // hours, some time zones have 30-minute or 45-minute offsets.
-        const startFromEpoch = subtractExact(
-            addExact(seconds, this.time.toSecondOfDay()),
-            14 * LocalTime.SECONDS_PER_HOUR,
+        return Instant.ofEpochSecond(
+            subtractExact(this.toEpochSecond(), offset.getTotalSeconds()),
+            this.time.getNano(),
         );
-
-        const endFromEpoch = addExact(
-            startFromEpoch,
-            26 * LocalTime.SECONDS_PER_HOUR,
-        );
-
-        const target = LocalDateTime.of(
-            this.date,
-            LocalTime.of(
-                this.time.getHour(),
-                this.time.getMinute(),
-                this.time.getSecond(),
-            ),
-        );
-
-        const zonedDateTime = new Date(startFromEpoch * LocalTime.MILLIS_PER_SECOND);
-        let localDateTime = LocalDateTime.fromZonedDate(zonedDateTime, zone);
-
-        // Determine the time-zone offset multiple. As of 2023, most time zones
-        // have 1h offsets, but some time zones have 30m or 45m offsets.
-        // There are cases where the multiple changes during transitions.
-        // Lord Howe Island uses an offset of UTC + 11 during the summer. In the winter,
-        // after Daylight Saving is over they set the clocks back a half hour (UTC + 10:30).
-        const step = Math.min(
-            LocalDateTime.getTimeZoneMultiple(zonedDateTime, zone.getId()),
-            LocalDateTime.getTimeZoneMultiple(
-                new Date(endFromEpoch * LocalTime.MILLIS_PER_SECOND),
-                zone.getId(),
-            ),
-        );
-
-        // Worst case scenario, we have to loop 26 hours * 4 15-minute increments,
-        // which is 104 iterations.
-        //
-        // Benchmarks on a 2020 MacBook Pro (Apple M1 chip 8-core CPU):
-        // For Pacific/Niue (UTC-11), the loop runs 25 times and takes on average 1.7ms
-        // For America/Sao_Paulo (UTC-3), the loop runs 17 times and takes on average 1.2ms
-        while (!localDateTime.equals(target)) {
-            zonedDateTime.setTime(addExact(zonedDateTime.getTime(), step * LocalTime.MILLIS_PER_SECOND));
-            localDateTime = LocalDateTime.fromZonedDate(zonedDateTime, zone);
-
-            if (localDateTime.isAfter(target)) {
-                // There is a gap, the local date-time doesn't exist in the target time-zone.
-                // For gaps, the general strategy is that if the local date-time falls in the middle
-                // of a gap, then the resulting zoned date-time will have a local date-time shifted
-                // forwards by the length of the gap, resulting in a date-time in the later offset,
-                // typically "summer" time.
-
-                break;
-            }
-
-            // For overlaps, the general strategy is that if the local date-time falls in the
-            // middle of an Overlap, then the previous offset will be retained. If there is no
-            // previous offset, or the previous offset is invalid, then the earlier offset is used,
-            // typically "summer" time.
-            // Since the time is shifted forwards, the first local date-time that is equal to
-            // the target is the one that meets the criteria.
-        }
-
-        const epochSeconds = intDiv(zonedDateTime.getTime(), LocalTime.MILLIS_PER_SECOND);
-        const nanoAdjustment = this.time.getNano();
-
-        return Instant.ofEpochSecond(epochSeconds, nanoAdjustment);
     }
 
     /**
-     * Returns the time-zone offset multiple.
+     * Returns this local date-time in the given time-zone.
      *
-     * As of 2023, most time zones have 1h offsets, but some time zones have 30m or 45m offsets.
-     * This function returns either 1h, 30m, or 15m, whichever is the smallest multiple of the
-     * time-zone offset.
+     * When this local date-time is ambiguous or does not exist in the time-zone,
+     * see {@link ZonedDateTime.of} for how it is resolved.
      *
-     * @param date     The point in time to check the offset.
-     * @param timezone The time zone in which to check the offset.
-     *
-     * @returns The time-zone offset multiple in seconds.
+     * @param zone The time-zone.
      */
-    private static getTimeZoneMultiple(date: Date, timezone: string): number {
-        const offset = Math.abs(LocalDateTime.getTimeZoneOffset(date, timezone));
-
-        if (offset % LocalTime.SECONDS_PER_HOUR === 0) {
-            return LocalTime.SECONDS_PER_HOUR;
-        }
-
-        if (offset % (LocalTime.SECONDS_PER_HOUR / 2) === 0) {
-            return LocalTime.SECONDS_PER_HOUR / 2;
-        }
-
-        return LocalTime.SECONDS_PER_HOUR / 4;
+    public atZone(zone: TimeZone): ZonedDateTime {
+        return ZonedDateTime.of(this, zone);
     }
 
     /**
-     * Finds the time-zone offset in seconds for the given date at the given time-zone.
-     *
-     * @param date The point in time to check the offset.
-     * @param timezone The time zone in which to check the offset.
-     *
-     * @returns The time-zone offset in seconds.
+     * Converts this local date-time to a number of seconds, read as if it were in UTC.
      */
-    private static getTimeZoneOffset(date: Date, timezone: string): number {
-        const timeZoneName = new Intl.DateTimeFormat('sv-SE', {
-            timeZone: timezone,
-            calendar: 'iso8601',
-            timeZoneName: 'short',
-        }).format(date);
-
-        const matches = timeZoneName.match(/GMT([+-]\d+)(?::(\d+))?/);
-        const hours = Number.parseInt(matches?.[1] ?? '0', 10);
-        const minutes = Number.parseInt(matches?.[2] ?? '0', 10);
-
-        return hours * LocalTime.SECONDS_PER_HOUR
-            + minutes * LocalTime.SECONDS_PER_MINUTE;
+    private toEpochSecond(): number {
+        return addExact(
+            multiplyExact(this.date.toEpochDay(), LocalTime.SECONDS_PER_DAY),
+            this.time.toSecondOfDay(),
+        );
     }
 
     /**

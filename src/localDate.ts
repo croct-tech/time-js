@@ -1,3 +1,7 @@
+import type {Clock} from './clock';
+import {DefaultClockProvider} from './defaultClockProvider';
+import {LocalTime} from './localTime';
+import type {TimeZone} from './timeZone';
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact} from './math';
 import {Period} from './period';
 
@@ -75,6 +79,29 @@ export class LocalDate {
         this.year = year;
         this.month = month;
         this.day = day;
+    }
+
+    /**
+     * Returns the current date from the given clock in the clock's time-zone.
+     *
+     * @param clock The clock to use. The default clock is used if one is not given.
+     */
+    public static now(clock: Clock = DefaultClockProvider.getClock()): LocalDate {
+        return LocalDate.nowIn(clock.getZone(), clock);
+    }
+
+    /**
+     * Returns the current date from the default or given clock in the given time-zone.
+     *
+     * @param zone The time-zone to use.
+     * @param clock The clock to use. The default clock is used if one is not given.
+     */
+    public static nowIn(zone: TimeZone, clock: Clock = DefaultClockProvider.getClock()): LocalDate {
+        const instant = clock.getInstant();
+        const offset = zone.getRules().getOffset(instant);
+        const epochSecond = addExact(instant.getSeconds(), offset.getTotalSeconds());
+
+        return LocalDate.ofEpochDay(floorDiv(epochSecond, LocalTime.SECONDS_PER_DAY));
     }
 
     /**
@@ -361,6 +388,59 @@ export class LocalDate {
      */
     public minusDays(days: number): LocalDate {
         return this.plusDays(-days);
+    }
+
+    /**
+     * Returns a copy of this local date with the given year.
+     *
+     * If the day of month is invalid for the resulting year and month, it is
+     * adjusted to the last valid day. For example, changing the year of
+     * `2024-02-29` to 2023 yields `2023-02-28`.
+     *
+     * @param year The year in the ISO-8601 calendar system.
+     *
+     * @throws {Error} If the year is out of range.
+     */
+    public withYear(year: number): LocalDate {
+        if (this.year === year) {
+            return this;
+        }
+
+        return LocalDate.resolvePreviousValid(year, this.month, this.day);
+    }
+
+    /**
+     * Returns a copy of this local date with the given month of year.
+     *
+     * If the day of month is invalid for the resulting year and month, it is
+     * adjusted to the last valid day. For example, changing the month of
+     * `2024-01-31` to February yields `2024-02-29`.
+     *
+     * @param month The month of year, in the range 1 to 12.
+     *
+     * @throws {Error} If the month is out of range.
+     */
+    public withMonth(month: number): LocalDate {
+        if (this.month === month) {
+            return this;
+        }
+
+        return LocalDate.resolvePreviousValid(this.year, month, this.day);
+    }
+
+    /**
+     * Returns a copy of this local date with the given day of month.
+     *
+     * @param day The day of month, in the range 1 to 31.
+     *
+     * @throws {Error} If the day is invalid for the year and month of this date.
+     */
+    public withDay(day: number): LocalDate {
+        if (this.day === day) {
+            return this;
+        }
+
+        return LocalDate.of(this.year, this.month, day);
     }
 
     /**

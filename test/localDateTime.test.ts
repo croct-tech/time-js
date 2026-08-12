@@ -9,6 +9,9 @@ import {
     TimeZone,
 } from '../src';
 import {FixedClock} from '../src/clock/fixedClock';
+import {DefaultClockProvider} from '../src/defaultClockProvider';
+
+type Adjuster = Record<string, (value: number) => LocalDateTime>;
 
 describe('A value object representing a local date time', () => {
     it('can be created from its components', () => {
@@ -62,8 +65,16 @@ describe('A value object representing a local date time', () => {
     });
 
     it.each([
-        ['2015-08-31T12:11:59.123456789Z', TimeZone.of('America/Sao_Paulo'), '2015-08-31T09:11:59.123'],
-        ['2015-08-31T00:00:00.123456789Z', TimeZone.of('UTC'), '2015-08-31T00:00:00.123'],
+        [
+            '2015-08-31T12:11:59.123456789Z',
+            TimeZone.of('America/Sao_Paulo'),
+            '2015-08-31T09:11:59.123456789',
+        ],
+        [
+            '2015-08-31T00:00:00.123456789Z',
+            TimeZone.of('UTC'),
+            '2015-08-31T00:00:00.123456789',
+        ],
     ])(
         'can provide the current local date time from the given clock',
         (currentTime: string, timeZone: TimeZone, localDateTime: string) => {
@@ -71,7 +82,7 @@ describe('A value object representing a local date time', () => {
 
             const now = LocalDateTime.now(clock);
 
-            expect(now.toString()).toBe(localDateTime);
+            expect(now.equals(LocalDateTime.parse(localDateTime))).toBe(true);
         },
     );
 
@@ -1394,5 +1405,152 @@ describe('A value object representing a local date time', () => {
         const localDateTime = LocalDateTime.of(localDate, localTime);
 
         expect(localDateTime.toJSON()).toBe('2020-04-10T15:02:01.000002222');
+    });
+
+    it.each([
+        ['America/Sao_Paulo'],
+        ['America/New_York'],
+        ['Australia/Lord_Howe'],
+        ['UTC'],
+    ])('should preserve the nanosecond of the instant in %s', (zone: string) => {
+        const instant = Instant.ofEpochSecond(1_700_000_000, 123_456_789);
+
+        expect(LocalDateTime.ofInstant(instant, TimeZone.of(zone)).getNano()).toBe(123_456_789);
+    });
+
+    it.each([
+        [10_000],
+        [12_345],
+        [-1],
+        [-1_000],
+        [LocalDate.MAX_YEAR],
+        [LocalDate.MIN_YEAR],
+    ])('should convert an instant in the year %s outside the four-digit range', (year: number) => {
+        const epochSecond = LocalDate.of(year, 1, 1).toEpochDay() * LocalTime.SECONDS_PER_DAY;
+        const dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), TimeZone.UTC);
+
+        expect(dateTime.getYear()).toBe(year);
+        expect(dateTime.getMonth()).toBe(1);
+        expect(dateTime.getDay()).toBe(1);
+    });
+
+    it('can provide the current local date time from the default clock', () => {
+        const previous = DefaultClockProvider.getClock();
+
+        DefaultClockProvider.setClock(
+            FixedClock.of(Instant.parse('2015-08-31T12:11:59Z'), TimeZone.UTC),
+        );
+
+        try {
+            expect(LocalDateTime.now().equals(LocalDateTime.parse('2015-08-31T12:11:59')))
+                .toBe(true);
+            expect(
+                LocalDateTime.nowIn(TimeZone.of('America/Sao_Paulo'))
+                    .equals(LocalDateTime.parse('2015-08-31T09:11:59')),
+            ).toBe(true);
+        } finally {
+            DefaultClockProvider.setClock(previous);
+        }
+    });
+
+    it.each([
+        ['withYear', 2016, LocalDateTime.parse('2016-08-30T14:20:05.123456789')],
+        ['withMonth', 9, LocalDateTime.parse('2015-09-30T14:20:05.123456789')],
+        ['withDay', 1, LocalDateTime.parse('2015-08-01T14:20:05.123456789')],
+        ['withHour', 0, LocalDateTime.parse('2015-08-30T00:20:05.123456789')],
+        ['withMinute', 0, LocalDateTime.parse('2015-08-30T14:00:05.123456789')],
+        ['withSecond', 0, LocalDateTime.parse('2015-08-30T14:20:00.123456789')],
+        ['withMilli', 500, LocalDateTime.parse('2015-08-30T14:20:05.5')],
+        ['withMicro', 500, LocalDateTime.parse('2015-08-30T14:20:05.0005')],
+        ['withNano', 0, LocalDateTime.parse('2015-08-30T14:20:05')],
+    ])('can create a copy with %s(%s)', (
+        method: string,
+        value: number,
+        expected: LocalDateTime,
+    ) => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05.123456789');
+        const result = (dateTime as unknown as Adjuster)[method](value);
+
+        expect(result.equals(expected)).toBe(true);
+    });
+
+    it.each([
+        // The day of month is adjusted to the last valid day of the resulting month.
+        ['withYear', 2023, LocalDateTime.parse('2023-02-28T10:00')],
+        ['withMonth', 4, LocalDateTime.parse('2024-04-29T10:00')],
+    ])('adjusts an invalid day of month when %s(%s) is applied', (
+        method: string,
+        value: number,
+        expected: LocalDateTime,
+    ) => {
+        const dateTime = LocalDateTime.parse('2024-02-29T10:00');
+        const result = (dateTime as unknown as Adjuster)[method](value);
+
+        expect(result.equals(expected)).toBe(true);
+    });
+
+    it('can create a copy with a different local date or time', () => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05');
+
+        expect(
+            dateTime.withDate(LocalDate.of(2016, 1, 2))
+                .equals(LocalDateTime.parse('2016-01-02T14:20:05')),
+        ).toBe(true);
+
+        expect(
+            dateTime.withTime(LocalTime.of(1, 2, 3))
+                .equals(LocalDateTime.parse('2015-08-30T01:02:03')),
+        ).toBe(true);
+
+        expect(dateTime.withDate(LocalDate.of(2015, 8, 30))).toBe(dateTime);
+        expect(dateTime.withTime(LocalTime.of(14, 20, 5))).toBe(dateTime);
+    });
+
+    it.each([
+        ['withMonth', 13, 'Month must be an integer between 1 and 12.'],
+        ['withDay', 32, 'Day must be an integer between 1 and 31.'],
+        ['withHour', 24, 'Hour must be an integer between 0 and 23.'],
+        ['withMinute', 60, 'Minute must be an integer between 0 and 59.'],
+        ['withSecond', 60, 'Second must be an integer between 0 and 59.'],
+        ['withNano', 1_000_000_000, 'Nanosecond of second must be an integer between 0 and 999999999.'],
+    ])('should reject %s(%s)', (method: string, value: number, message: string) => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05');
+        const change = (): LocalDateTime => (dateTime as unknown as Adjuster)[method](value);
+
+        expect(change).toThrow(message);
+    });
+
+    it.each([
+        ['America/Sao_Paulo'],
+        ['America/New_York'],
+        ['Asia/Katmandu'],
+        ['Australia/Lord_Howe'],
+        ['UTC'],
+    ])('should convert an instant to a local date-time in %s and back', (zone: string) => {
+        const timeZone = TimeZone.of(zone);
+        const instant = Instant.ofEpochSecond(1_700_000_000, 123_456_789);
+
+        expect(LocalDateTime.ofInstant(instant, timeZone).toInstant(timeZone).equals(instant))
+            .toBe(true);
+    });
+
+    it.each([
+        // A native date object spans about 273,790 years on either side of the epoch,
+        // so both of these instants fall outside it. The offset is then resolved at the
+        // closest representable instant, which is past the last transition of every
+        // time zone. The zones are picked so that applying the offset does not push the
+        // local date-time out of the supported range.
+        [500_000, 'America/Sao_Paulo'],
+        [-500_000, 'Asia/Tokyo'],
+    ])('should convert an instant in the year %s beyond the range of a native date', (
+        year: number,
+        zone: string,
+    ) => {
+        const timeZone = TimeZone.of(zone);
+        const epochSecond = LocalDate.of(year, 1, 1).toEpochDay() * LocalTime.SECONDS_PER_DAY;
+        const instant = Instant.ofEpochSecond(epochSecond);
+
+        expect(LocalDateTime.ofInstant(instant, timeZone).toInstant(timeZone).equals(instant))
+            .toBe(true);
     });
 });

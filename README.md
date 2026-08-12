@@ -26,6 +26,21 @@ Use the package manage [NPM](https://getcomposer.org) to install the package:
 npm install @croct/time
 ```
 
+## Time zones
+
+Offsets come from the JavaScript runtime, so there is no time zone database to
+install or keep up to date.
+
+Daylight savings gaps and overlaps are fully supported, with a few limits:
+
+- Standard time and daylight savings time cannot be told apart. Only the offset
+  in effect is known.
+- `getNextTransition` and `getPreviousTransition` look about five years from the
+  given instant and return `null` past that. Checking whether a local date-time
+  falls in a gap or an overlap has no such limit.
+- Offsets before 1970 depend on the runtime. Some environments drop the early
+  history of some zones.
+
 ## Contributing
 
 Contributions to the package are always welcome!

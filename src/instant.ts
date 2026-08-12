@@ -4,6 +4,8 @@ import {LocalDate} from './localDate';
 import {LocalDateTime} from './localDateTime';
 import {LocalTime} from './localTime';
 import {addExact, floorDiv, floorMod, intDiv, multiplyExact, subtractExact} from './math';
+import type {TimeZone} from './timeZone';
+import {ZonedDateTime} from './zonedDateTime';
 import {Duration} from './duration';
 
 /**
@@ -241,6 +243,15 @@ export class Instant {
      */
     public toDate(): Date {
         return new Date(this.toEpochMillis());
+    }
+
+    /**
+     * Returns the date-time at this instant in the given time-zone.
+     *
+     * @param zone The time-zone.
+     */
+    public atZone(zone: TimeZone): ZonedDateTime {
+        return ZonedDateTime.ofInstant(this, zone);
     }
 
     /**

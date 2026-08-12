@@ -205,14 +205,21 @@ describe('An ISO amount of date-time', () => {
         expect(() => PeriodDuration.parse('')).toThrow('Unrecognized ISO-8601 period string "".');
     });
 
-    it('can determine whether the period and the duration are zero', () => {
-        const zero = Period.zero();
-
-        expect(zero.isZero()).toBe(true);
-
-        const nonZero = PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5});
-
-        expect(nonZero.isZero()).toBe(false);
+    it.each([
+        [PeriodDuration.zero(), true],
+        [PeriodDuration.ofParts({years: 1, months: 2, days: 3, seconds: 4, nanos: 5}), false],
+        // Only the date-based part is zero.
+        [PeriodDuration.ofParts({seconds: 4}), false],
+        [PeriodDuration.ofParts({nanos: 5}), false],
+        // Only the time-based part is zero.
+        [PeriodDuration.ofParts({years: 1}), false],
+        [PeriodDuration.ofParts({months: 2}), false],
+        [PeriodDuration.ofParts({days: 3}), false],
+    ])('can determine whether the period and the duration are zero', (
+        periodDuration: PeriodDuration,
+        expected: boolean,
+    ) => {
+        expect(periodDuration.isZero()).toBe(expected);
     });
 
     it('should return the date-based part', () => {
