@@ -11,46 +11,46 @@ import {
 import {FixedClock} from '../src/clock/fixedClock';
 import {DefaultClockProvider} from '../src/defaultClockProvider';
 
-const NEW_YORK = TimeZone.of('America/New_York');
-const SAO_PAULO = TimeZone.of('America/Sao_Paulo');
-const TOKYO = TimeZone.of('Asia/Tokyo');
-
-/**
- * Builds a zoned date-time from its parts without resolving it against the
- * rules of the time-zone, so that expected values are independent of the
- * behaviour under test.
- */
-function zoned(dateTime: string, offset: string, zone?: TimeZone): ZonedDateTime {
-    const zoneOffset = ZoneOffset.of(offset);
-
-    return ZonedDateTime.ofLenient(LocalDateTime.parse(dateTime), zoneOffset, zone ?? zoneOffset);
-}
-
-/**
- * The local date-time that occurs twice in America/New_York when the clocks
- * move back on the third of November 2024.
- */
-const OVERLAP = LocalDateTime.parse('2024-11-03T01:30');
-
-/**
- * The local date-time that never occurs in America/New_York when the clocks
- * move forward on the tenth of March 2024.
- */
-const GAP = LocalDateTime.parse('2024-03-10T02:30');
-
-/**
- * The day before São Paulo moved the clocks forward at midnight on the
- * fifteenth of October 2017.
- */
-const DATE_BASE = zoned('2017-10-14T10:00', '-03:00', SAO_PAULO);
-
-/**
- * The day before São Paulo moved the clocks forward at midnight on the
- * fourth of November 2018.
- */
-const TIME_BASE = zoned('2018-11-03T10:00', '-03:00', SAO_PAULO);
-
 describe('A value object representing a zoned date time', () => {
+    const NEW_YORK = TimeZone.of('America/New_York');
+    const SAO_PAULO = TimeZone.of('America/Sao_Paulo');
+    const TOKYO = TimeZone.of('Asia/Tokyo');
+
+    /**
+     * Builds a zoned date-time from its parts without resolving it against the
+     * rules of the time-zone, so that expected values are independent of the
+     * behaviour under test.
+     */
+    function zoned(dateTime: string, offset: string, zone?: TimeZone): ZonedDateTime {
+        const zoneOffset = ZoneOffset.of(offset);
+
+        return ZonedDateTime.ofLenient(LocalDateTime.parse(dateTime), zoneOffset, zone ?? zoneOffset);
+    }
+
+    /**
+     * The local date-time that occurs twice in America/New_York when the clocks
+     * move back on the third of November 2024.
+     */
+    const OVERLAP = LocalDateTime.parse('2024-11-03T01:30');
+
+    /**
+     * The local date-time that never occurs in America/New_York when the clocks
+     * move forward on the tenth of March 2024.
+     */
+    const GAP = LocalDateTime.parse('2024-03-10T02:30');
+
+    /**
+     * The day before São Paulo moved the clocks forward at midnight on the
+     * fifteenth of October 2017.
+     */
+    const DATE_BASE = zoned('2017-10-14T10:00', '-03:00', SAO_PAULO);
+
+    /**
+     * The day before São Paulo moved the clocks forward at midnight on the
+     * fourth of November 2018.
+     */
+    const TIME_BASE = zoned('2018-11-03T10:00', '-03:00', SAO_PAULO);
+
     it('can provide the current date-time from the given clock', () => {
         const clock = FixedClock.of(Instant.parse('2015-08-31T12:11:59.123456789Z'), SAO_PAULO);
 

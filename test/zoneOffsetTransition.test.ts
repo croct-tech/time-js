@@ -1,26 +1,26 @@
 import {Duration, Instant, LocalDateTime, ZoneOffset, ZoneOffsetTransition} from '../src';
 
-/**
- * The spring-forward transition of America/New_York in 2024, where the local
- * time-line jumps from 02:00 to 03:00.
- */
-const GAP = ZoneOffsetTransition.of(
-    LocalDateTime.parse('2024-03-10T02:00'),
-    ZoneOffset.of('-05:00'),
-    ZoneOffset.of('-04:00'),
-);
-
-/**
- * The fall-back transition of America/New_York in 2024, where the local
- * time-line repeats the hour from 01:00 to 02:00.
- */
-const OVERLAP = ZoneOffsetTransition.of(
-    LocalDateTime.parse('2024-11-03T02:00'),
-    ZoneOffset.of('-04:00'),
-    ZoneOffset.of('-05:00'),
-);
-
 describe('A value object representing a zone offset transition', () => {
+    /**
+     * The spring-forward transition of America/New_York in 2024, where the local
+     * time-line jumps from 02:00 to 03:00.
+     */
+    const GAP = ZoneOffsetTransition.of(
+        LocalDateTime.parse('2024-03-10T02:00'),
+        ZoneOffset.of('-05:00'),
+        ZoneOffset.of('-04:00'),
+    );
+
+    /**
+     * The fall-back transition of America/New_York in 2024, where the local
+     * time-line repeats the hour from 01:00 to 02:00.
+     */
+    const OVERLAP = ZoneOffsetTransition.of(
+        LocalDateTime.parse('2024-11-03T02:00'),
+        ZoneOffset.of('-04:00'),
+        ZoneOffset.of('-05:00'),
+    );
+
     it('should reject equal offsets', () => {
         expect(
             () => ZoneOffsetTransition.of(

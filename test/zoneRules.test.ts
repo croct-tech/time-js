@@ -1,13 +1,5 @@
 import {Instant, LocalDateTime, TimeZone, ZoneOffset, ZoneRules} from '../src';
 
-function expectOffsets(actual: ZoneOffset[], expected: string[]): void {
-    expect(actual).toHaveLength(expected.length);
-
-    actual.forEach((offset, index) => {
-        expect(offset.equals(ZoneOffset.of(expected[index]))).toBe(true);
-    });
-}
-
 describe('The rules of a region-based time zone', () => {
     it('is provided by both region-based and offset-based time zones', () => {
         expect(TimeZone.of('America/Sao_Paulo').getRules()).toBeInstanceOf(ZoneRules);
@@ -50,18 +42,20 @@ describe('The rules of a region-based time zone', () => {
     });
 
     it.each([
-        ['America/New_York', '2024-06-01T12:00', ['-04:00']],
-        ['America/Sao_Paulo', '2024-06-01T12:00', ['-03:00']],
-        ['Asia/Tokyo', '2024-06-01T12:00', ['+09:00']],
+        ['America/New_York', '2024-06-01T12:00', '-04:00'],
+        ['America/Sao_Paulo', '2024-06-01T12:00', '-03:00'],
+        ['Asia/Tokyo', '2024-06-01T12:00', '+09:00'],
     ])('reports a single valid offset for %s at %s', (
         zone: string,
         dateTime: string,
-        expected: string[],
+        expected: string,
     ) => {
         const rules = TimeZone.of(zone).getRules();
         const local = LocalDateTime.parse(dateTime);
+        const offsets = rules.getValidOffsets(local);
 
-        expectOffsets(rules.getValidOffsets(local), expected);
+        expect(offsets).toHaveLength(1);
+        expect(offsets[0].equals(ZoneOffset.of(expected))).toBe(true);
         expect(rules.getTransition(local)).toBeNull();
     });
 
@@ -83,30 +77,34 @@ describe('The rules of a region-based time zone', () => {
         const local = LocalDateTime.parse(dateTime);
         const transition = rules.getTransition(local);
 
-        expectOffsets(rules.getValidOffsets(local), []);
+        expect(rules.getValidOffsets(local)).toHaveLength(0);
         expect(transition).not.toBeNull();
         expect(transition?.isGap()).toBe(true);
-        expectOffsets(transition?.getValidOffsets() ?? [], []);
+        expect(transition?.getValidOffsets()).toHaveLength(0);
     });
 
     it.each([
-        ['America/New_York', '2024-11-03T01:30', ['-04:00', '-05:00']],
-        ['America/Sao_Paulo', '2018-02-17T23:30', ['-02:00', '-03:00']],
-        ['Australia/Lord_Howe', '2024-04-07T01:45', ['+11:00', '+10:30']],
+        ['America/New_York', '2024-11-03T01:30', '-04:00', '-05:00'],
+        ['America/Sao_Paulo', '2018-02-17T23:30', '-02:00', '-03:00'],
+        ['Australia/Lord_Howe', '2024-04-07T01:45', '+11:00', '+10:30'],
     ])('reports two valid offsets for %s at %s, which falls in an overlap', (
         zone: string,
         dateTime: string,
-        expected: string[],
+        before: string,
+        after: string,
     ) => {
         const rules = TimeZone.of(zone).getRules();
         const local = LocalDateTime.parse(dateTime);
         const transition = rules.getTransition(local);
+        const offsets = rules.getValidOffsets(local);
 
-        expectOffsets(rules.getValidOffsets(local), expected);
+        expect(offsets).toHaveLength(2);
+        expect(offsets[0].equals(ZoneOffset.of(before))).toBe(true);
+        expect(offsets[1].equals(ZoneOffset.of(after))).toBe(true);
         expect(transition).not.toBeNull();
         expect(transition?.isOverlap()).toBe(true);
-        expect(transition?.getOffsetBefore().equals(ZoneOffset.of(expected[0]))).toBe(true);
-        expect(transition?.getOffsetAfter().equals(ZoneOffset.of(expected[1]))).toBe(true);
+        expect(transition?.getOffsetBefore().equals(ZoneOffset.of(before))).toBe(true);
+        expect(transition?.getOffsetAfter().equals(ZoneOffset.of(after))).toBe(true);
     });
 
     it.each([
