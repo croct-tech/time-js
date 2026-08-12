@@ -1,6 +1,10 @@
 import {Instant, LocalDateTime, TimeZone, ZoneOffset, ZoneRules} from '../src';
 
 describe('The rules of a region-based time zone', () => {
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
     it('is provided by both region-based and offset-based time zones', () => {
         expect(TimeZone.of('America/Sao_Paulo').getRules()).toBeInstanceOf(ZoneRules);
         expect(TimeZone.of('-03:00').getRules()).toBeInstanceOf(ZoneRules);
@@ -23,6 +27,22 @@ describe('The rules of a region-based time zone', () => {
         expect(
             TimeZone.of(zone).getRules().getOffset(Instant.parse(instant))
                 .equals(ZoneOffset.of(expected)),
+        ).toBe(true);
+    });
+
+    it.each([
+        // Runtimes disagree on how they report a zero offset.
+        ['GMT'],
+        ['GMT+00:00'],
+    ])('reads a zone on Greenwich reported as "%s"', (name: string) => {
+        jest.spyOn(Intl.DateTimeFormat.prototype, 'formatToParts')
+            .mockReturnValue([{type: 'timeZoneName', value: name}]);
+
+        expect(
+            TimeZone.of('Europe/London')
+                .getRules()
+                .getOffset(Instant.EPOCH)
+                .equals(ZoneOffset.UTC),
         ).toBe(true);
     });
 
@@ -241,10 +261,6 @@ describe('The rules of a region-based time zone', () => {
 
             return 'GMT-04:00';
         }
-
-        afterEach(() => {
-            jest.restoreAllMocks();
-        });
 
         it('should reject an offset it cannot parse', () => {
             mockOffsets(() => 'Coordinated Universal Time');
