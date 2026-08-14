@@ -1543,9 +1543,9 @@ describe('A value object representing a local date time', () => {
         expect(() => dateTime.withNano(1_000_000_000))
             .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
         expect(() => dateTime.withMilli(1_000))
-            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+            .toThrow('Millisecond of second must be an integer between 0 and 999.');
         expect(() => dateTime.withMicro(1_000_000))
-            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+            .toThrow('Microsecond of second must be an integer between 0 and 999999.');
     });
 
     it.each([

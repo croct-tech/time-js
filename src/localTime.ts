@@ -1,7 +1,7 @@
 import type {Clock} from './clock';
 import {DefaultClockProvider} from './defaultClockProvider';
 import type {TimeZone} from './timeZone';
-import {addExact, floorMod, intDiv, multiplyExact, subtractExact} from './math';
+import {addExact, floorMod, intDiv, subtractExact} from './math';
 import {Duration} from './duration';
 
 /**
@@ -602,7 +602,11 @@ export class LocalTime {
      * @throws {Error} If the millisecond is out of range.
      */
     public withMilli(millis: number): LocalTime {
-        return this.withNano(multiplyExact(millis, LocalTime.NANOS_PER_MILLI));
+        if (!Number.isInteger(millis) || millis < 0 || millis > 999) {
+            throw new Error('Millisecond of second must be an integer between 0 and 999.');
+        }
+
+        return this.withNano(millis * LocalTime.NANOS_PER_MILLI);
     }
 
     /**
@@ -615,7 +619,11 @@ export class LocalTime {
      * @throws {Error} If the microsecond is out of range.
      */
     public withMicro(micros: number): LocalTime {
-        return this.withNano(multiplyExact(micros, LocalTime.NANOS_PER_MICRO));
+        if (!Number.isInteger(micros) || micros < 0 || micros > 999_999) {
+            throw new Error('Microsecond of second must be an integer between 0 and 999999.');
+        }
+
+        return this.withNano(micros * LocalTime.NANOS_PER_MICRO);
     }
 
     /**

@@ -986,13 +986,21 @@ describe('A value object representing a local time', () => {
             .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
     });
 
-    it('should reject an out-of-range millisecond', () => {
-        expect(() => LocalTime.of(20, 6, 59).withMilli(1_000))
-            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+    it.each(Object.entries({
+        'fractional milliseconds number': 1.5,
+        'milliseconds number less than 0': -1,
+        'milliseconds number greater than 999': 1_000,
+    }))('should reject a %s', (_, millis) => {
+        expect(() => LocalTime.of(20, 6, 59).withMilli(millis))
+            .toThrow('Millisecond of second must be an integer between 0 and 999.');
     });
 
-    it('should reject an out-of-range microsecond', () => {
-        expect(() => LocalTime.of(20, 6, 59).withMicro(1_000_000))
-            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+    it.each(Object.entries({
+        'fractional microseconds number': 1.5,
+        'microseconds number less than 0': -1,
+        'microseconds number greater than 999999': 1_000_000,
+    }))('should reject a %s', (_, micros) => {
+        expect(() => LocalTime.of(20, 6, 59).withMicro(micros))
+            .toThrow('Microsecond of second must be an integer between 0 and 999999.');
     });
 });
