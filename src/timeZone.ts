@@ -404,10 +404,14 @@ export class ZoneOffset extends TimeZone {
      */
     public static ofTotalSeconds(totalSeconds: number): ZoneOffset {
         if (!Number.isSafeInteger(totalSeconds) || Math.abs(totalSeconds) > ZoneOffset.MAX_SECONDS) {
-            throw new Error(
-                'Offset must be between -18:00 and +18:00, '
-                + `but got ${ZoneOffset.formatAmount(totalSeconds)}.`,
-            );
+            // Only a whole number of seconds has an offset amount to report. Formatting
+            // one that is not either overflows or spells out an impossible offset, so
+            // the value itself is reported instead.
+            const amount = Number.isSafeInteger(totalSeconds)
+                ? ZoneOffset.formatAmount(totalSeconds)
+                : `${totalSeconds} seconds`;
+
+            throw new Error(`Offset must be between -18:00 and +18:00, but got ${amount}.`);
         }
 
         if (totalSeconds === 0) {

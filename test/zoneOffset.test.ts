@@ -97,8 +97,14 @@ describe('A value object representing a time-zone offset', () => {
         expect(() => ZoneOffset.ofTotalSeconds(totalSeconds)).toThrow(message);
     });
 
-    it('should reject a fractional total of seconds', () => {
-        expect(() => ZoneOffset.ofTotalSeconds(1.5)).toThrow('Offset must be between -18:00 and +18:00');
+    it.each(Object.entries({
+        'a fractional total of seconds': 1.5,
+        'a total of seconds that is not a number': Number.NaN,
+        'an infinite total of seconds': Number.POSITIVE_INFINITY,
+    }))('should reject %s', (_, totalSeconds) => {
+        expect(() => ZoneOffset.ofTotalSeconds(totalSeconds)).toThrow(
+            `Offset must be between -18:00 and +18:00, but got ${totalSeconds} seconds.`,
+        );
     });
 
     it('is created by the time-zone factory for offset-based IDs', () => {
