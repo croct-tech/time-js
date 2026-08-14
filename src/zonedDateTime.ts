@@ -779,8 +779,8 @@ export class ZonedDateTime {
      * Checks whether this date-time is equal to another.
      *
      * Two date-times denoting the same point on the time-line in different time-zones
-     * are not equal. Use {@link ZonedDateTime#compare|compare} to compare them by
-     * the point they denote.
+     * are not equal. Compare {@link ZonedDateTime#toInstant|toInstant} instead to
+     * check whether they denote the same point.
      *
      * @param dateTime The date-time to compare.
      */
