@@ -271,6 +271,28 @@ describe('The rules of a region-based time zone', () => {
         expect(rules.getOffset(instant).equals(ZoneOffset.of('-04:00'))).toBe(true);
     });
 
+    it('should reject a local date-time too close to the bound to read the offsets around it', () => {
+        // The last local date-time a native date object can represent. Reading the
+        // offsets around it runs past the bound, and applying any of them to it
+        // lands on an instant the runtime cannot represent either.
+        const rules = TimeZone.of('America/New_York').getRules();
+        const dateTime = LocalDateTime.parse('+275760-09-13T00:00');
+
+        expect(() => rules.getValidOffsets(dateTime)).toThrow(
+            'Unable to determine the offset of the timezone America/New_York at '
+            + '275760-09-13T00:00, as it is outside the range the runtime supports.',
+        );
+    });
+
+    it('accepts the last local date-time the offsets around it can be read for', () => {
+        const rules = TimeZone.of('America/New_York').getRules();
+        // Two days and eighteen hours from the bound, which is the probing window
+        // plus the largest offset a zone can observe.
+        const dateTime = LocalDateTime.ofEpochSecond(8_640_000_000_000 - 237_600);
+
+        expect(rules.getValidOffsets(dateTime)).toHaveLength(1);
+    });
+
     it.each([
         ['America/New_York', '2024-11-03T01:30', '-04:00'],
         ['America/New_York', '2024-03-10T02:30', '-05:00'],

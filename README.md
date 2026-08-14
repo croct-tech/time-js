@@ -42,7 +42,9 @@ point in time, which leads to three limits:
   environments drop the early history of some zones.
 - The data is only reachable for the points in time a native date object can
   represent, roughly 273,790 years around 1970, so region-based zones reject the
-  instants and local date-times beyond that range rather than guess an offset.
+  instants and local date-times beyond that range rather than guess an offset. The
+  bound for a local date-time is a few days tighter, as resolving one reads the
+  offsets around it.
 
 ## Contributing
 

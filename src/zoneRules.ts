@@ -266,6 +266,17 @@ class IntlZoneRules extends ZoneRules {
     private static MAX_DATE_SECOND = intDiv(8_640_000_000_000_000, LocalTime.MILLIS_PER_SECOND);
 
     /**
+     * The distance, in seconds, kept from the bounds of the native date range when
+     * checking a local date-time.
+     *
+     * Resolving a local date-time reads the offset at the instants around it, the
+     * furthest of which is the probing window away plus the largest offset a zone
+     * can observe, which is eighteen hours. Keeping that distance is what lets those
+     * reads assume the whole window is representable.
+     */
+    private static LOCAL_MARGIN = (2 * LocalTime.SECONDS_PER_DAY) + (18 * LocalTime.SECONDS_PER_HOUR);
+
+    /**
      * A regular expression that matches the offset reported by the runtime.
      */
     private static PATTERN = /^GMT(?:(?<sign>[+-])(?<hours>\d{1,2}):(?<minutes>\d{2})(?::(?<seconds>\d{2}))?)?$/;
@@ -358,7 +369,7 @@ class IntlZoneRules extends ZoneRules {
             dateTime.getLocalTime().toSecondOfDay(),
         );
 
-        this.checkSupported(local, dateTime);
+        this.checkSupported(local, dateTime, IntlZoneRules.LOCAL_MARGIN);
 
         return local;
     }
@@ -374,11 +385,16 @@ class IntlZoneRules extends ZoneRules {
      *
      * @param epochSecond The number of seconds from the epoch to check.
      * @param point       The point in time the number of seconds was derived from.
+     * @param margin      The distance to keep from the bounds of the native date range.
      *
      * @throws {Error} If the point in time is outside the supported range.
      */
-    private checkSupported(epochSecond: number, point: Instant | LocalDateTime): void {
-        if (Math.abs(epochSecond) > IntlZoneRules.MAX_DATE_SECOND) {
+    private checkSupported(
+        epochSecond: number,
+        point: Instant | LocalDateTime,
+        margin = 0,
+    ): void {
+        if (Math.abs(epochSecond) > IntlZoneRules.MAX_DATE_SECOND - margin) {
             throw new Error(
                 `Unable to determine the offset of the timezone ${this.id} at `
                 + `${point.toString()}, as it is outside the range the runtime supports.`,
@@ -472,9 +488,10 @@ class IntlZoneRules extends ZoneRules {
      * from the epoch.
      *
      * Points beyond the range of a native date object are clamped to the closest
-     * representable one. Only the probes taken around a point already checked to be
-     * within range can reach that far, and they are well past the last transition of
-     * every zone, so the clamped offset is the one in effect there.
+     * representable one. Only the scan for an adjacent transition can reach that far,
+     * as the reads around a local date-time are kept within the range by the margin
+     * checked upfront. Clamping merely makes the scan see a constant offset past the
+     * bound, so it reports no transition there rather than a wrong one.
      */
     private getOffsetAt(epochSecond: number): number {
         const second = Math.max(
