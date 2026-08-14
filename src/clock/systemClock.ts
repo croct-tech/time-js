@@ -6,7 +6,13 @@ import {TimeZone} from '../timeZone';
  * A clock that uses the system to obtain the current time.
  */
 export class SystemClock implements Clock {
-    public static UTC = new this(TimeZone.UTC);
+    private static UTC_CLOCK?: SystemClock;
+
+    public static get UTC(): SystemClock {
+        SystemClock.UTC_CLOCK ??= new SystemClock(TimeZone.UTC);
+
+        return SystemClock.UTC_CLOCK;
+    }
 
     private readonly zone: TimeZone;
 

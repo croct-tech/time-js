@@ -273,12 +273,16 @@ export class ZoneOffset extends TimeZone {
     /**
      * The maximum offset in seconds, corresponding to `+18:00`.
      */
-    public static MAX_SECONDS = 18 * LocalTime.SECONDS_PER_HOUR;
+    public static get MAX_SECONDS(): number {
+        return 18 * LocalTime.SECONDS_PER_HOUR;
+    }
 
     /**
      * The minimum offset in seconds, corresponding to `-18:00`.
      */
-    public static MIN_SECONDS = -ZoneOffset.MAX_SECONDS;
+    public static get MIN_SECONDS(): number {
+        return -ZoneOffset.MAX_SECONDS;
+    }
 
     /**
      * A regular expression that matches offset IDs.
