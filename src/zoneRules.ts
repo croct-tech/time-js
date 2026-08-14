@@ -229,28 +229,38 @@ class IntlZoneRules extends ZoneRules {
      * local time-line by a full day, such as the ones that moved Pacific/Apia and
      * Pacific/Kiritimati across the international date line, are still bracketed.
      */
-    private static PROBES = [
-        -2 * LocalTime.SECONDS_PER_DAY,
-        -LocalTime.SECONDS_PER_DAY,
-        -intDiv(LocalTime.SECONDS_PER_DAY, 2),
-        0,
-        intDiv(LocalTime.SECONDS_PER_DAY, 2),
-        LocalTime.SECONDS_PER_DAY,
-        2 * LocalTime.SECONDS_PER_DAY,
-    ];
+    private static PROBE_OFFSETS?: number[];
+
+    private static get PROBES(): number[] {
+        IntlZoneRules.PROBE_OFFSETS ??= [
+            -2 * LocalTime.SECONDS_PER_DAY,
+            -LocalTime.SECONDS_PER_DAY,
+            -intDiv(LocalTime.SECONDS_PER_DAY, 2),
+            0,
+            intDiv(LocalTime.SECONDS_PER_DAY, 2),
+            LocalTime.SECONDS_PER_DAY,
+            2 * LocalTime.SECONDS_PER_DAY,
+        ];
+
+        return IntlZoneRules.PROBE_OFFSETS;
+    }
 
     /**
      * The window, in seconds, searched on either side of a local date-time
      * when locating the transition that affects it.
      */
-    private static TRANSITION_WINDOW = 2 * LocalTime.SECONDS_PER_DAY;
+    private static get TRANSITION_WINDOW(): number {
+        return 2 * LocalTime.SECONDS_PER_DAY;
+    }
 
     /**
      * The step, in seconds, between coarse probes when scanning for an adjacent
      * transition. Transitions are months apart in practice, so a week-long step
      * cannot skip over one.
      */
-    private static SCAN_STEP = 7 * LocalTime.SECONDS_PER_DAY;
+    private static get SCAN_STEP(): number {
+        return 7 * LocalTime.SECONDS_PER_DAY;
+    }
 
     /**
      * The distance, in seconds, scanned when searching for an adjacent transition.
@@ -258,12 +268,16 @@ class IntlZoneRules extends ZoneRules {
      * Five years covers any zone that observes daylight savings, while bounding the
      * cost for the many zones that have no further transition at all.
      */
-    private static SCAN_HORIZON = 5 * 365 * LocalTime.SECONDS_PER_DAY;
+    private static get SCAN_HORIZON(): number {
+        return 5 * 365 * LocalTime.SECONDS_PER_DAY;
+    }
 
     /**
      * The largest number of seconds representable by a native date object.
      */
-    private static MAX_DATE_SECOND = intDiv(8_640_000_000_000_000, LocalTime.MILLIS_PER_SECOND);
+    private static get MAX_DATE_SECOND(): number {
+        return intDiv(8_640_000_000_000_000, LocalTime.MILLIS_PER_SECOND);
+    }
 
     /**
      * The distance, in seconds, kept from the bounds of the native date range when
@@ -274,7 +288,9 @@ class IntlZoneRules extends ZoneRules {
      * a zone can observe, eighteen hours. Neither reach compounds the other, so their
      * sum leaves room for both the reads and the instant they resolve to.
      */
-    private static LOCAL_MARGIN = (2 * LocalTime.SECONDS_PER_DAY) + (18 * LocalTime.SECONDS_PER_HOUR);
+    private static get LOCAL_MARGIN(): number {
+        return (2 * LocalTime.SECONDS_PER_DAY) + (18 * LocalTime.SECONDS_PER_HOUR);
+    }
 
     /**
      * A regular expression that matches the offset reported by the runtime.

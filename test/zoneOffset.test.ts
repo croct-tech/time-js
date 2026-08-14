@@ -6,6 +6,11 @@ describe('A value object representing a time-zone offset', () => {
         expect(ZoneOffset.UTC.getId()).toBe('Z');
     });
 
+    it('provides constants for the offsets it accepts, eighteen hours either way', () => {
+        expect(ZoneOffset.MAX_SECONDS).toBe(18 * 3600);
+        expect(ZoneOffset.MIN_SECONDS).toBe(-18 * 3600);
+    });
+
     it.each([
         ['Z', 'Z', 0],
         ['z', 'Z', 0],
