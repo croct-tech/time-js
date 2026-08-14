@@ -361,11 +361,11 @@ export class ZoneOffset extends TimeZone {
      *
      * All components must have the same sign.
      *
-     * @param hours   The number of hours, from -18 to 18.
-     * @param minutes The number of minutes, from -59 to 59.
-     * @param seconds The number of seconds, from -59 to 59.
+     * @param hours   The number of whole hours, from -18 to 18.
+     * @param minutes The number of whole minutes, from -59 to 59.
+     * @param seconds The number of whole seconds, from -59 to 59.
      *
-     * @throws {Error} If any component is out of range, or the signs differ.
+     * @throws {Error} If any component is fractional or out of range, or the signs differ.
      */
     public static ofTotal(hours: number, minutes = 0, seconds = 0): ZoneOffset {
         const signs = [Math.sign(hours), Math.sign(minutes), Math.sign(seconds)];
@@ -376,16 +376,16 @@ export class ZoneOffset extends TimeZone {
             throw new Error('Time-zone offset hours, minutes and seconds must have the same sign.');
         }
 
-        if (hours < -18 || hours > 18) {
-            throw new Error(`Offset hours must be between -18 and 18, but got ${hours}.`);
+        if (!Number.isInteger(hours) || hours < -18 || hours > 18) {
+            throw new Error(`Offset hours must be an integer between -18 and 18, but got ${hours}.`);
         }
 
-        if (minutes < -59 || minutes > 59) {
-            throw new Error(`Offset minutes must be between -59 and 59, but got ${minutes}.`);
+        if (!Number.isInteger(minutes) || minutes < -59 || minutes > 59) {
+            throw new Error(`Offset minutes must be an integer between -59 and 59, but got ${minutes}.`);
         }
 
-        if (seconds < -59 || seconds > 59) {
-            throw new Error(`Offset seconds must be between -59 and 59, but got ${seconds}.`);
+        if (!Number.isInteger(seconds) || seconds < -59 || seconds > 59) {
+            throw new Error(`Offset seconds must be an integer between -59 and 59, but got ${seconds}.`);
         }
 
         return ZoneOffset.ofTotalSeconds(

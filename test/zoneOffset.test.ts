@@ -64,24 +64,43 @@ describe('A value object representing a time-zone offset', () => {
     });
 
     it.each([
-        [-19, 'Offset hours must be between -18 and 18, but got -19.'],
-        [19, 'Offset hours must be between -18 and 18, but got 19.'],
+        [-19, 'Offset hours must be an integer between -18 and 18, but got -19.'],
+        [19, 'Offset hours must be an integer between -18 and 18, but got 19.'],
     ])('should reject the out-of-range hour %s', (hours: number, message: string) => {
         expect(() => ZoneOffset.ofTotal(hours)).toThrow(message);
     });
 
     it.each([
-        [-60, 'Offset minutes must be between -59 and 59, but got -60.'],
-        [60, 'Offset minutes must be between -59 and 59, but got 60.'],
+        [-60, 'Offset minutes must be an integer between -59 and 59, but got -60.'],
+        [60, 'Offset minutes must be an integer between -59 and 59, but got 60.'],
     ])('should reject the out-of-range minute %s', (minutes: number, message: string) => {
         expect(() => ZoneOffset.ofTotal(Math.sign(minutes), minutes)).toThrow(message);
     });
 
     it.each([
-        [-60, 'Offset seconds must be between -59 and 59, but got -60.'],
-        [60, 'Offset seconds must be between -59 and 59, but got 60.'],
+        [-60, 'Offset seconds must be an integer between -59 and 59, but got -60.'],
+        [60, 'Offset seconds must be an integer between -59 and 59, but got 60.'],
     ])('should reject the out-of-range second %s', (seconds: number, message: string) => {
         expect(() => ZoneOffset.ofTotal(Math.sign(seconds), 0, seconds)).toThrow(message);
+    });
+
+    it.each(Object.entries({
+        'a fractional hour': {
+            components: [1.5, 0, 0],
+            message: 'Offset hours must be an integer between -18 and 18, but got 1.5.',
+        },
+        'a fractional minute': {
+            components: [0, 1.5, 0],
+            message: 'Offset minutes must be an integer between -59 and 59, but got 1.5.',
+        },
+        'a fractional second': {
+            components: [0, 0, 1.5],
+            message: 'Offset seconds must be an integer between -59 and 59, but got 1.5.',
+        },
+    }))('should reject %s', (_, scenario) => {
+        const [hours, minutes, seconds] = scenario.components;
+
+        expect(() => ZoneOffset.ofTotal(hours, minutes, seconds)).toThrow(scenario.message);
     });
 
     it('can be created from a total offset in seconds', () => {
