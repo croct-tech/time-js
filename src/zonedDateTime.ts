@@ -88,29 +88,39 @@ export class ZonedDateTime {
         }
 
         const rules = zone.getRules();
+        const offsets = rules.getValidOffsets(dateTime);
 
-        if (preferredOffset === undefined) {
-            return new ZonedDateTime(dateTime, rules.resolveOffset(dateTime), zone);
+        if (offsets.length === 1) {
+            return new ZonedDateTime(dateTime, offsets[0], zone);
+        }
+
+        if (offsets.length > 1) {
+            const [earlier, later] = offsets;
+
+            return new ZonedDateTime(
+                dateTime,
+                preferredOffset?.equals(later) === true ? later : earlier,
+                zone,
+            );
         }
 
         const transition = rules.getTransition(dateTime);
 
         if (transition === null) {
-            return new ZonedDateTime(dateTime, rules.resolveOffset(dateTime), zone);
-        }
-
-        if (transition.isGap()) {
-            return new ZonedDateTime(
-                dateTime.plusSeconds(transition.getDuration().getSeconds()),
-                transition.getOffsetAfter(),
-                zone,
+            // A local date-time with no valid offset falls in a gap, which always has a
+            // transition. Reaching this point means the time-zone data of the runtime
+            // reported the two inconsistently.
+            throw new Error(
+                `Unable to resolve the offset of ${dateTime.toString()} `
+                + `in zone "${zone.toString()}".`,
             );
         }
 
-        const later = transition.getOffsetAfter();
-        const offset = preferredOffset.equals(later) ? later : transition.getOffsetBefore();
-
-        return new ZonedDateTime(dateTime, offset, zone);
+        return new ZonedDateTime(
+            dateTime.plusSeconds(transition.getDuration().getSeconds()),
+            transition.getOffsetAfter(),
+            zone,
+        );
     }
 
     /**

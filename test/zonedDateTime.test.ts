@@ -130,11 +130,19 @@ describe('A value object representing a zoned date time', () => {
         expect(dateTime.getOffset().equals(ZoneOffset.of(expected))).toBe(true);
     });
 
-    it('shifts a local date-time that falls in a gap forward by the length of the gap', () => {
-        const dateTime = ZonedDateTime.of(GAP, NEW_YORK, ZoneOffset.of('-05:00'));
+    it.each(Object.entries({
+        'no preferred offset': undefined,
+        'the offset before the gap': ZoneOffset.of('-05:00'),
+        'the offset after the gap': ZoneOffset.of('-04:00'),
+        'an offset the zone never observes': ZoneOffset.of('-03:00'),
+    }))(
+        'shifts a local date-time that falls in a gap forward by the length of the gap given %s',
+        (_, preferredOffset) => {
+            const dateTime = ZonedDateTime.of(GAP, NEW_YORK, preferredOffset);
 
-        expect(dateTime.equals(zoned('2024-03-10T03:30', '-04:00', NEW_YORK))).toBe(true);
-    });
+            expect(dateTime.equals(zoned('2024-03-10T03:30', '-04:00', NEW_YORK))).toBe(true);
+        },
+    );
 
     it('can be created from an instant', () => {
         const dateTime = ZonedDateTime.ofInstant(Instant.parse('2024-06-01T16:00:00Z'), NEW_YORK);
@@ -651,5 +659,23 @@ describe('A value object representing a zoned date time', () => {
                 .atZone(NEW_YORK)
                 .equals(zoned('2024-06-01T12:00', '-04:00', NEW_YORK)),
         ).toBe(true);
+    });
+
+    describe('when the runtime reports inconsistent time-zone data', () => {
+        afterEach(() => {
+            jest.restoreAllMocks();
+        });
+
+        it('should reject a local date-time that has neither a valid offset nor a gap', () => {
+            const rules = NEW_YORK.getRules();
+
+            jest.spyOn(rules, 'getValidOffsets').mockReturnValue([]);
+            jest.spyOn(rules, 'getTransition').mockReturnValue(null);
+
+            expect(() => ZonedDateTime.of(GAP, NEW_YORK)).toThrow(
+                'Unable to resolve the offset of 2024-03-10T02:30 '
+                + 'in zone "America/New_York".',
+            );
+        });
     });
 });
