@@ -621,6 +621,8 @@ describe('A value object representing a zoned date time', () => {
         expect(earlier.isBeforeOrEqual(earlier)).toBe(true);
         expect(earlier.isAfterOrEqual(earlier)).toBe(true);
         expect(earlier.compare(earlier)).toBe(0);
+        expect(earlier.compare(later)).toBeGreaterThan(0);
+        expect(later.compare(earlier)).toBeLessThan(0);
     });
 
     it('orders date-times denoting the same instant by their local date-time and zone', () => {
@@ -629,6 +631,23 @@ describe('A value object representing a zoned date time', () => {
 
         expect(newYork.compare(saoPaulo)).toBeLessThan(0);
         expect(saoPaulo.compare(newYork)).toBeGreaterThan(0);
+    });
+
+    it('reports date-times denoting the same instant as neither before nor after', () => {
+        const newYork = zoned('2024-06-01T12:00', '-04:00', NEW_YORK);
+        const saoPaulo = zoned('2024-06-01T13:00', '-03:00', SAO_PAULO);
+
+        expect(newYork.toInstant().equals(saoPaulo.toInstant())).toBe(true);
+
+        expect(newYork.isBefore(saoPaulo)).toBe(false);
+        expect(newYork.isAfter(saoPaulo)).toBe(false);
+        expect(newYork.isBeforeOrEqual(saoPaulo)).toBe(true);
+        expect(newYork.isAfterOrEqual(saoPaulo)).toBe(true);
+
+        expect(saoPaulo.isBefore(newYork)).toBe(false);
+        expect(saoPaulo.isAfter(newYork)).toBe(false);
+        expect(saoPaulo.isBeforeOrEqual(newYork)).toBe(true);
+        expect(saoPaulo.isAfterOrEqual(newYork)).toBe(true);
     });
 
     it('can be converted to a string in the ISO-8601 format', () => {

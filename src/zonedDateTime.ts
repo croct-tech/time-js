@@ -794,10 +794,15 @@ export class ZonedDateTime {
      * Compares this date-time to another for order, primarily by the point on the
      * time-line that each denotes.
      *
+     * The local date-time and the time-zone break ties, so that date-times denoting
+     * the same point in different time-zones are ordered consistently rather than
+     * reported as equal. Use {@link ZonedDateTime#isBefore|isBefore} and
+     * {@link ZonedDateTime#isAfter|isAfter} to compare by the point alone.
+     *
      * @param dateTime The date-time to compare.
      */
     public compare(dateTime: ZonedDateTime): number {
-        const instant = this.toInstant().compare(dateTime.toInstant());
+        const instant = this.compareInstant(dateTime);
 
         if (instant !== 0) {
             return instant;
@@ -817,37 +822,60 @@ export class ZonedDateTime {
     /**
      * Checks whether this date-time is after another on the time-line.
      *
+     * Only the point that each date-time denotes is considered, so two date-times
+     * denoting the same point in different time-zones are neither before nor after
+     * each other.
+     *
      * @param dateTime The date-time to compare.
      */
     public isAfter(dateTime: ZonedDateTime): boolean {
-        return this.compare(dateTime) > 0;
+        return this.compareInstant(dateTime) > 0;
     }
 
     /**
      * Checks whether this date-time is after or equal to another on the time-line.
      *
+     * Only the point that each date-time denotes is considered, so two date-times
+     * denoting the same point in different time-zones are equal on the time-line.
+     *
      * @param dateTime The date-time to compare.
      */
     public isAfterOrEqual(dateTime: ZonedDateTime): boolean {
-        return this.compare(dateTime) >= 0;
+        return this.compareInstant(dateTime) >= 0;
     }
 
     /**
      * Checks whether this date-time is before another on the time-line.
      *
+     * Only the point that each date-time denotes is considered, so two date-times
+     * denoting the same point in different time-zones are neither before nor after
+     * each other.
+     *
      * @param dateTime The date-time to compare.
      */
     public isBefore(dateTime: ZonedDateTime): boolean {
-        return this.compare(dateTime) < 0;
+        return this.compareInstant(dateTime) < 0;
     }
 
     /**
      * Checks whether this date-time is before or equal to another on the time-line.
      *
+     * Only the point that each date-time denotes is considered, so two date-times
+     * denoting the same point in different time-zones are equal on the time-line.
+     *
      * @param dateTime The date-time to compare.
      */
     public isBeforeOrEqual(dateTime: ZonedDateTime): boolean {
-        return this.compare(dateTime) <= 0;
+        return this.compareInstant(dateTime) <= 0;
+    }
+
+    /**
+     * Compares this date-time to another by the point on the time-line that each denotes.
+     *
+     * @param dateTime The date-time to compare.
+     */
+    private compareInstant(dateTime: ZonedDateTime): number {
+        return this.toInstant().compare(dateTime.toInstant());
     }
 
     /**
