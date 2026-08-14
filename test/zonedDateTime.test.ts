@@ -150,6 +150,18 @@ describe('A value object representing a zoned date time', () => {
         expect(dateTime.equals(zoned('2024-06-01T12:00', '-04:00', NEW_YORK))).toBe(true);
     });
 
+    it('resolves the offset of the zone only once when created from an instant', () => {
+        const getOffset = jest.spyOn(NEW_YORK.getRules(), 'getOffset');
+
+        try {
+            ZonedDateTime.ofInstant(Instant.parse('2024-06-01T16:00:00Z'), NEW_YORK);
+
+            expect(getOffset).toHaveBeenCalledTimes(1);
+        } finally {
+            getOffset.mockRestore();
+        }
+    });
+
     it('can be created from a number of seconds from the epoch', () => {
         const dateTime = ZonedDateTime.ofEpochSecond(1_717_257_600, 123, NEW_YORK);
 

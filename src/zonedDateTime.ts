@@ -130,11 +130,11 @@ export class ZonedDateTime {
      * @param zone    The time-zone.
      */
     public static ofInstant(instant: Instant, zone: TimeZone): ZonedDateTime {
-        return new ZonedDateTime(
-            LocalDateTime.ofInstant(instant, zone),
-            zone.getRules().getOffset(instant),
-            zone,
-        );
+        // Resolving the offset against the rules of the zone is the expensive part,
+        // so the local date-time is derived from the offset already resolved.
+        const offset = zone.getRules().getOffset(instant);
+
+        return new ZonedDateTime(LocalDateTime.ofInstant(instant, offset), offset, zone);
     }
 
     /**
