@@ -12,7 +12,9 @@ import {ZoneOffsetTransition} from './zoneOffsetTransition';
  * runtime, which does not expose the underlying transition table. Consequently,
  * transitions are discovered by probing the offset around a point in time rather
  * than being read from a list, and the rules cannot report whether an offset is
- * a daylight savings offset or a standard one.
+ * a daylight savings offset or a standard one. The data is also only reachable for
+ * the points in time a native date object can represent, which is a narrower range
+ * than the one of an instant, so points beyond it are rejected.
  */
 export abstract class ZoneRules {
     /**
@@ -58,6 +60,8 @@ export abstract class ZoneRules {
      * Returns the offset that applies at the given instant.
      *
      * @param instant The instant to find the offset for.
+     *
+     * @throws {Error} If the instant is outside the range region-based rules support.
      */
     public abstract getOffset(instant: Instant): ZoneOffset;
 
@@ -69,6 +73,8 @@ export abstract class ZoneRules {
      * an overlap, ordered from the offset before the transition to the offset after it.
      *
      * @param dateTime The local date-time to find the offsets for.
+     *
+     * @throws {Error} If the local date-time is outside the range region-based rules support.
      */
     public abstract getValidOffsets(dateTime: LocalDateTime): ZoneOffset[];
 
@@ -78,6 +84,8 @@ export abstract class ZoneRules {
      * The result is `null` unless the local date-time falls in a gap or an overlap.
      *
      * @param dateTime The local date-time to find the transition for.
+     *
+     * @throws {Error} If the local date-time is outside the range region-based rules support.
      */
     public abstract getTransition(dateTime: LocalDateTime): ZoneOffsetTransition | null;
 
@@ -88,6 +96,8 @@ export abstract class ZoneRules {
      * transition beyond it. See {@link ZoneRules} for the rationale.
      *
      * @param instant The instant to search from, exclusive.
+     *
+     * @throws {Error} If the instant is outside the range region-based rules support.
      */
     public abstract getNextTransition(instant: Instant): ZoneOffsetTransition | null;
 
@@ -98,6 +108,8 @@ export abstract class ZoneRules {
      * transition beyond it. See {@link ZoneRules} for the rationale.
      *
      * @param instant The instant to search from, exclusive.
+     *
+     * @throws {Error} If the instant is outside the range region-based rules support.
      */
     public abstract getPreviousTransition(instant: Instant): ZoneOffsetTransition | null;
 
@@ -282,11 +294,15 @@ class IntlZoneRules extends ZoneRules {
     }
 
     public getOffset(instant: Instant): ZoneOffset {
-        return ZoneOffset.ofTotalSeconds(this.getOffsetAt(instant.getSeconds()));
+        const second = instant.getSeconds();
+
+        this.checkSupported(second, instant);
+
+        return ZoneOffset.ofTotalSeconds(this.getOffsetAt(second));
     }
 
     public getValidOffsets(dateTime: LocalDateTime): ZoneOffset[] {
-        const local = IntlZoneRules.toEpochSecond(dateTime);
+        const local = this.toSupportedEpochSecond(dateTime);
 
         return this.getCandidates(local)
             .filter(offset => this.getOffsetAt(local - offset) === offset)
@@ -294,7 +310,7 @@ class IntlZoneRules extends ZoneRules {
     }
 
     public getTransition(dateTime: LocalDateTime): ZoneOffsetTransition | null {
-        const local = IntlZoneRules.toEpochSecond(dateTime);
+        const local = this.toSupportedEpochSecond(dateTime);
         const valid = this.getCandidates(local)
             .filter(offset => this.getOffsetAt(local - offset) === offset);
 
@@ -309,10 +325,16 @@ class IntlZoneRules extends ZoneRules {
     }
 
     public getNextTransition(instant: Instant): ZoneOffsetTransition | null {
-        return this.scan(instant.getSeconds(), 1);
+        const second = instant.getSeconds();
+
+        this.checkSupported(second, instant);
+
+        return this.scan(second, 1);
     }
 
     public getPreviousTransition(instant: Instant): ZoneOffsetTransition | null {
+        this.checkSupported(instant.getSeconds(), instant);
+
         // Transitions occur on whole seconds, so the last second before the instant
         // is the second of the instant itself when it has a fraction, and the one
         // before it otherwise.
@@ -327,12 +349,41 @@ class IntlZoneRules extends ZoneRules {
 
     /**
      * Returns the local date-time as a number of seconds, read as if it were in UTC.
+     *
+     * @throws {Error} If the local date-time is outside the supported range.
      */
-    private static toEpochSecond(dateTime: LocalDateTime): number {
-        return addExact(
+    private toSupportedEpochSecond(dateTime: LocalDateTime): number {
+        const local = addExact(
             multiplyExact(dateTime.getLocalDate().toEpochDay(), LocalTime.SECONDS_PER_DAY),
             dateTime.getLocalTime().toSecondOfDay(),
         );
+
+        this.checkSupported(local, dateTime);
+
+        return local;
+    }
+
+    /**
+     * Checks that the given point in time is one the runtime can resolve an offset for.
+     *
+     * The time-zone data of the runtime is only reachable through a native date
+     * object, whose range is narrower than the one of an instant. Rejecting the
+     * points beyond it keeps these rules from reporting an offset that merely looks
+     * plausible, as the offset of the closest representable point is unrelated to
+     * the one in effect at a point hundreds of thousands of years away from it.
+     *
+     * @param epochSecond The number of seconds from the epoch to check.
+     * @param point       The point in time the number of seconds was derived from.
+     *
+     * @throws {Error} If the point in time is outside the supported range.
+     */
+    private checkSupported(epochSecond: number, point: Instant | LocalDateTime): void {
+        if (Math.abs(epochSecond) > IntlZoneRules.MAX_DATE_SECOND) {
+            throw new Error(
+                `Unable to determine the offset of the timezone ${this.id} at `
+                + `${point.toString()}, as it is outside the range the runtime supports.`,
+            );
+        }
     }
 
     /**
@@ -420,8 +471,10 @@ class IntlZoneRules extends ZoneRules {
      * Returns the offset in seconds that applies at the given number of seconds
      * from the epoch.
      *
-     * Instants beyond the range of a native date object are clamped to the closest
-     * representable instant, which is well past the last transition of every zone.
+     * Points beyond the range of a native date object are clamped to the closest
+     * representable one. Only the probes taken around a point already checked to be
+     * within range can reach that far, and they are well past the last transition of
+     * every zone, so the clamped offset is the one in effect there.
      */
     private getOffsetAt(epochSecond: number): number {
         const second = Math.max(

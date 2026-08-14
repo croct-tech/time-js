@@ -1564,13 +1564,10 @@ describe('A value object representing a local date time', () => {
 
     it.each([
         // A native date object spans about 273,790 years on either side of the epoch,
-        // so both of these instants fall outside it. The offset is then resolved at the
-        // closest representable instant, which is past the last transition of every
-        // time zone. The zones are picked so that applying the offset does not push the
-        // local date-time out of the supported range.
+        // so both of these instants fall outside it and no offset can be read for them.
         [500_000, 'America/Sao_Paulo'],
         [-500_000, 'Asia/Tokyo'],
-    ])('should convert an instant in the year %s beyond the range of a native date', (
+    ])('should reject an instant in the year %s beyond the range of a native date', (
         year: number,
         zone: string,
     ) => {
@@ -1578,7 +1575,20 @@ describe('A value object representing a local date time', () => {
         const epochSecond = LocalDate.of(year, 1, 1).toEpochDay() * LocalTime.SECONDS_PER_DAY;
         const instant = Instant.ofEpochSecond(epochSecond);
 
-        expect(LocalDateTime.ofInstant(instant, timeZone).toInstant(timeZone).equals(instant))
-            .toBe(true);
+        expect(() => LocalDateTime.ofInstant(instant, timeZone))
+            .toThrow('is outside the range the runtime supports.');
+    });
+
+    it.each([
+        [500_000, 'America/Sao_Paulo'],
+        [-500_000, 'Asia/Tokyo'],
+    ])('should reject a local date-time in the year %s beyond the range of a native date', (
+        year: number,
+        zone: string,
+    ) => {
+        const dateTime = LocalDateTime.of(LocalDate.of(year, 1, 1), LocalTime.of(12));
+
+        expect(() => dateTime.toInstant(TimeZone.of(zone)))
+            .toThrow('is outside the range the runtime supports.');
     });
 });

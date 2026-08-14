@@ -230,6 +230,47 @@ describe('The rules of a region-based time zone', () => {
         expect(rules.getPreviousTransition(instant)).toBeNull();
     });
 
+    it.each(Object.entries({
+        'the offset at an instant': (rules: ZoneRules, instant: Instant): unknown => rules.getOffset(instant),
+        'the next transition': (rules: ZoneRules, instant: Instant): unknown => rules.getNextTransition(instant),
+        'the previous transition': (
+            rules: ZoneRules,
+            instant: Instant,
+        ): unknown => rules.getPreviousTransition(instant),
+    }))('should reject an instant beyond the supported range when resolving %s', (_, resolve) => {
+        const rules = TimeZone.of('America/New_York').getRules();
+
+        expect(() => resolve(rules, Instant.parse('+500000-01-15T12:00:00Z'))).toThrow(
+            'Unable to determine the offset of the timezone America/New_York at '
+            + '+500000-01-15T12:00:00Z, as it is outside the range the runtime supports.',
+        );
+    });
+
+    it.each(Object.entries({
+        'the valid offsets': (
+            rules: ZoneRules,
+            dateTime: LocalDateTime,
+        ): unknown => rules.getValidOffsets(dateTime),
+        'the transition': (
+            rules: ZoneRules,
+            dateTime: LocalDateTime,
+        ): unknown => rules.getTransition(dateTime),
+    }))('should reject a local date-time beyond the supported range when resolving %s', (_, resolve) => {
+        const rules = TimeZone.of('America/New_York').getRules();
+
+        expect(() => resolve(rules, LocalDateTime.parse('+500000-01-15T12:00'))).toThrow(
+            'Unable to determine the offset of the timezone America/New_York at '
+            + '500000-01-15T12:00, as it is outside the range the runtime supports.',
+        );
+    });
+
+    it('accepts the last instant the runtime can represent', () => {
+        const rules = TimeZone.of('America/New_York').getRules();
+        const instant = Instant.ofEpochSecond(8_640_000_000_000);
+
+        expect(rules.getOffset(instant).equals(ZoneOffset.of('-04:00'))).toBe(true);
+    });
+
     it.each([
         ['America/New_York', '2024-11-03T01:30', '-04:00'],
         ['America/New_York', '2024-03-10T02:30', '-05:00'],

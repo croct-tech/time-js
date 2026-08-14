@@ -40,6 +40,9 @@ point in time, which leads to three limits:
   an overlap does not need the list, and has no such limit.
 - Offsets before 1970 depend on the `Intl` data of the runtime, and some
   environments drop the early history of some zones.
+- The data is only reachable for the points in time a native date object can
+  represent, roughly 273,790 years around 1970, so region-based zones reject the
+  instants and local date-times beyond that range rather than guess an offset.
 
 ## Contributing
 
