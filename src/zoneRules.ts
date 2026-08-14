@@ -313,7 +313,12 @@ class IntlZoneRules extends ZoneRules {
     }
 
     public getPreviousTransition(instant: Instant): ZoneOffsetTransition | null {
-        return this.scan(instant.getSeconds(), -1);
+        // Transitions occur on whole seconds, so the last second before the instant
+        // is the second of the instant itself when it has a fraction, and the one
+        // before it otherwise.
+        const second = instant.getNano() > 0 ? instant.getSeconds() : instant.getSeconds() - 1;
+
+        return this.scan(second, -1);
     }
 
     public toString(): string {
@@ -351,7 +356,11 @@ class IntlZoneRules extends ZoneRules {
     /**
      * Scans for the closest transition in the given direction, if any.
      *
-     * @param from      The number of seconds from the epoch to scan from, exclusive.
+     * The offset observed at the given point is the reference the scan compares
+     * against, so a transition falling exactly on it is reported when scanning
+     * backward, but not when scanning forward.
+     *
+     * @param from      The number of seconds from the epoch to scan from.
      * @param direction Positive to scan forward, negative to scan backward.
      */
     private scan(from: number, direction: number): ZoneOffsetTransition | null {

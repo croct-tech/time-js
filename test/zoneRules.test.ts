@@ -173,6 +173,36 @@ describe('The rules of a region-based time zone', () => {
         expect(transition?.getInstant().equals(Instant.parse(expected))).toBe(true);
     });
 
+    it.each([
+        // The instant of the transition itself is not before it, so the search
+        // has to skip to the one preceding it.
+        ['2024-11-03T06:00:00Z', '2024-03-10T07:00:00Z'],
+        ['2024-11-03T06:00:00.000000001Z', '2024-11-03T06:00:00Z'],
+    ])('excludes the instant %s when finding the previous transition', (
+        instant: string,
+        expected: string,
+    ) => {
+        const transition = TimeZone.of('America/New_York')
+            .getRules()
+            .getPreviousTransition(Instant.parse(instant));
+
+        expect(transition?.getInstant().equals(Instant.parse(expected))).toBe(true);
+    });
+
+    it.each([
+        ['2024-03-10T07:00:00Z', '2024-11-03T06:00:00Z'],
+        ['2024-03-10T06:59:59.999999999Z', '2024-03-10T07:00:00Z'],
+    ])('excludes the instant %s when finding the next transition', (
+        instant: string,
+        expected: string,
+    ) => {
+        const transition = TimeZone.of('America/New_York')
+            .getRules()
+            .getNextTransition(Instant.parse(instant));
+
+        expect(transition?.getInstant().equals(Instant.parse(expected))).toBe(true);
+    });
+
     it('reports only a past transition for a zone that no longer observes daylight savings', () => {
         // Brazil abolished daylight savings after the transition of February 2019,
         // which still falls within the window the rules search backwards.
