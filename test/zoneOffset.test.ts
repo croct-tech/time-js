@@ -84,23 +84,35 @@ describe('A value object representing a time-zone offset', () => {
         expect(() => ZoneOffset.ofTotal(Math.sign(seconds), 0, seconds)).toThrow(message);
     });
 
-    it.each(Object.entries({
+    type OfTotalScenario = {
+        hours: number,
+        minutes: number,
+        seconds: number,
+        message: string,
+    };
+
+    it.each(Object.entries<OfTotalScenario>({
         'a fractional hour': {
-            components: [1.5, 0, 0],
+            hours: 1.5,
+            minutes: 0,
+            seconds: 0,
             message: 'Offset hours must be an integer between -18 and 18, but got 1.5.',
         },
         'a fractional minute': {
-            components: [0, 1.5, 0],
+            hours: 0,
+            minutes: 1.5,
+            seconds: 0,
             message: 'Offset minutes must be an integer between -59 and 59, but got 1.5.',
         },
         'a fractional second': {
-            components: [0, 0, 1.5],
+            hours: 0,
+            minutes: 0,
+            seconds: 1.5,
             message: 'Offset seconds must be an integer between -59 and 59, but got 1.5.',
         },
     }))('should reject %s', (_, scenario) => {
-        const [hours, minutes, seconds] = scenario.components;
-
-        expect(() => ZoneOffset.ofTotal(hours, minutes, seconds)).toThrow(scenario.message);
+        expect(() => ZoneOffset.ofTotal(scenario.hours, scenario.minutes, scenario.seconds))
+            .toThrow(scenario.message);
     });
 
     it('can be created from a total offset in seconds', () => {
@@ -116,7 +128,7 @@ describe('A value object representing a time-zone offset', () => {
         expect(() => ZoneOffset.ofTotalSeconds(totalSeconds)).toThrow(message);
     });
 
-    it.each(Object.entries({
+    it.each(Object.entries<number>({
         'a fractional total of seconds': 1.5,
         'a total of seconds that is not a number': Number.NaN,
         'an infinite total of seconds': Number.POSITIVE_INFINITY,

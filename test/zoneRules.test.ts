@@ -230,13 +230,12 @@ describe('The rules of a region-based time zone', () => {
         expect(rules.getPreviousTransition(instant)).toBeNull();
     });
 
-    it.each(Object.entries({
-        'the offset at an instant': (rules: ZoneRules, instant: Instant): unknown => rules.getOffset(instant),
-        'the next transition': (rules: ZoneRules, instant: Instant): unknown => rules.getNextTransition(instant),
-        'the previous transition': (
-            rules: ZoneRules,
-            instant: Instant,
-        ): unknown => rules.getPreviousTransition(instant),
+    type InstantScenario = (rules: ZoneRules, instant: Instant) => unknown;
+
+    it.each(Object.entries<InstantScenario>({
+        'the offset at an instant': (rules, instant) => rules.getOffset(instant),
+        'the next transition': (rules, instant) => rules.getNextTransition(instant),
+        'the previous transition': (rules, instant) => rules.getPreviousTransition(instant),
     }))('should reject an instant beyond the supported range when resolving %s', (_, resolve) => {
         const rules = TimeZone.of('America/New_York').getRules();
 
@@ -246,15 +245,11 @@ describe('The rules of a region-based time zone', () => {
         );
     });
 
-    it.each(Object.entries({
-        'the valid offsets': (
-            rules: ZoneRules,
-            dateTime: LocalDateTime,
-        ): unknown => rules.getValidOffsets(dateTime),
-        'the transition': (
-            rules: ZoneRules,
-            dateTime: LocalDateTime,
-        ): unknown => rules.getTransition(dateTime),
+    type LocalDateTimeScenario = (rules: ZoneRules, dateTime: LocalDateTime) => unknown;
+
+    it.each(Object.entries<LocalDateTimeScenario>({
+        'the valid offsets': (rules, dateTime) => rules.getValidOffsets(dateTime),
+        'the transition': (rules, dateTime) => rules.getTransition(dateTime),
     }))('should reject a local date-time beyond the supported range when resolving %s', (_, resolve) => {
         const rules = TimeZone.of('America/New_York').getRules();
 

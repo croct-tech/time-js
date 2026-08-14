@@ -986,7 +986,7 @@ describe('A value object representing a local time', () => {
             .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
     });
 
-    it.each(Object.entries({
+    it.each(Object.entries<number>({
         'fractional milliseconds number': 1.5,
         'milliseconds number less than 0': -1,
         'milliseconds number greater than 999': 1_000,
@@ -995,7 +995,7 @@ describe('A value object representing a local time', () => {
             .toThrow('Millisecond of second must be an integer between 0 and 999.');
     });
 
-    it.each(Object.entries({
+    it.each(Object.entries<number>({
         'fractional microseconds number': 1.5,
         'microseconds number less than 0': -1,
         'microseconds number greater than 999999': 1_000_000,

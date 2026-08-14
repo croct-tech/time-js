@@ -130,7 +130,7 @@ describe('A value object representing a zoned date time', () => {
         expect(dateTime.getOffset().equals(ZoneOffset.of(expected))).toBe(true);
     });
 
-    it.each(Object.entries({
+    it.each(Object.entries<ZoneOffset | undefined>({
         'no preferred offset': undefined,
         'the offset before the gap': ZoneOffset.of('-05:00'),
         'the offset after the gap': ZoneOffset.of('-04:00'),
