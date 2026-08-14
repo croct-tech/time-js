@@ -344,14 +344,14 @@ class IntlZoneRules extends ZoneRules {
     }
 
     public getPreviousTransition(instant: Instant): ZoneOffsetTransition | null {
-        this.checkSupported(instant.getSeconds(), instant);
+        const second = instant.getSeconds();
+
+        this.checkSupported(second, instant);
 
         // Transitions occur on whole seconds, so the last second before the instant
         // is the second of the instant itself when it has a fraction, and the one
         // before it otherwise.
-        const second = instant.getNano() > 0 ? instant.getSeconds() : instant.getSeconds() - 1;
-
-        return this.scan(second, -1);
+        return this.scan(instant.getNano() > 0 ? second : second - 1, -1);
     }
 
     public toString(): string {
