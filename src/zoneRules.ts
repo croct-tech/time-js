@@ -269,10 +269,10 @@ class IntlZoneRules extends ZoneRules {
      * The distance, in seconds, kept from the bounds of the native date range when
      * checking a local date-time.
      *
-     * Resolving a local date-time reads the offset at the instants around it, the
-     * furthest of which is the probing window away plus the largest offset a zone
-     * can observe, which is eighteen hours. Keeping that distance is what lets those
-     * reads assume the whole window is representable.
+     * Resolving a local date-time reads the offset as far as the probing window from
+     * it, and the offset it resolves to denotes an instant as far as the largest one
+     * a zone can observe, eighteen hours. Neither reach compounds the other, so their
+     * sum leaves room for both the reads and the instant they resolve to.
      */
     private static LOCAL_MARGIN = (2 * LocalTime.SECONDS_PER_DAY) + (18 * LocalTime.SECONDS_PER_HOUR);
 

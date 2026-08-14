@@ -287,7 +287,7 @@ describe('The rules of a region-based time zone', () => {
     it('accepts the last local date-time the offsets around it can be read for', () => {
         const rules = TimeZone.of('America/New_York').getRules();
         // Two days and eighteen hours from the bound, which is the probing window
-        // plus the largest offset a zone can observe.
+        // and the largest offset a zone can observe added together.
         const dateTime = LocalDateTime.ofEpochSecond(8_640_000_000_000 - 237_600);
 
         expect(rules.getValidOffsets(dateTime)).toHaveLength(1);
