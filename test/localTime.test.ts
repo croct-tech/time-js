@@ -1,4 +1,6 @@
-import {Duration, LocalTime} from '../src';
+import {Duration, Instant, LocalTime, TimeZone} from '../src';
+import {FixedClock} from '../src/clock/fixedClock';
+import {DefaultClockProvider} from '../src/defaultClockProvider';
 
 describe('A value object representing a local time', () => {
     it('can be created from its components', () => {
@@ -847,5 +849,158 @@ describe('A value object representing a local time', () => {
         const localTime = LocalTime.of(20, 6, 59, 123456789);
 
         expect(localTime.toJSON()).toBe('20:06:59.123456789');
+    });
+
+    it.each([
+        ['2015-08-31T12:11:59.123456789Z', 'America/Sao_Paulo', LocalTime.of(9, 11, 59, 123_456_789)],
+        ['2015-08-31T12:11:59.123456789Z', 'Asia/Katmandu', LocalTime.of(17, 56, 59, 123_456_789)],
+        ['2015-08-31T12:11:59.123456789Z', 'UTC', LocalTime.of(12, 11, 59, 123_456_789)],
+        // The instant falls on the previous day in Sao Paulo.
+        ['2015-08-31T02:11:59Z', 'America/Sao_Paulo', LocalTime.of(23, 11, 59)],
+    ])('can provide the current time at %s in %s from the given clock', (
+        currentTime: string,
+        zone: string,
+        expected: LocalTime,
+    ) => {
+        const clock = FixedClock.of(Instant.parse(currentTime), TimeZone.of(zone));
+
+        expect(LocalTime.now(clock).equals(expected)).toBe(true);
+    });
+
+    it('can provide the current time from the given clock in a given time-zone', () => {
+        const clock = FixedClock.of(Instant.parse('2015-08-31T12:11:59Z'), TimeZone.UTC);
+
+        expect(
+            LocalTime.nowIn(TimeZone.of('America/Sao_Paulo'), clock)
+                .equals(LocalTime.of(9, 11, 59)),
+        ).toBe(true);
+    });
+
+    it('can provide the current time from the default clock', () => {
+        const previous = DefaultClockProvider.getClock();
+
+        DefaultClockProvider.setClock(
+            FixedClock.of(Instant.parse('2015-08-31T12:11:59Z'), TimeZone.UTC),
+        );
+
+        try {
+            expect(LocalTime.now().equals(LocalTime.of(12, 11, 59))).toBe(true);
+            expect(
+                LocalTime.nowIn(TimeZone.of('America/Sao_Paulo'))
+                    .equals(LocalTime.of(9, 11, 59)),
+            ).toBe(true);
+        } finally {
+            DefaultClockProvider.setClock(previous);
+        }
+    });
+
+    it.each([
+        [5, LocalTime.of(5, 6, 59, 123_456_789)],
+        [0, LocalTime.of(0, 6, 59, 123_456_789)],
+        [23, LocalTime.of(23, 6, 59, 123_456_789)],
+    ])('can create a copy with the hour %s', (hour: number, expected: LocalTime) => {
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withHour(hour).equals(expected)).toBe(true);
+    });
+
+    it.each([
+        [0, LocalTime.of(20, 0, 59, 123_456_789)],
+        [59, LocalTime.of(20, 59, 59, 123_456_789)],
+    ])('can create a copy with the minute %s', (minute: number, expected: LocalTime) => {
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withMinute(minute).equals(expected)).toBe(true);
+    });
+
+    it.each([
+        [0, LocalTime.of(20, 6, 0, 123_456_789)],
+        [59, LocalTime.of(20, 6, 59, 123_456_789)],
+    ])('can create a copy with the second %s', (second: number, expected: LocalTime) => {
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withSecond(second).equals(expected)).toBe(true);
+    });
+
+    it.each([
+        [500, LocalTime.of(20, 6, 59, 500_000_000)],
+        [0, LocalTime.of(20, 6, 59)],
+        [999, LocalTime.of(20, 6, 59, 999_000_000)],
+    ])('can create a copy with the millisecond %s', (millis: number, expected: LocalTime) => {
+        // The remaining sub-millisecond part is discarded.
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withMilli(millis).equals(expected)).toBe(true);
+    });
+
+    it.each([
+        [500, LocalTime.of(20, 6, 59, 500_000)],
+        [0, LocalTime.of(20, 6, 59)],
+        [999_999, LocalTime.of(20, 6, 59, 999_999_000)],
+    ])('can create a copy with the microsecond %s', (micros: number, expected: LocalTime) => {
+        // The remaining sub-microsecond part is discarded.
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withMicro(micros).equals(expected)).toBe(true);
+    });
+
+    it.each([
+        [0, LocalTime.of(20, 6, 59)],
+        [999_999_999, LocalTime.of(20, 6, 59, 999_999_999)],
+    ])('can create a copy with the nanosecond %s', (nanos: number, expected: LocalTime) => {
+        expect(LocalTime.of(20, 6, 59, 123_456_789).withNano(nanos).equals(expected)).toBe(true);
+    });
+
+    it('should return the same local time when a field is unchanged', () => {
+        const localTime = LocalTime.of(20, 6, 59, 123_456_789);
+
+        expect(localTime.withHour(20)).toBe(localTime);
+        expect(localTime.withMinute(6)).toBe(localTime);
+        expect(localTime.withSecond(59)).toBe(localTime);
+        expect(localTime.withNano(123_456_789)).toBe(localTime);
+    });
+
+    it.each([
+        [-1],
+        [24],
+        [1.5],
+    ])('should reject the invalid hour %s', (hour: number) => {
+        expect(() => LocalTime.of(20, 6, 59).withHour(hour))
+            .toThrow('Hour must be an integer between 0 and 23.');
+    });
+
+    it.each([
+        [-1],
+        [60],
+        [1.5],
+    ])('should reject the invalid minute %s', (minute: number) => {
+        expect(() => LocalTime.of(20, 6, 59).withMinute(minute))
+            .toThrow('Minute must be an integer between 0 and 59.');
+    });
+
+    it.each([
+        [-1],
+        [60],
+        [1.5],
+    ])('should reject the invalid second %s', (second: number) => {
+        expect(() => LocalTime.of(20, 6, 59).withSecond(second))
+            .toThrow('Second must be an integer between 0 and 59.');
+    });
+
+    it.each([
+        [-1],
+        [1_000_000_000],
+        [1.5],
+    ])('should reject the invalid nanosecond %s', (nanos: number) => {
+        expect(() => LocalTime.of(20, 6, 59).withNano(nanos))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+    });
+
+    it.each(Object.entries<number>({
+        'fractional milliseconds number': 1.5,
+        'milliseconds number less than 0': -1,
+        'milliseconds number greater than 999': 1_000,
+    }))('should reject a %s', (_, millis) => {
+        expect(() => LocalTime.of(20, 6, 59).withMilli(millis))
+            .toThrow('Millisecond of second must be an integer between 0 and 999.');
+    });
+
+    it.each(Object.entries<number>({
+        'fractional microseconds number': 1.5,
+        'microseconds number less than 0': -1,
+        'microseconds number greater than 999999': 1_000_000,
+    }))('should reject a %s', (_, micros) => {
+        expect(() => LocalTime.of(20, 6, 59).withMicro(micros))
+            .toThrow('Microsecond of second must be an integer between 0 and 999999.');
     });
 });

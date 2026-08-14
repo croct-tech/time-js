@@ -26,6 +26,26 @@ Use the package manage [NPM](https://getcomposer.org) to install the package:
 npm install @croct/time
 ```
 
+## Time zones
+
+Offsets for region-based zones come from `Intl`. Daylight savings gaps and
+overlaps are fully supported, but `Intl` only reports the offset in effect at a
+point in time, which leads to three limits:
+
+- Standard time and daylight savings time cannot be told apart, since both look
+  the same through `Intl`.
+- There is no list of transitions to read, so `getNextTransition` and
+  `getPreviousTransition` search about five years from the given instant and
+  return `null` past that. Checking whether a local date-time falls in a gap or
+  an overlap does not need the list, and has no such limit.
+- Offsets before 1970 depend on the `Intl` data of the runtime, and some
+  environments drop the early history of some zones.
+- The data is only reachable for the points in time a native date object can
+  represent, roughly 273,790 years around 1970, so region-based zones reject the
+  instants and local date-times beyond that range rather than guess an offset. The
+  bound for a local date-time is a few days tighter, as resolving one reads the
+  offsets around it.
+
 ## Contributing
 
 Contributions to the package are always welcome!

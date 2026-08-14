@@ -1,4 +1,6 @@
-import {LocalDate, Period} from '../src';
+import {Instant, LocalDate, Period, TimeZone} from '../src';
+import {FixedClock} from '../src/clock/fixedClock';
+import {DefaultClockProvider} from '../src/defaultClockProvider';
 
 describe('A value object representing a local date', () => {
     it('can be created from its components', () => {
@@ -771,5 +773,130 @@ describe('A value object representing a local date', () => {
         const localDate = LocalDate.of(2015, 8, 30);
 
         expect(localDate.toJSON()).toBe('2015-08-30');
+    });
+
+    it.each([
+        ['2015-08-31T12:11:59Z', 'America/Sao_Paulo', LocalDate.of(2015, 8, 31)],
+        // The instant falls on the previous day in Sao Paulo.
+        ['2015-08-31T02:11:59Z', 'America/Sao_Paulo', LocalDate.of(2015, 8, 30)],
+        ['2015-08-31T23:11:59Z', 'Asia/Tokyo', LocalDate.of(2015, 9, 1)],
+        ['2015-08-31T12:11:59Z', 'UTC', LocalDate.of(2015, 8, 31)],
+    ])('can provide the current date at %s in %s from the given clock', (
+        currentTime: string,
+        zone: string,
+        expected: LocalDate,
+    ) => {
+        const clock = FixedClock.of(Instant.parse(currentTime), TimeZone.of(zone));
+
+        expect(LocalDate.now(clock).equals(expected)).toBe(true);
+    });
+
+    it('can provide the current date from the given clock in a given time-zone', () => {
+        const clock = FixedClock.of(Instant.parse('2015-08-31T23:11:59Z'), TimeZone.UTC);
+
+        expect(LocalDate.nowIn(TimeZone.of('Asia/Tokyo'), clock).equals(LocalDate.of(2015, 9, 1)))
+            .toBe(true);
+    });
+
+    it('can provide the current date from the default clock', () => {
+        const previous = DefaultClockProvider.getClock();
+
+        DefaultClockProvider.setClock(
+            FixedClock.of(Instant.parse('2015-08-31T12:11:59Z'), TimeZone.UTC),
+        );
+
+        try {
+            expect(LocalDate.now().equals(LocalDate.of(2015, 8, 31))).toBe(true);
+            expect(LocalDate.nowIn(TimeZone.of('Asia/Tokyo')).equals(LocalDate.of(2015, 8, 31)))
+                .toBe(true);
+        } finally {
+            DefaultClockProvider.setClock(previous);
+        }
+    });
+
+    it.each([
+        [LocalDate.of(2015, 8, 30), 2016, LocalDate.of(2016, 8, 30)],
+        // The day of month is adjusted to the last valid day of the resulting month.
+        [LocalDate.of(2024, 2, 29), 2023, LocalDate.of(2023, 2, 28)],
+        [LocalDate.of(2024, 2, 29), 2028, LocalDate.of(2028, 2, 29)],
+        [LocalDate.of(2015, 8, 30), -1, LocalDate.of(-1, 8, 30)],
+        [LocalDate.of(2015, 8, 30), LocalDate.MAX_YEAR, LocalDate.of(LocalDate.MAX_YEAR, 8, 30)],
+    ])('can create a copy of %s with the year %s', (
+        localDate: LocalDate,
+        year: number,
+        expected: LocalDate,
+    ) => {
+        expect(localDate.withYear(year).equals(expected)).toBe(true);
+    });
+
+    it('should return the same local date when the year is unchanged', () => {
+        const localDate = LocalDate.of(2015, 8, 30);
+
+        expect(localDate.withYear(2015)).toBe(localDate);
+    });
+
+    it.each([
+        [LocalDate.MAX_YEAR + 1],
+        [LocalDate.MIN_YEAR - 1],
+        [2015.5],
+    ])('should reject the invalid year %s', (year: number) => {
+        expect(() => LocalDate.of(2015, 8, 30).withYear(year)).toThrow();
+    });
+
+    it.each([
+        [LocalDate.of(2015, 8, 30), 9, LocalDate.of(2015, 9, 30)],
+        // The day of month is adjusted to the last valid day of the resulting month.
+        [LocalDate.of(2015, 1, 31), 2, LocalDate.of(2015, 2, 28)],
+        [LocalDate.of(2024, 1, 31), 2, LocalDate.of(2024, 2, 29)],
+        [LocalDate.of(2015, 1, 31), 4, LocalDate.of(2015, 4, 30)],
+    ])('can create a copy of %s with the month %s', (
+        localDate: LocalDate,
+        month: number,
+        expected: LocalDate,
+    ) => {
+        expect(localDate.withMonth(month).equals(expected)).toBe(true);
+    });
+
+    it('should return the same local date when the month is unchanged', () => {
+        const localDate = LocalDate.of(2015, 8, 30);
+
+        expect(localDate.withMonth(8)).toBe(localDate);
+    });
+
+    it.each([
+        [0],
+        [13],
+        [1.5],
+    ])('should reject the invalid month %s', (month: number) => {
+        expect(() => LocalDate.of(2015, 8, 30).withMonth(month))
+            .toThrow('Month must be an integer between 1 and 12.');
+    });
+
+    it.each([
+        [LocalDate.of(2015, 8, 30), 1, LocalDate.of(2015, 8, 1)],
+        [LocalDate.of(2015, 8, 30), 31, LocalDate.of(2015, 8, 31)],
+        [LocalDate.of(2024, 2, 1), 29, LocalDate.of(2024, 2, 29)],
+    ])('can create a copy of %s with the day %s', (
+        localDate: LocalDate,
+        day: number,
+        expected: LocalDate,
+    ) => {
+        expect(localDate.withDay(day).equals(expected)).toBe(true);
+    });
+
+    it('should return the same local date when the day is unchanged', () => {
+        const localDate = LocalDate.of(2015, 8, 30);
+
+        expect(localDate.withDay(30)).toBe(localDate);
+    });
+
+    it.each([
+        // Unlike the year and month, the day is never adjusted.
+        [LocalDate.of(2015, 2, 1), 29, 'Day must be an integer between 1 and 28.'],
+        [LocalDate.of(2015, 4, 1), 31, 'Day must be an integer between 1 and 30.'],
+        [LocalDate.of(2015, 8, 1), 0, 'Day must be an integer between 1 and 31.'],
+        [LocalDate.of(2015, 8, 1), 1.5, 'Day must be an integer between 1 and 31.'],
+    ])('should reject the day %s for %s', (localDate: LocalDate, day: number, message: string) => {
+        expect(() => localDate.withDay(day)).toThrow(message);
     });
 });

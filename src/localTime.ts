@@ -1,4 +1,7 @@
-import {intDiv, subtractExact} from './math';
+import type {Clock} from './clock';
+import {DefaultClockProvider} from './defaultClockProvider';
+import type {TimeZone} from './timeZone';
+import {addExact, floorMod, intDiv, subtractExact} from './math';
 import {Duration} from './duration';
 
 /**
@@ -127,6 +130,32 @@ export class LocalTime {
         this.minute = minute;
         this.second = second;
         this.nanos = nanos;
+    }
+
+    /**
+     * Returns the current time from the given clock in the clock's time-zone.
+     *
+     * @param clock The clock to use. The default clock is used if one is not given.
+     */
+    public static now(clock: Clock = DefaultClockProvider.getClock()): LocalTime {
+        return LocalTime.nowIn(clock.getZone(), clock);
+    }
+
+    /**
+     * Returns the current time from the default or given clock in the given time-zone.
+     *
+     * @param zone The time-zone to use.
+     * @param clock The clock to use. The default clock is used if one is not given.
+     */
+    public static nowIn(zone: TimeZone, clock: Clock = DefaultClockProvider.getClock()): LocalTime {
+        const instant = clock.getInstant();
+        const offset = zone.getRules().getOffset(instant);
+        const epochSecond = addExact(instant.getSeconds(), offset.getTotalSeconds());
+
+        return LocalTime.ofSecondOfDay(
+            floorMod(epochSecond, LocalTime.SECONDS_PER_DAY),
+            instant.getNano(),
+        );
     }
 
     /**
@@ -516,6 +545,100 @@ export class LocalTime {
      */
     public minus(duration: Duration): LocalTime {
         return this.minusSeconds(duration.getSeconds()).minusNanos(duration.getNanos());
+    }
+
+    /**
+     * Returns a copy of this local time with the given hour of day.
+     *
+     * @param hour The hour of the day, in the range 0 to 23.
+     *
+     * @throws {Error} If the hour is out of range.
+     */
+    public withHour(hour: number): LocalTime {
+        if (this.hour === hour) {
+            return this;
+        }
+
+        return LocalTime.of(hour, this.minute, this.second, this.nanos);
+    }
+
+    /**
+     * Returns a copy of this local time with the given minute of hour.
+     *
+     * @param minute The minute of the hour, in the range 0 to 59.
+     *
+     * @throws {Error} If the minute is out of range.
+     */
+    public withMinute(minute: number): LocalTime {
+        if (this.minute === minute) {
+            return this;
+        }
+
+        return LocalTime.of(this.hour, minute, this.second, this.nanos);
+    }
+
+    /**
+     * Returns a copy of this local time with the given second of minute.
+     *
+     * @param second The second of the minute, in the range 0 to 59.
+     *
+     * @throws {Error} If the second is out of range.
+     */
+    public withSecond(second: number): LocalTime {
+        if (this.second === second) {
+            return this;
+        }
+
+        return LocalTime.of(this.hour, this.minute, second, this.nanos);
+    }
+
+    /**
+     * Returns a copy of this local time with the given millisecond of second.
+     *
+     * The remaining sub-millisecond part of the second is discarded.
+     *
+     * @param millis The millisecond of the second, in the range 0 to 999.
+     *
+     * @throws {Error} If the millisecond is out of range.
+     */
+    public withMilli(millis: number): LocalTime {
+        if (!Number.isInteger(millis) || millis < 0 || millis > 999) {
+            throw new Error('Millisecond of second must be an integer between 0 and 999.');
+        }
+
+        return this.withNano(millis * LocalTime.NANOS_PER_MILLI);
+    }
+
+    /**
+     * Returns a copy of this local time with the given microsecond of second.
+     *
+     * The remaining sub-microsecond part of the second is discarded.
+     *
+     * @param micros The microsecond of the second, in the range 0 to 999,999.
+     *
+     * @throws {Error} If the microsecond is out of range.
+     */
+    public withMicro(micros: number): LocalTime {
+        if (!Number.isInteger(micros) || micros < 0 || micros > 999_999) {
+            throw new Error('Microsecond of second must be an integer between 0 and 999999.');
+        }
+
+        return this.withNano(micros * LocalTime.NANOS_PER_MICRO);
+    }
+
+    /**
+     * Returns a copy of this local time with the given nanosecond of second.
+     *
+     * @param nanos The nanosecond of the second, in the range 0 to 999,999,999.
+     *
+     * @throws {Error} If the nanosecond is out of range.
+     */
+    public withNano(nanos: number): LocalTime {
+        if (this.nanos === nanos) {
+            return this;
+        }
+
+        return LocalTime.of(this.hour, this.minute, this.second, nanos);
     }
 
     /**

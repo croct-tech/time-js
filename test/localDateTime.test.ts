@@ -9,6 +9,7 @@ import {
     TimeZone,
 } from '../src';
 import {FixedClock} from '../src/clock/fixedClock';
+import {DefaultClockProvider} from '../src/defaultClockProvider';
 
 describe('A value object representing a local date time', () => {
     it('can be created from its components', () => {
@@ -62,8 +63,16 @@ describe('A value object representing a local date time', () => {
     });
 
     it.each([
-        ['2015-08-31T12:11:59.123456789Z', TimeZone.of('America/Sao_Paulo'), '2015-08-31T09:11:59.123'],
-        ['2015-08-31T00:00:00.123456789Z', TimeZone.of('UTC'), '2015-08-31T00:00:00.123'],
+        [
+            '2015-08-31T12:11:59.123456789Z',
+            TimeZone.of('America/Sao_Paulo'),
+            '2015-08-31T09:11:59.123456789',
+        ],
+        [
+            '2015-08-31T00:00:00.123456789Z',
+            TimeZone.of('UTC'),
+            '2015-08-31T00:00:00.123456789',
+        ],
     ])(
         'can provide the current local date time from the given clock',
         (currentTime: string, timeZone: TimeZone, localDateTime: string) => {
@@ -71,7 +80,7 @@ describe('A value object representing a local date time', () => {
 
             const now = LocalDateTime.now(clock);
 
-            expect(now.toString()).toBe(localDateTime);
+            expect(now.equals(LocalDateTime.parse(localDateTime))).toBe(true);
         },
     );
 
@@ -1394,5 +1403,192 @@ describe('A value object representing a local date time', () => {
         const localDateTime = LocalDateTime.of(localDate, localTime);
 
         expect(localDateTime.toJSON()).toBe('2020-04-10T15:02:01.000002222');
+    });
+
+    it.each([
+        ['America/Sao_Paulo'],
+        ['America/New_York'],
+        ['Australia/Lord_Howe'],
+        ['UTC'],
+    ])('should preserve the nanosecond of the instant in %s', (zone: string) => {
+        const instant = Instant.ofEpochSecond(1_700_000_000, 123_456_789);
+
+        expect(LocalDateTime.ofInstant(instant, TimeZone.of(zone)).getNano()).toBe(123_456_789);
+    });
+
+    it.each([
+        [10_000],
+        [12_345],
+        [-1],
+        [-1_000],
+        [LocalDate.MAX_YEAR],
+        [LocalDate.MIN_YEAR],
+    ])('should convert an instant in the year %s outside the four-digit range', (year: number) => {
+        const epochSecond = LocalDate.of(year, 1, 1).toEpochDay() * LocalTime.SECONDS_PER_DAY;
+        const dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), TimeZone.UTC);
+
+        expect(dateTime.getYear()).toBe(year);
+        expect(dateTime.getMonth()).toBe(1);
+        expect(dateTime.getDay()).toBe(1);
+    });
+
+    it('can provide the current local date time from the default clock', () => {
+        const previous = DefaultClockProvider.getClock();
+
+        DefaultClockProvider.setClock(
+            FixedClock.of(Instant.parse('2015-08-31T12:11:59Z'), TimeZone.UTC),
+        );
+
+        try {
+            expect(LocalDateTime.now().equals(LocalDateTime.parse('2015-08-31T12:11:59')))
+                .toBe(true);
+            expect(
+                LocalDateTime.nowIn(TimeZone.of('America/Sao_Paulo'))
+                    .equals(LocalDateTime.parse('2015-08-31T09:11:59')),
+            ).toBe(true);
+        } finally {
+            DefaultClockProvider.setClock(previous);
+        }
+    });
+
+    it('can create a copy with a different year, month or day', () => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05.123456789');
+
+        expect(
+            dateTime.withYear(2016)
+                .equals(LocalDateTime.parse('2016-08-30T14:20:05.123456789')),
+        ).toBe(true);
+
+        expect(
+            dateTime.withMonth(9)
+                .equals(LocalDateTime.parse('2015-09-30T14:20:05.123456789')),
+        ).toBe(true);
+
+        expect(
+            dateTime.withDay(1)
+                .equals(LocalDateTime.parse('2015-08-01T14:20:05.123456789')),
+        ).toBe(true);
+    });
+
+    it('can create a copy with a different hour, minute or second', () => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05.123456789');
+
+        expect(
+            dateTime.withHour(0)
+                .equals(LocalDateTime.parse('2015-08-30T00:20:05.123456789')),
+        ).toBe(true);
+
+        expect(
+            dateTime.withMinute(0)
+                .equals(LocalDateTime.parse('2015-08-30T14:00:05.123456789')),
+        ).toBe(true);
+
+        expect(
+            dateTime.withSecond(0)
+                .equals(LocalDateTime.parse('2015-08-30T14:20:00.123456789')),
+        ).toBe(true);
+    });
+
+    it('can create a copy with a different fraction of second', () => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05.123456789');
+
+        // The remaining sub-millisecond and sub-microsecond parts are discarded.
+        expect(dateTime.withMilli(500).equals(LocalDateTime.parse('2015-08-30T14:20:05.5')))
+            .toBe(true);
+        expect(dateTime.withMicro(500).equals(LocalDateTime.parse('2015-08-30T14:20:05.0005')))
+            .toBe(true);
+        expect(dateTime.withNano(0).equals(LocalDateTime.parse('2015-08-30T14:20:05'))).toBe(true);
+    });
+
+    it('adjusts an invalid day of month to the last valid one', () => {
+        const dateTime = LocalDateTime.parse('2024-02-29T10:00');
+
+        expect(dateTime.withYear(2023).equals(LocalDateTime.parse('2023-02-28T10:00'))).toBe(true);
+        expect(dateTime.withMonth(4).equals(LocalDateTime.parse('2024-04-29T10:00'))).toBe(true);
+    });
+
+    it('can create a copy with a different local date or time', () => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05');
+
+        expect(
+            dateTime.withDate(LocalDate.of(2016, 1, 2))
+                .equals(LocalDateTime.parse('2016-01-02T14:20:05')),
+        ).toBe(true);
+
+        expect(
+            dateTime.withTime(LocalTime.of(1, 2, 3))
+                .equals(LocalDateTime.parse('2015-08-30T01:02:03')),
+        ).toBe(true);
+
+        expect(dateTime.withDate(LocalDate.of(2015, 8, 30))).toBe(dateTime);
+        expect(dateTime.withTime(LocalTime.of(14, 20, 5))).toBe(dateTime);
+    });
+
+    it('should reject an out-of-range date field', () => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05');
+
+        expect(() => dateTime.withYear(LocalDate.MAX_YEAR + 1)).toThrow();
+        expect(() => dateTime.withMonth(13)).toThrow('Month must be an integer between 1 and 12.');
+        expect(() => dateTime.withDay(32)).toThrow('Day must be an integer between 1 and 31.');
+    });
+
+    it('should reject an out-of-range time field', () => {
+        const dateTime = LocalDateTime.parse('2015-08-30T14:20:05');
+
+        expect(() => dateTime.withHour(24)).toThrow('Hour must be an integer between 0 and 23.');
+        expect(() => dateTime.withMinute(60))
+            .toThrow('Minute must be an integer between 0 and 59.');
+        expect(() => dateTime.withSecond(60))
+            .toThrow('Second must be an integer between 0 and 59.');
+        expect(() => dateTime.withNano(1_000_000_000))
+            .toThrow('Nanosecond of second must be an integer between 0 and 999999999.');
+        expect(() => dateTime.withMilli(1_000))
+            .toThrow('Millisecond of second must be an integer between 0 and 999.');
+        expect(() => dateTime.withMicro(1_000_000))
+            .toThrow('Microsecond of second must be an integer between 0 and 999999.');
+    });
+
+    it.each([
+        ['America/Sao_Paulo'],
+        ['America/New_York'],
+        ['Asia/Katmandu'],
+        ['Australia/Lord_Howe'],
+        ['UTC'],
+    ])('should convert an instant to a local date-time in %s and back', (zone: string) => {
+        const timeZone = TimeZone.of(zone);
+        const instant = Instant.ofEpochSecond(1_700_000_000, 123_456_789);
+
+        expect(LocalDateTime.ofInstant(instant, timeZone).toInstant(timeZone).equals(instant))
+            .toBe(true);
+    });
+
+    it.each([
+        // A native date object spans about 273,790 years on either side of the epoch,
+        // so both of these instants fall outside it and no offset can be read for them.
+        [500_000, 'America/Sao_Paulo'],
+        [-500_000, 'Asia/Tokyo'],
+    ])('should reject an instant in the year %s beyond the range of a native date', (
+        year: number,
+        zone: string,
+    ) => {
+        const timeZone = TimeZone.of(zone);
+        const epochSecond = LocalDate.of(year, 1, 1).toEpochDay() * LocalTime.SECONDS_PER_DAY;
+        const instant = Instant.ofEpochSecond(epochSecond);
+
+        expect(() => LocalDateTime.ofInstant(instant, timeZone))
+            .toThrow('is outside the range the runtime supports.');
+    });
+
+    it.each([
+        [500_000, 'America/Sao_Paulo'],
+        [-500_000, 'Asia/Tokyo'],
+    ])('should reject a local date-time in the year %s beyond the range of a native date', (
+        year: number,
+        zone: string,
+    ) => {
+        const dateTime = LocalDateTime.of(LocalDate.of(year, 1, 1), LocalTime.of(12));
+
+        expect(() => dateTime.toInstant(TimeZone.of(zone)))
+            .toThrow('is outside the range the runtime supports.');
     });
 });
