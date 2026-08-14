@@ -305,6 +305,13 @@ export class ZoneOffset extends TimeZone {
     private id?: string;
 
     /**
+     * The rules of the offset, lazily created.
+     *
+     * The offset never varies, so the rules describing it never do either.
+     */
+    private rules?: ZoneRules;
+
+    /**
      * Initializes an offset from its total number of seconds.
      */
     private constructor(totalSeconds: number) {
@@ -424,7 +431,9 @@ export class ZoneOffset extends TimeZone {
     }
 
     public getRules(): ZoneRules {
-        return ZoneRules.ofFixed(this);
+        this.rules ??= ZoneRules.ofFixed(this);
+
+        return this.rules;
     }
 
     /**

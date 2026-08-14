@@ -146,6 +146,12 @@ describe('A value object representing a timezone', () => {
             .toBe(TimeZone.of('America/Sao_Paulo').getRules());
     });
 
+    it('caches the rules of an offset', () => {
+        const offset = ZoneOffset.of('-03:00');
+
+        expect(offset.getRules()).toBe(offset.getRules());
+    });
+
     it.each([
         ['UTC', 'Z'],
         ['GMT+03:00', '+03:00'],
