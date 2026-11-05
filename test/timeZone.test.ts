@@ -42,6 +42,7 @@ describe('A value object representing a timezone', () => {
         'EET',
         'EST',
         'EST5EDT',
+        'Etc/GMT',
         'Etc/GMT+1',
         'Etc/GMT+10',
         'Etc/GMT+11',
@@ -68,6 +69,7 @@ describe('A value object representing a timezone', () => {
         'Etc/GMT-7',
         'Etc/GMT-8',
         'Etc/GMT-9',
+        'Etc/UTC',
         'HST',
         'MET',
         'MST',
@@ -76,6 +78,20 @@ describe('A value object representing a timezone', () => {
         'WET',
     ])('supports non-continental "%s" timezone', timeZone => {
         expect(TimeZone.of(timeZone).toString()).toBe(timeZone);
+    });
+
+    it.each([
+        'UTC',
+        'GMT',
+        'Etc/UTC',
+        'Etc/GMT',
+    ])('lists "%s" as an equivalent of UTC with the same offset', timeZone => {
+        expect(
+            TimeZone.of(timeZone)
+                .getRules()
+                .getOffset(Instant.EPOCH)
+                .equals(ZoneOffset.UTC),
+        ).toBe(true);
     });
 
     it.each([
