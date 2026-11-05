@@ -80,17 +80,16 @@ describe('A value object representing a timezone', () => {
         expect(TimeZone.of(timeZone).toString()).toBe(timeZone);
     });
 
-    it('lists the GMT timezone among the supported IDs', () => {
-        expect(TimeZone.getTimesZoneIds().has('GMT')).toBe(true);
-    });
-
     it.each([
-        'Etc/GMT',
+        'UTC',
+        'GMT',
         'Etc/UTC',
-    ])('reads no offset from UTC for the "%s" alias', timeZone => {
+        'Etc/GMT',
+    ])('lists "%s" as an equivalent of UTC with the same offset', timeZone => {
         const rules = TimeZone.of(timeZone).getRules();
 
-        expect(rules.getOffset(Instant.ofEpochMilli(1704067200000)).equals(ZoneOffset.UTC)).toBe(true);
+        expect(TimeZone.getTimesZoneIds().has(timeZone)).toBe(true);
+        expect(rules.getOffset(Instant.EPOCH).equals(ZoneOffset.UTC)).toBe(true);
     });
 
     it.each([
