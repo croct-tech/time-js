@@ -86,9 +86,12 @@ describe('A value object representing a timezone', () => {
         'Etc/UTC',
         'Etc/GMT',
     ])('lists "%s" as an equivalent of UTC with the same offset', timeZone => {
-        const rules = TimeZone.of(timeZone).getRules();
-
-        expect(rules.getOffset(Instant.EPOCH).equals(ZoneOffset.UTC)).toBe(true);
+        expect(
+            TimeZone.of(timeZone)
+                .getRules()
+                .getOffset(Instant.EPOCH)
+                .equals(ZoneOffset.UTC),
+        ).toBe(true);
     });
 
     it.each([
